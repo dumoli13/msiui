@@ -1,0 +1,29 @@
+{
+  "name": "msiui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "3.2.4",
+    "@storybook/addon-essentials": "8.5.2",
+    "@storybook/addon-interactions": "8.5.2",
+    "@storybook/addon-onboarding": "8.5.2",
+    "@storybook/blocks": "8.5.2",
+    "@storybook/react": "8.5.2",
+    "@storybook/react-vite": "8.5.2",
+    "@storybook/test": "8.5.2",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "storybook": "8.5.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11"
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  }
+}
