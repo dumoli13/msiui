@@ -1,12 +1,12 @@
 {
-  "name": "msiui",
-  "private": true,
+  "name": "dumoli-ui",
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "prepare": "husky install",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -p .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -17,6 +17,7 @@
     "lint:fix": "eslint src/ --fix"
   },
   "dependencies": {
+    "dumoli-ui": "^0.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -36,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
@@ -48,8 +50,10 @@
     "globals": "^15.14.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
+    "postcss": "^8.5.1",
     "prettier": "^3.4.2",
     "storybook": "^8.5.2",
+    "tailwindcss": "^4.0.1",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.0.5"
