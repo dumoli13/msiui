@@ -1,7 +1,7 @@
 {
   "name": "dumoli-ui",
   "license": "MIT",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/es/index.js",
@@ -30,16 +30,16 @@
   },
   "exports": {
     "./Button": {
-      "import": "./dist/Button.js",
-      "require": "./dist/Button.js"
+      "import": "./dist/Button/Button.js",
+      "require": "./dist/Button/Button.js"
     },
     "./Header": {
-      "import": "./dist/Header.js",
-      "require": "./dist/Header.js"
+      "import": "./dist/Header/Header.js",
+      "require": "./dist/Header/Header.js"
     },
     "./Page": {
-      "import": "./dist/Page.js",
-      "require": "./dist/Page.js"
+      "import": "./dist/Page/Page.js",
+      "require": "./dist/Page/Page.js"
     }
   }
 }
