@@ -1,3 +1,4 @@
+import React from 'react';
 import './button.css';
 
 export interface ButtonProps {
@@ -14,7 +15,7 @@ export interface ButtonProps {
 }
 
 /** Primary UI component for user interaction */
-export const Button = ({
+const Button = ({
   primary = false,
   size = 'medium',
   backgroundColor,
@@ -27,9 +28,10 @@ export const Button = ({
   return (
     <button
       type="button"
-      className={['storybook-button', `storybook-button--${size}`, mode].join(
-        ' ',
-      )}
+      // className={['storybook-button', `storybook-button--${size}`, mode].join(
+      //   ' ',
+      // )}
+      className="bg-blue-500 text-white px-4 py-2 rounded"
       style={{ backgroundColor }}
       {...props}
     >
@@ -37,3 +39,6 @@ export const Button = ({
     </button>
   );
 };
+
+
+export default Button

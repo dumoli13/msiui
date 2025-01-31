@@ -1,6 +1,7 @@
-import { Button } from '../../components/Button/Button';
+import React from 'react';
+import Button from '../Button/Button';
 import './header.css';
-
+ 
 type User = {
   name: string;
 };
@@ -12,7 +13,7 @@ export interface HeaderProps {
   onCreateAccount?: () => void;
 }
 
-export const Header = ({
+const Header = ({
   user,
   onLogin,
   onLogout,
@@ -67,3 +68,6 @@ export const Header = ({
     </div>
   </header>
 );
+
+
+export default Header
