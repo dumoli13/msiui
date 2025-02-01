@@ -1,4 +1,4 @@
-export { default as Button } from './components/Button/Button';
-export { default as Header } from './components/Header/Header';
-export { default as Page } from './components/Page/Page';
+export { default as Button } from './Button/Button';
+export { default as Header } from './Header/Header';
+export { default as Page } from './Page/Page';
  

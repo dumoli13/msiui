@@ -28,11 +28,10 @@ const Button = ({
   return (
     <button
       type="button"
-      // className={['storybook-button', `storybook-button--${size}`, mode].join(
-      //   ' ',
-      // )}
-      className="bg-blue-500 text-white px-4 py-2 rounded"
-      style={{ backgroundColor }}
+      className={['storybook-button', `storybook-button--${size}`, mode].join(
+        ' ',
+      )}
+       style={{ backgroundColor }}
       {...props}
     >
       {label}
