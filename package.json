@@ -1,7 +1,7 @@
 {
   "name": "dumoli-ui",
   "license": "MIT",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/es/index.js",
@@ -14,7 +14,7 @@
     "react-dom": "^19.0.0"
   },
   "scripts": {
-    "build": "tsc -p . && cpy 'src/**/*.css' dist --parents",
+    "build": "tsc -p . && yarn copy:css",
     "copy:css": "cpy 'src/**/*.css' dist --parents"
   },
   "devDependencies": {
