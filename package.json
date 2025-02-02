@@ -1,7 +1,7 @@
 {
   "name": "dumoli-ui",
   "license": "MIT",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/es/index.js",
@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc -p . && yarn copy:css",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./src/output.css --minify",
     "copy:css": "cpy 'src/**/*.css' dist --parents"
   },
   "devDependencies": {
