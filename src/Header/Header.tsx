@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../Button/Button';
+import '../output.css';
 import './header.css';
  
 type User = {

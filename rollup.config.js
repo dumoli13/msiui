@@ -15,6 +15,7 @@ export default {
     postcss({
       extract: true, // Extracts CSS into separate files
       modules: true, // Enables CSS modules (optional)
+      plugins: [require('tailwindcss'), require('autoprefixer')],
     }),
     copy({
       targets: [

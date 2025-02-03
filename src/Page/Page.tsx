@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Header from '../Header/Header';
+import '../output.css';
 import './page.css';
 import React from 'react';
 
@@ -7,7 +8,7 @@ type User = {
   name: string;
 };
 
-const Page: React.FC = () => {
+const Page= () => {
   const [user, setUser] = useState<User>();
 
   return (
