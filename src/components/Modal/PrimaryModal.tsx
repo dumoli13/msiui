@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-interface PrimaryModalProps {
+export interface PrimaryModalProps {
   icon?: ReactNode;
   title: string;
   content: ReactNode;

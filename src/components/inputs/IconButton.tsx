@@ -5,7 +5,7 @@ import React, {
 } from 'react';
 import cx from 'classnames';
 import { Loader } from 'react-feather';
-import Tooltip from '../display/Tooltip';
+import Tooltip from '../Display/Tooltip';
 
 export type ButtonVariant = 'contained' | 'secondary' | 'outlined' | 'text';
 export type ButtonColor =

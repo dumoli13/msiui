@@ -1,3 +1,3 @@
-export * from './icons';
-export * from './inputs';
+export * from './components';
+export * from './libs';
 export * from './types';

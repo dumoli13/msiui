@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -37,7 +37,9 @@ interface AutoCompleteProps<T, D = undefined>
   fullWidth?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  inputRef?: RefObject<AutoCompleteRef<T>> | RefCallback<AutoCompleteRef<T>>;
+  inputRef?:
+    | RefObject<AutoCompleteRef<T> | null>
+    | RefCallback<AutoCompleteRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;

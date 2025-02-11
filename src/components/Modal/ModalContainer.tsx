@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import { ModalProps } from '.';
-import Button from '../Button';
+import { Button } from '../Inputs';
 
 /**
  * ModalContainer Component
@@ -141,9 +141,7 @@ const ModalContainer = ({
         <div
           className={cx(
             'pb-12 px-12 h-full text-neutral-80 text-28px flex-1 overflow-auto',
-            {
-              'ml-16': !!icon,
-            },
+            { 'ml-16': !!icon },
           )}
         >
           {children}

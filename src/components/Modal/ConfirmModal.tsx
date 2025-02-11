@@ -4,7 +4,7 @@ import { AlertTriangle } from 'react-feather';
 import COLORS from '../../libs/color';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-interface ConfirmModalProps {
+export interface ConfirmModalProps {
   icon?: ReactNode;
   title: string;
   content: ReactNode;
@@ -40,7 +40,6 @@ interface ConfirmModalProps {
  *
  * @returns {JSX.Element} The rendered confirm modal component.
  */
-
 const ConfirmModal = ({
   icon = (
     <AlertTriangle
@@ -50,7 +49,6 @@ const ConfirmModal = ({
       stroke={COLORS.neutral[10]}
     />
   ),
-
   title,
   content,
   confirmText = 'Confirm',

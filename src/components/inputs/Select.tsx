@@ -1,4 +1,4 @@
-import {
+import React, {
   InputHTMLAttributes,
   ReactNode,
   RefCallback,
@@ -40,7 +40,7 @@ interface SelectProps<T, D = undefined>
   disabled?: boolean;
   fullWidth?: boolean;
   icon?: ReactNode;
-  inputRef?: RefObject<SelectRef<T>> | RefCallback<SelectRef<T>>;
+  inputRef?: RefObject<SelectRef<T> | null> | RefCallback<SelectRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -273,7 +273,7 @@ const Select = <T, D = undefined>({
         <div
           role="button"
           tabIndex={!disabled ? 0 : -1}
-          aria-pressed={isDropdownOpen ? 'true' : 'false'}
+          aria-pressed="true"
           className={cx('w-full outline-none truncate', {
             'text-16px': size === 'default',
             'text-18px': size === 'large',

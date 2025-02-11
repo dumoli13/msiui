@@ -1,6 +1,6 @@
 import React, { KeyboardEvent, ReactNode, useEffect } from 'react';
 import cx from 'classnames';
-import Button, { ButtonColor } from '../Button';
+import Button, { ButtonColor } from '../Inputs/Button';
 
 export interface ModalProps {
   open: boolean;
@@ -150,9 +150,7 @@ const ModalConfirmContainer = ({
         <div
           className={cx(
             'pb-12 px-12 h-full text-neutral-80 text-28px flex-1 overflow-auto',
-            {
-              'ml-16': !!icon,
-            },
+            { 'ml-16': !!icon },
           )}
         >
           {children}

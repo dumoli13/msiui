@@ -156,10 +156,7 @@ const Accordion = ({
                 <div
                   className={cx(
                     'w-full text-24px font-medium text-neutral-100',
-                    {
-                      'py-4': size === 'default',
-                      'py-8': size === 'large',
-                    },
+                    { 'py-4': size === 'default', 'py-8': size === 'large' },
                   )}
                 >
                   {item.title}
@@ -170,9 +167,7 @@ const Accordion = ({
                   onClick={() => handleToggle(item.key)}
                   className={cx(
                     'text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300',
-                    {
-                      'rotate-180': isOpen,
-                    },
+                    { 'rotate-180': isOpen },
                   )}
                 >
                   <ChevronDown height={24} width={24} />
@@ -199,9 +194,7 @@ const Accordion = ({
                 <div
                   className={cx(
                     'text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300',
-                    {
-                      'rotate-180': isOpen,
-                    },
+                    { 'rotate-180': isOpen },
                   )}
                 >
                   <ChevronDown height={24} width={24} />
@@ -211,10 +204,10 @@ const Accordion = ({
 
             {/* Content section with transition */}
             <div
-              ref={(el) => (refs.current[index] = el)}
-              style={{
-                maxHeight: isOpen ? `${height[index]}px` : '0px',
+              ref={(el) => {
+                refs.current[index] = el;
               }}
+              style={{ maxHeight: isOpen ? `${height[index]}px` : '0px' }}
               className="overflow-hidden transition-all duration-300 "
             >
               <div

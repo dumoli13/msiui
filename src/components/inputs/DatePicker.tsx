@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import {
+import React, {
   InputHTMLAttributes,
   ReactNode,
   RefCallback,
@@ -9,11 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  SUNDAY_DATE,
-  areDatesEqual,
-  isToday,
-} from '@/libs/inputValidation/utils';
 import cx from 'classnames';
 import dayjs from 'dayjs';
 import {
@@ -25,6 +20,11 @@ import {
   ChevronsRight,
   X,
 } from 'react-feather';
+import {
+  SUNDAY_DATE,
+  areDatesEqual,
+  isToday,
+} from '../../libs/inputValidation';
 import InputDropdown from './InputDropdown';
 
 export type InputDateValue = Date | null;
@@ -73,7 +73,9 @@ export interface DatePickerProps
   helperText?: ReactNode;
   placeholder?: string;
   fullWidth?: boolean;
-  inputRef?: RefObject<InputDatePickerRef> | RefCallback<InputDatePickerRef>;
+  inputRef?:
+    | RefObject<InputDatePickerRef | null>
+    | RefCallback<InputDatePickerRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;

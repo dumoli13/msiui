@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -31,7 +31,9 @@ interface PasswordFieldProps
   fullWidth?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  inputRef?: RefObject<PasswordFieldRef> | RefCallback<PasswordFieldRef>;
+  inputRef?:
+    | RefObject<PasswordFieldRef | null>
+    | RefCallback<PasswordFieldRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;

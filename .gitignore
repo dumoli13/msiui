@@ -7,8 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-storybook-static
+node_modules 
 dist
 dist-ssr
 *.local
@@ -24,4 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 
-*storybook.log
+ 

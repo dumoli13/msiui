@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -50,7 +50,9 @@ interface NumberTextFieldProps
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   clearable?: boolean;
-  inputRef?: RefObject<NumberTextfieldRef> | RefCallback<NumberTextfieldRef>;
+  inputRef?:
+    | RefObject<NumberTextfieldRef | null>
+    | RefCallback<NumberTextfieldRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;

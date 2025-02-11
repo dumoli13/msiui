@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import cx from 'classnames';
-import { DEFAULT_ITEMS_PER_PAGE } from '../../const/pagination';
 import PaginationButton from './PaginationButton';
 
-export type PaginationDataType = {
-  page: number;
-  limit: number;
+export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_ITEMS_PER_PAGE = [5, 10, 20, 30, 40, 50, 100];
+
+export type Pagination<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 };
+
+export type PaginationDataType = { page: number; limit: number };
 interface PaginationProps {
   total: number;
   currentPage: number;
@@ -52,7 +58,6 @@ interface PaginationProps {
  * @property {PaginationProps} props - The props for the Pagination component.
  * @returns {JSX.Element} A pagination UI that allows navigation between pages and selection of items per page.
  */
-
 const pageButtonStyle = cx(
   'text-neutral-100 text-16px h-8 min-w-8 px-2 shadow-box-1  rounded border border-neutral-40 bg-neutral-10',
   'disabled:bg-primary-surface disabled:text-primary-main disabled:border-primary-surface disabled:cursor-not-allowed',

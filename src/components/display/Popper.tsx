@@ -132,11 +132,7 @@ const Popper = ({
           rect.left + window.scrollX + rect.width / 2 - dropdownRect.width / 2;
       }
 
-      setDropdownPosition({
-        top,
-        left,
-        width: rect.width,
-      });
+      setDropdownPosition({ top, left, width: rect.width });
     }
   }, [verticalAlign, horizontalAlign]);
 
@@ -199,7 +195,7 @@ const Popper = ({
         <div
           role="button"
           tabIndex={-1}
-          aria-pressed={isDropdownOpen ? 'true' : 'false'}
+          aria-pressed="true"
           onClick={handleDropdownToggle}
         >
           {children}

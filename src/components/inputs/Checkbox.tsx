@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -27,7 +27,7 @@ interface CheckboxProps
   onChange?: (checked: boolean) => void;
   helperText?: ReactNode;
   disabled?: boolean;
-  inputRef?: RefObject<CheckboxRef> | RefCallback<CheckboxRef>;
+  inputRef?: RefObject<CheckboxRef | null> | RefCallback<CheckboxRef | null>;
   error?: string;
   width?: number;
 }
@@ -118,9 +118,7 @@ const Checkbox = ({
   return (
     <div
       className={cx(
-        {
-          'flex items-center gap-4': labelPosition === 'left',
-        },
+        { 'flex items-center gap-4': labelPosition === 'left' },
         className,
       )}
       style={width ? { width } : undefined}
@@ -133,8 +131,8 @@ const Checkbox = ({
       >
         <div
           role="checkbox"
-          aria-checked={value ? 'true' : 'false'}
-          aria-disabled={disabled ? 'true' : 'false'}
+          aria-checked="true"
+          aria-disabled="false"
           aria-label={ariaLabel}
           className={cx(
             'shrink-0 w-5 h-5 rounded-md border flex justify-center items-center transition-all box-border relative',

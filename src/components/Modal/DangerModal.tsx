@@ -4,7 +4,7 @@ import { XCircle } from 'react-feather';
 import COLORS from '../../libs/color';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-interface DangerModalProps {
+export interface DangerModalProps {
   icon?: ReactNode;
   title: string;
   content: ReactNode;

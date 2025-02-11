@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -11,7 +11,7 @@ import {
 } from 'react';
 import cx from 'classnames';
 import { Check, ChevronDown, Loader, X } from 'react-feather';
-import Tag from '../display/Tag';
+import Tag from '../Display/Tag';
 import InputDropdown from './InputDropdown';
 import { SelectValue } from './Select';
 
@@ -39,8 +39,8 @@ interface AutoCompleteMultipleProps<T, D = undefined>
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   inputRef?:
-    | RefObject<AutoCompleteMultipleRef<T>>
-    | RefCallback<AutoCompleteMultipleRef<T>>;
+    | RefObject<AutoCompleteMultipleRef<T> | null>
+    | RefCallback<AutoCompleteMultipleRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -248,10 +248,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
             onMouseDown={handleRemoveSelected(option)}
             className={cx(
               'cursor-pointer p-4 hover:bg-neutral-20 text-left break-words flex items-center justify-between gap-2.5 bg-primary-surface text-primary-main',
-              {
-                'text-14x': size === 'default',
-                'text-16px': size === 'large',
-              },
+              { 'text-14x': size === 'default', 'text-16px': size === 'large' },
             )}
           >
             <span>{option.label}</span>
@@ -269,10 +266,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
             onMouseDown={handleOptionSelect(option)}
             className={cx(
               'cursor-pointer p-4 hover:bg-neutral-20 text-left break-words text-neutral-100',
-              {
-                'text-14x': size === 'default',
-                'text-16px': size === 'large',
-              },
+              { 'text-14x': size === 'default', 'text-16px': size === 'large' },
             )}
           >
             {option.label}

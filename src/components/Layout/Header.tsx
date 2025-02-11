@@ -1,8 +1,6 @@
 import React from 'react';
-import Tag from '../components/display/Tag';
-import Breadcrumb, {
-  BreadcrumbItem,
-} from '../components/navigation/Breadcrumb';
+import { Tag } from '../Display';
+import Breadcrumb, { BreadcrumbItem } from '../Navigation/Breadcrumb';
 import HeaderClock from './HeaderClock';
 
 interface HeaderProps {

@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   ReactNode,
   RefCallback,
@@ -33,7 +33,7 @@ interface TextAreaProps
   fullWidth?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  inputRef?: RefObject<TextAreaRef> | RefCallback<TextAreaRef>;
+  inputRef?: RefObject<TextAreaRef | null> | RefCallback<TextAreaRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -225,10 +225,7 @@ const TextArea = ({
           <div
             className={cx(
               'rounded-full bg-success-main p-0.5 text-neutral-10',
-              {
-                'my-1.5': size === 'default',
-                'my-[12.5px]': size === 'large',
-              },
+              { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' },
             )}
           >
             <Check width={10} height={10} strokeWidth={3} />
@@ -238,10 +235,7 @@ const TextArea = ({
           <div
             className={cx(
               'rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center',
-              {
-                'my-1.5': size === 'default',
-                'my-[12.5px]': size === 'large',
-              },
+              { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' },
             )}
           >
             !

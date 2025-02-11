@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
-import COLORS from '@/libs/color';
+import React, { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AlertCircle } from 'react-feather';
+import { COLORS } from '../../libs';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-interface WarningModalProps {
+export interface WarningModalProps {
   icon?: ReactNode;
   title: string;
   content: ReactNode;

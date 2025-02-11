@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useState } from 'react';
 import cx from 'classnames';
-import Checkbox from '../inputs/Checkbox';
-import { SelectValue } from '../inputs/Select';
+import Checkbox from '../Inputs/Checkbox';
+import { SelectValue } from '../Inputs/Select';
 import FilterSearch from './FilterSearch';
 import FilterSelect from './FilterSelect';
 
@@ -169,10 +169,7 @@ const Table = <T extends { [key: string]: any }>({
   verticalAlign,
 }: TableProps<T>) => {
   const [sortConfig, setSortConfig] = useState<TableSortingProps<T>>(
-    sorting || {
-      key: columns[0].key,
-      direction: null,
-    },
+    sorting || { key: columns[0].key, direction: null },
   );
 
   const [internalSelectedRows, setInternalSelectedRows] = useState<number[]>(

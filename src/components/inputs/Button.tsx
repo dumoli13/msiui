@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import cx from 'classnames';
-import { LoaderIcon } from '../icons';
+import { Loader } from 'react-feather';
 
 export type ButtonVariant = 'contained' | 'secondary' | 'outlined' | 'text';
 export type ButtonColor = 'primary' | 'success' | 'danger' | 'warning' | 'info';
@@ -128,7 +128,7 @@ const Button = ({
       </span>
       {loading && (
         <span className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center">
-          <LoaderIcon className="animate-spin" />
+          <Loader className="animate-spin" />
         </span>
       )}
     </button>

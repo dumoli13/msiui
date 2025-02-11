@@ -1,4 +1,4 @@
-import {
+import React, {
   InputHTMLAttributes,
   ReactNode,
   RefCallback,
@@ -26,7 +26,7 @@ interface SwitchProps
   labelPosition?: 'top' | 'left';
   onChange?: (checked: boolean) => void;
   helperText?: ReactNode;
-  inputRef?: RefObject<SwitchRef> | RefCallback<SwitchRef>;
+  inputRef?: RefObject<SwitchRef | null> | RefCallback<SwitchRef | null>;
   size?: 'default' | 'large';
   fullWidth?: boolean;
   error?: string;
@@ -176,9 +176,7 @@ const Switch = ({
               <div
                 className={cx(
                   'absolute left-0.5 top-0.5 w-3 h-3 rounded-full bg-neutral-10 transition-all duration-500',
-                  {
-                    'translate-x-3': checked,
-                  },
+                  { 'translate-x-3': checked },
                 )}
               />
             </div>

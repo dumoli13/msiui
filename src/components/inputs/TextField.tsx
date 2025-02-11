@@ -1,4 +1,4 @@
-import {
+import React, {
   ChangeEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -30,7 +30,7 @@ interface TextFieldProps
   fullWidth?: boolean;
   startIcon?: ReactNode;
   endIcon?: ReactNode;
-  inputRef?: RefObject<TextfieldRef> | RefCallback<TextfieldRef>;
+  inputRef?: RefObject<TextfieldRef | null> | RefCallback<TextfieldRef | null>;
   size?: 'default' | 'large';
   clearable?: boolean;
   error?: string;

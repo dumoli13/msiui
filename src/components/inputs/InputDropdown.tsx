@@ -1,12 +1,18 @@
-import { ReactNode, RefObject, useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  RefObject,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
 interface InputDropdownProps {
   open: boolean;
   children: ReactNode;
-  elementRef: RefObject<HTMLDivElement>;
-  dropdownRef: RefObject<HTMLDivElement>;
+  elementRef: RefObject<HTMLDivElement | null>;
+  dropdownRef: RefObject<HTMLDivElement | null>;
   fullWidth?: boolean;
   maxHeight?: number;
 }
