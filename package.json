@@ -20,6 +20,7 @@
     "classnames": "^2.5.1",
     "cpy-cli": "^5.0.0",
     "dayjs": "^1.11.13",
+    "react-feather": "^2.0.10",
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.1.5",
     "tailwindcss-animate": "^1.0.7",

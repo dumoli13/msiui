@@ -1,5 +1,5 @@
 import React, { FormEvent, ReactNode } from 'react';
-import { ButtonColor } from '../Inputs/Button';
+import { ButtonColor } from '../Input/Button';
 import ConfirmModal, { ConfirmModalProps } from './ConfirmModal';
 import DangerModal, { DangerModalProps } from './DangerModal';
 import InfoModal, { InfoModalProps } from './InfoModal';

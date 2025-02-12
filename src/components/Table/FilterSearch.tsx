@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
 import { Search } from 'react-feather';
-import Popper from '../Display/Popper';
-import IconButton from '../Inputs/IconButton';
-import TextField, { TextfieldRef } from '../Inputs/TextField';
+import Popper from '../Displays/Popper';
+import IconButton from '../Input/IconButton';
+import TextField, { TextfieldRef } from '../Input/TextField';
 
 interface FilterSearchProps {
   value?: string;

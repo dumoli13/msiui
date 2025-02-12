@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useState } from 'react';
 import cx from 'classnames';
-import Checkbox from '../Inputs/Checkbox';
-import { SelectValue } from '../Inputs/Select';
+import Checkbox from '../Input/Checkbox';
+import { SelectValue } from '../Input/Select';
 import FilterSearch from './FilterSearch';
 import FilterSelect from './FilterSelect';
 
@@ -12,56 +12,56 @@ export type TableColumn<
   FilterType = string | SelectValue<T[keyof T], D> | null,
 > =
   | {
-      filter: 'textfield';
-      key: string;
-      dataIndex?: keyof T;
-      label: string;
-      subLabel?: string;
-      sortable?: boolean;
-      width?: number | string;
-      minWidth?: number;
-      render?: (
-        value: T[keyof T] | null,
-        record: T,
-        index: number,
-      ) => ReactNode;
-      filterValue: string;
-      onChange: (value: string) => void;
-    }
+    filter: 'textfield';
+    key: string;
+    dataIndex?: keyof T;
+    label: string;
+    subLabel?: string;
+    sortable?: boolean;
+    width?: number | string;
+    minWidth?: number;
+    render?: (
+      value: T[keyof T] | null,
+      record: T,
+      index: number,
+    ) => ReactNode;
+    filterValue: string;
+    onChange: (value: string) => void;
+  }
   | {
-      filter: 'select' | 'autocomplete';
-      key: string;
-      dataIndex?: keyof T;
-      label: string;
-      subLabel?: string;
-      sortable?: boolean;
-      width?: number | string;
-      minWidth?: number;
-      render?: (
-        value: T[keyof T] | null,
-        record: T,
-        index: number,
-      ) => ReactNode;
-      filterValue: FilterType;
-      onChange: (value: FilterType) => void;
-      option: Array<SelectValue<T[keyof T], D>>;
-    }
+    filter: 'select' | 'autocomplete';
+    key: string;
+    dataIndex?: keyof T;
+    label: string;
+    subLabel?: string;
+    sortable?: boolean;
+    width?: number | string;
+    minWidth?: number;
+    render?: (
+      value: T[keyof T] | null,
+      record: T,
+      index: number,
+    ) => ReactNode;
+    filterValue: FilterType;
+    onChange: (value: FilterType) => void;
+    option: Array<SelectValue<T[keyof T], D>>;
+  }
   | {
-      filter?: 'none';
-      key: string;
-      dataIndex?: keyof T;
-      label: string;
-      subLabel?: string;
-      sortable?: boolean;
-      width?: number | string;
-      minWidth?: number;
-      render?: (
-        value: T[keyof T] | null,
-        record: T,
-        index: number,
-      ) => ReactNode;
-      filterValue?: FilterType;
-    };
+    filter?: 'none';
+    key: string;
+    dataIndex?: keyof T;
+    label: string;
+    subLabel?: string;
+    sortable?: boolean;
+    width?: number | string;
+    minWidth?: number;
+    render?: (
+      value: T[keyof T] | null,
+      record: T,
+      index: number,
+    ) => ReactNode;
+    filterValue?: FilterType;
+  };
 
 export type TableSortingProps<T> = {
   direction: 'asc' | 'desc' | null;
@@ -279,20 +279,18 @@ const Table = <T extends { [key: string]: any }>({
                         {col.sortable && (
                           <div className="flex flex-col gap-0.5">
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${
-                                col.key === sortConfig.key &&
-                                sortConfig.direction === 'asc'
+                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                  sortConfig.direction === 'asc'
                                   ? 'border-primary-main'
                                   : 'border-neutral-60'
-                              }`}
+                                }`}
                             />
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${
-                                col.key === sortConfig.key &&
-                                sortConfig.direction === 'desc'
+                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                  sortConfig.direction === 'desc'
                                   ? 'border-primary-main'
                                   : 'border-neutral-60'
-                              }`}
+                                }`}
                             />
                           </div>
                         )}
@@ -320,18 +318,18 @@ const Table = <T extends { [key: string]: any }>({
                     )}
                     {(col.filter === 'select' ||
                       col.filter === 'autocomplete') && (
-                      <FilterSelect
-                        type={col.filter}
-                        label={col.label}
-                        value={
-                          col.filterValue as SelectValue<T[keyof T]> | null
-                        }
-                        option={col.option || []}
-                        onChange={(value) =>
-                          col.onChange?.(value as SelectValue<T[keyof T]>)
-                        }
-                      />
-                    )}
+                        <FilterSelect
+                          type={col.filter}
+                          label={col.label}
+                          value={
+                            col.filterValue as SelectValue<T[keyof T]> | null
+                          }
+                          option={col.option || []}
+                          onChange={(value) =>
+                            col.onChange?.(value as SelectValue<T[keyof T]>)
+                          }
+                        />
+                      )}
                   </div>
                 </th>
               ))}

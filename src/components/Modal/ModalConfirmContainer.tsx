@@ -1,6 +1,6 @@
 import React, { KeyboardEvent, ReactNode, useEffect } from 'react';
 import cx from 'classnames';
-import Button, { ButtonColor } from '../Inputs/Button';
+import Button, { ButtonColor } from '../Input/Button';
 
 export interface ModalProps {
   open: boolean;

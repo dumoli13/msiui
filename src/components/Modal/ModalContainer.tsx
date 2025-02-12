@@ -1,7 +1,7 @@
 import React, { KeyboardEvent, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import { ModalProps } from '.';
-import { Button } from '../Inputs';
+import { Button } from '../Input';
 
 /**
  * ModalContainer Component
