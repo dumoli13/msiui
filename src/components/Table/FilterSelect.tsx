@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react';
 import cx from 'classnames';
 import { ChevronDown } from 'react-feather';
 import Popper from '../Displays/Popper';
-import AutoComplete from '../Input/AutoComplete';
-import IconButton from '../Input/IconButton';
-import Select, { SelectRef, SelectValue } from '../Input/Select';
+import AutoComplete from '../Inputs/AutoComplete';
+import IconButton from '../Inputs/IconButton';
+import Select, { SelectRef, SelectValue } from '../Inputs/Select';
 
 interface FilterSearchProps<T, D> {
   type: 'select' | 'autocomplete';

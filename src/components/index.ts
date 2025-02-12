@@ -1,6 +1,6 @@
 export * from './Displays';
 export * from './IconOld';
-export * from './Input';
+export * from './Inputs';
 export * from './Layout';
 export * from './Modal';
 export * from './Navigations';

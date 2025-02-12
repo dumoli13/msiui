@@ -38,8 +38,8 @@ interface AutoCompleteProps<T, D = undefined>
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   inputRef?:
-    | RefObject<AutoCompleteRef<T> | null>
-    | RefCallback<AutoCompleteRef<T> | null>;
+  | RefObject<AutoCompleteRef<T> | null>
+  | RefCallback<AutoCompleteRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -381,9 +381,8 @@ const AutoComplete = <T, D = undefined>({
       </div>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${
-            isError ? 'text-danger-main' : 'text-neutral-60'
-          }`}
+          className={`w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'
+            }`}
         >
           {helperMessage}
         </div>

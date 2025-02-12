@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React, { ReactNode, useState } from 'react';
 import cx from 'classnames';
-import Checkbox from '../Input/Checkbox';
-import { SelectValue } from '../Input/Select';
+import Checkbox from '../Inputs/Checkbox';
+import { SelectValue } from '../Inputs/Select';
 import FilterSearch from './FilterSearch';
 import FilterSelect from './FilterSelect';
 
@@ -280,16 +280,16 @@ const Table = <T extends { [key: string]: any }>({
                           <div className="flex flex-col gap-0.5">
                             <span
                               className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                  sortConfig.direction === 'asc'
-                                  ? 'border-primary-main'
-                                  : 'border-neutral-60'
+                                sortConfig.direction === 'asc'
+                                ? 'border-primary-main'
+                                : 'border-neutral-60'
                                 }`}
                             />
                             <span
                               className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                  sortConfig.direction === 'desc'
-                                  ? 'border-primary-main'
-                                  : 'border-neutral-60'
+                                sortConfig.direction === 'desc'
+                                ? 'border-primary-main'
+                                : 'border-neutral-60'
                                 }`}
                             />
                           </div>
