@@ -1,21 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { JSX, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { XCircle } from 'react-feather';
 import COLORS from '../../libs/color';
+import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-export interface DangerModalProps {
-  icon?: ReactNode;
-  title: string;
-  content: ReactNode;
-  confirmText?: string;
-  cancelText?: string;
-  onConfirm?: () => void | Promise<void>;
-  onCancel?: () => void;
-}
-
 /**
- * DangerModal Component
  *
  * A modal dialog that represents a dangerous or critical action that requires confirmation.
  * Typically used for actions like deleting or disabling items, where the user is warned about
@@ -29,17 +19,6 @@ export interface DangerModalProps {
  * @property {() => void | Promise<void>} [onConfirm] - Callback function when the user confirms the action.
  * @property {() => void} [onCancel] - Callback function when the user cancels the action.
  *
- * @example Basic Usage:
- * ```tsx
- * <DangerModal
- *   title="Are you sure?"
- *   content="This action cannot be undone. Do you wish to continue?"
- *   onConfirm={() => deleteItem(itemId)}
- *   onCancel={() => console.log("Action canceled")}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered danger modal component.
  */
 
 const DangerModal = ({
@@ -57,7 +36,8 @@ const DangerModal = ({
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
-}: DangerModalProps) => {
+  customAction,
+}: ConfirmModalProps) => {
   const container = document.createElement('div');
   const root = createRoot(container);
   document.body.appendChild(container);
@@ -83,6 +63,7 @@ const DangerModal = ({
       confirmText={confirmText}
       cancelText={cancelText}
       confirmButtonColor="danger"
+      customAction={customAction}
     >
       {content}
     </ModalConfirmContainer>,

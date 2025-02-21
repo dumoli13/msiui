@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import cx from 'classnames';
 import { Button } from '../Inputs';
 /**
- * ModalContainer Component
  *
  * A flexible modal component that can be used to display content in a modal with customizable title, content, and actions.
  * It supports focus trapping, keyboard navigation (Escape to close, Tab for focus cycling),
@@ -25,21 +24,8 @@ import { Button } from '../Inputs';
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {string} [confirmButtonColor='primary'] - The color for the confirm button.
  *
- * @example Basic Usage:
- * ```tsx
- * <ModalContainer
- *   open={isOpen}
- *   title="Modal Title"
- *   onClose={closeModal}
- *   onConfirm={handleConfirm}
- * >
- *   <p>Modal Content</p>
- * </ModalContainer>
- * ```
- *
- * @returns {JSX.Element|null} The modal component or null if `open` is false.
  */
-const ModalContainer = ({ open, title, children, icon, className, width = 804, closeOnOverlayClick = false, onClose, cancelText = 'Cancel', cancelButtonColor = 'primary', onConfirm, confirmLoading = false, confirmDisabled = false, confirmText = 'Confirm', confirmButtonColor = 'primary', }) => {
+const ModalContainer = ({ open, title, children, icon, className, width = 804, closeOnOverlayClick = false, onClose, cancelText = 'Cancel', cancelButtonColor = 'primary', onConfirm, confirmLoading = false, confirmDisabled = false, confirmText = 'Confirm', confirmButtonColor = 'primary', customAction, }) => {
     const modalRef = useRef(null);
     const handleKeyDown = (e) => {
         if (e.key === 'Escape' && onClose) {
@@ -88,7 +74,8 @@ const ModalContainer = ({ open, title, children, icon, className, width = 804, c
             React.createElement("div", { className: cx('pb-12 px-12 h-full text-neutral-80 text-28px flex-1 overflow-auto', { 'ml-16': !!icon }) }, children),
             React.createElement("div", { className: "px-12 py-6 bg-neutral-20 flex justify-end items-center gap-6 rounded-b-xl" },
                 onClose && (React.createElement(Button, { variant: "outlined", onClick: onClose, color: cancelButtonColor }, cancelText)),
-                onConfirm && (React.createElement(Button, { type: "submit", variant: "contained", color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled }, confirmText))))));
+                onConfirm && (React.createElement(Button, { type: "submit", variant: "contained", color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled }, confirmText)),
+                customAction && customAction.map((action) => action)))));
 };
 export default ModalContainer;
 //# sourceMappingURL=ModalContainer.js.map

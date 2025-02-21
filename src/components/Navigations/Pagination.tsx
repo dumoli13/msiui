@@ -13,7 +13,7 @@ export type Pagination<T> = {
 };
 
 export type PaginationDataType = { page: number; limit: number };
-interface PaginationProps {
+export interface PaginationProps {
   total: number;
   currentPage: number;
   pageSize?: number;

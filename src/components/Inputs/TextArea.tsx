@@ -15,9 +15,10 @@ export interface TextAreaRef {
   element: HTMLTextAreaElement | null;
   value: string;
   focus: () => void;
+  reset: () => void;
 }
 
-interface TextAreaProps
+export interface TextAreaProps
   extends Omit<
     TextareaHTMLAttributes<HTMLTextAreaElement>,
     'onChange' | 'size'
@@ -124,6 +125,9 @@ const TextArea = ({
     value,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue('');
     },
   }));
 

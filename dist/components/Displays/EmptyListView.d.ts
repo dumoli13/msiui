@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReactNode } from 'react';
-interface EmptyListViewProps {
+export interface EmptyListViewProps {
     children?: ReactNode;
 }
 /**

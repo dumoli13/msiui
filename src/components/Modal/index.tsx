@@ -1,12 +1,12 @@
-import React, { FormEvent, ReactNode } from 'react';
+import React, { FormEvent, JSX, ReactNode } from 'react';
 import { ButtonColor } from '../Inputs/Button';
 import ConfirmModal, { ConfirmModalProps } from './ConfirmModal';
-import DangerModal, { DangerModalProps } from './DangerModal';
-import InfoModal, { InfoModalProps } from './InfoModal';
+import DangerModal from './DangerModal';
+import InfoModal from './InfoModal';
 import ModalContainer from './ModalContainer';
-import PrimaryModal, { PrimaryModalProps } from './PrimaryModal';
-import SuccessModal, { SuccessModalProps } from './SuccessModal';
-import WarningModal, { WarningModalProps } from './WarningModal';
+import PrimaryModal from './PrimaryModal';
+import SuccessModal from './SuccessModal';
+import WarningModal from './WarningModal';
 
 export interface ModalProps {
   open: boolean;
@@ -26,20 +26,20 @@ export interface ModalProps {
   confirmDisabled?: boolean;
   confirmText?: string;
   confirmButtonColor?: ButtonColor;
-  action?: ReactNode;
+  customAction?: Array<JSX.Element>;
 }
 
 interface ExtendedModal extends React.FC<ModalProps> {
   confirm: (props: ConfirmModalProps) => void;
-  success: (props: SuccessModalProps) => void;
-  info: (props: InfoModalProps) => void;
-  warning: (props: WarningModalProps) => void;
-  danger: (props: DangerModalProps) => void;
-  primary: (props: PrimaryModalProps) => void;
+  success: (props: ConfirmModalProps) => void;
+  info: (props: ConfirmModalProps) => void;
+  warning: (props: ConfirmModalProps) => void;
+  danger: (props: ConfirmModalProps) => void;
+  primary: (props: ConfirmModalProps) => void;
 }
 
-const Modal: ExtendedModal = ({ open, ...props }: ModalProps) => {
-  return <ModalContainer {...props} open={open} />;
+const Modal: ExtendedModal = (props: ModalProps) => {
+  return <ModalContainer {...props} />;
 };
 
 Modal.confirm = ConfirmModal;

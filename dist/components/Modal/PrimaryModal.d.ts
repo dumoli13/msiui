@@ -1,15 +1,5 @@
-import { ReactNode } from 'react';
-export interface PrimaryModalProps {
-    icon?: ReactNode;
-    title: string;
-    content: ReactNode;
-    confirmText?: string;
-    cancelText?: string;
-    action?: (onClose: () => void) => ReactNode;
-    onConfirm?: () => Promise<void> | void;
-}
+import { ConfirmModalProps } from './ConfirmModal';
 /**
- * PrimaryModal Component
  *
  * A modal component used to display a primary action confirmation with customizable title, content, and confirm/cancel buttons.
  * The modal includes an icon (optional) and allows custom text for both the confirm and cancel buttons.
@@ -23,19 +13,6 @@ export interface PrimaryModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * PrimaryModal({
- *   title: 'Are you sure?',
- *   content: 'This action cannot be undone.',
- *   onConfirm: async () => {
- *     await someAsyncAction();
- *     console.log('Action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
-declare const PrimaryModal: ({ title, content, confirmText, cancelText, onConfirm, action, }: PrimaryModalProps) => void;
+declare const PrimaryModal: ({ title, content, confirmText, cancelText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default PrimaryModal;

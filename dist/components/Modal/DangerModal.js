@@ -4,7 +4,6 @@ import { XCircle } from 'react-feather';
 import COLORS from '../../libs/color';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
- * DangerModal Component
  *
  * A modal dialog that represents a dangerous or critical action that requires confirmation.
  * Typically used for actions like deleting or disabling items, where the user is warned about
@@ -18,19 +17,8 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void | Promise<void>} [onConfirm] - Callback function when the user confirms the action.
  * @property {() => void} [onCancel] - Callback function when the user cancels the action.
  *
- * @example Basic Usage:
- * ```tsx
- * <DangerModal
- *   title="Are you sure?"
- *   content="This action cannot be undone. Do you wish to continue?"
- *   onConfirm={() => deleteItem(itemId)}
- *   onCancel={() => console.log("Action canceled")}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered danger modal component.
  */
-const DangerModal = ({ icon = (React.createElement(XCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.danger.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, }) => {
+const DangerModal = ({ icon = (React.createElement(XCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.danger.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -44,7 +32,7 @@ const DangerModal = ({ icon = (React.createElement(XCircle, { height: 48, width:
         }, onConfirm: () => {
             handleClose();
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
-        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger" }, content));
+        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger", customAction: customAction }, content));
 };
 export default DangerModal;
 //# sourceMappingURL=DangerModal.js.map

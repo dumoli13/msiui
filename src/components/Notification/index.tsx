@@ -1,16 +1,36 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AlertCircle, CheckCircle, XCircle } from 'react-feather';
-import COLORS from '../../libs/color';
+import { COLORS } from '../../libs';
 import NotificationContainer from './NotificationContainer';
 
-interface Notification {
+export interface NotificationProps {
   id: string;
   title: string;
   description: string;
   icon?: React.ReactNode;
   color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
 }
+
+let addNotificationToStack: ((notification: NotificationProps) => void) | null =
+  null;
+
+export const useNotification = () => {
+  return (notification: {
+    title: string;
+    description: string;
+    icon?: React.ReactNode;
+    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+  }) => {
+    if (addNotificationToStack) {
+      addNotificationToStack({
+        id: Math.random().toString(),
+        color: notification.color || 'primary',
+        ...notification,
+      });
+    }
+  };
+};
 
 /**
  * useNotification Hook
@@ -43,28 +63,8 @@ interface Notification {
  * ```
  */
 
-let addNotificationToStack: ((notification: Notification) => void) | null =
-  null;
-
-export const useNotification = () => {
-  return (notification: {
-    title: string;
-    description: string;
-    icon?: React.ReactNode;
-    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
-  }) => {
-    if (addNotificationToStack) {
-      addNotificationToStack({
-        id: Math.random().toString(),
-        color: notification.color || 'primary',
-        ...notification,
-      });
-    }
-  };
-};
-
-const NotificationStack: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+const NotificationStack = () => {
+  const [notifications, setNotifications] = useState<NotificationProps[]>([]);
 
   useEffect(() => {
     addNotificationToStack = (newNotification) => {

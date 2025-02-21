@@ -2,18 +2,10 @@ import React, { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CheckCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-export interface SuccessModalProps {
-  icon?: ReactNode;
-  title: string;
-  content: ReactNode;
-  confirmText?: string;
-  onConfirm?: () => void;
-}
-
 /**
- * SuccessModal Component
  *
  * A modal component used to display a success message with a customizable title, content, and a confirm button.
  * The modal includes an icon (default is a success icon) and allows for custom text on the confirm button.
@@ -28,18 +20,6 @@ export interface SuccessModalProps {
  * @property {string} [confirmText='OK'] - The text to display on the confirm button (default is "OK").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * SuccessModal({
- *   title: 'Action Successful',
- *   content: 'Your changes have been saved successfully.',
- *   onConfirm: () => {
- *     console.log('Success action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
 
 const SuccessModal = ({
@@ -55,7 +35,8 @@ const SuccessModal = ({
   content,
   confirmText = 'OK',
   onConfirm,
-}: SuccessModalProps) => {
+  customAction,
+}: ConfirmModalProps) => {
   const container = document.createElement('div');
   const root = createRoot(container);
   document.body.appendChild(container);
@@ -76,6 +57,7 @@ const SuccessModal = ({
       }}
       confirmText={confirmText}
       confirmButtonColor="success"
+      customAction={customAction}
     >
       {content}
     </ModalConfirmContainer>,

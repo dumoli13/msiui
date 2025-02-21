@@ -4,7 +4,6 @@ import { ModalProps } from '.';
 import { Button } from '../Inputs';
 
 /**
- * ModalContainer Component
  *
  * A flexible modal component that can be used to display content in a modal with customizable title, content, and actions.
  * It supports focus trapping, keyboard navigation (Escape to close, Tab for focus cycling),
@@ -27,19 +26,6 @@ import { Button } from '../Inputs';
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {string} [confirmButtonColor='primary'] - The color for the confirm button.
  *
- * @example Basic Usage:
- * ```tsx
- * <ModalContainer
- *   open={isOpen}
- *   title="Modal Title"
- *   onClose={closeModal}
- *   onConfirm={handleConfirm}
- * >
- *   <p>Modal Content</p>
- * </ModalContainer>
- * ```
- *
- * @returns {JSX.Element|null} The modal component or null if `open` is false.
  */
 
 const ModalContainer = ({
@@ -58,6 +44,7 @@ const ModalContainer = ({
   confirmDisabled = false,
   confirmText = 'Confirm',
   confirmButtonColor = 'primary',
+  customAction,
 }: ModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -122,7 +109,6 @@ const ModalContainer = ({
       ) : (
         <div className="fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" />
       )}
-
       <form
         className={cx(
           'border border-neutral-40 rounded-xl drop-shadow-sm bg-neutral-10 m-8 flex flex-col max-h-[90vh] ',
@@ -167,6 +153,7 @@ const ModalContainer = ({
               {confirmText}
             </Button>
           )}
+          {customAction && customAction.map((action) => action)}
         </div>
       </form>
     </div>

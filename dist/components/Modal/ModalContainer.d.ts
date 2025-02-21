@@ -1,7 +1,6 @@
 import React from 'react';
 import { ModalProps } from '.';
 /**
- * ModalContainer Component
  *
  * A flexible modal component that can be used to display content in a modal with customizable title, content, and actions.
  * It supports focus trapping, keyboard navigation (Escape to close, Tab for focus cycling),
@@ -24,19 +23,6 @@ import { ModalProps } from '.';
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {string} [confirmButtonColor='primary'] - The color for the confirm button.
  *
- * @example Basic Usage:
- * ```tsx
- * <ModalContainer
- *   open={isOpen}
- *   title="Modal Title"
- *   onClose={closeModal}
- *   onConfirm={handleConfirm}
- * >
- *   <p>Modal Content</p>
- * </ModalContainer>
- * ```
- *
- * @returns {JSX.Element|null} The modal component or null if `open` is false.
  */
-declare const ModalContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, }: ModalProps) => React.JSX.Element | null;
+declare const ModalContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => React.JSX.Element | null;
 export default ModalContainer;

@@ -20,9 +20,11 @@ import {
   ChevronsRight,
   X,
 } from 'react-feather';
+import { MONTH_LIST } from '../../const/datePicker';
 import {
   SUNDAY_DATE,
   areDatesEqual,
+  getYearRange,
   isToday,
 } from '../../libs/inputValidation';
 import InputDropdown from './InputDropdown';
@@ -31,34 +33,9 @@ export type InputDateValue = Date | null;
 export interface InputDatePickerRef {
   element: HTMLDivElement | null;
   value: InputDateValue;
+  focus: () => void;
+  reset: () => void;
 }
-
-const MONTH_LIST = [
-  { value: 0, label: 'Jan' },
-  { value: 1, label: 'Feb' },
-  { value: 2, label: 'Mar' },
-  { value: 3, label: 'Apr' },
-  { value: 4, label: 'May' },
-  { value: 5, label: 'Jun' },
-  { value: 6, label: 'Jul' },
-  { value: 7, label: 'Aug' },
-  { value: 8, label: 'Sep' },
-  { value: 9, label: 'Oct' },
-  { value: 10, label: 'Nov' },
-  { value: 11, label: 'Dec' },
-];
-
-function getYearRange(year: number) {
-  const step = 12;
-
-  const lowerBound = Math.floor(year / step) * step;
-  const upperBound = lowerBound + step;
-  return Array.from(
-    { length: upperBound - lowerBound },
-    (_, i) => lowerBound + i,
-  );
-}
-
 export interface DatePickerProps
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
@@ -184,6 +161,9 @@ const DatePicker = ({
     value,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue(null);
     },
   }));
 

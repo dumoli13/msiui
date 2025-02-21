@@ -22,9 +22,10 @@ export interface SelectRef<T, D = undefined> {
   element: HTMLDivElement | null;
   value: SelectValue<T, D> | null;
   focus: () => void;
+  reset: () => void;
 }
 
-interface SelectProps<T, D = undefined>
+export interface SelectProps<T, D = undefined>
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'onChange' | 'value' | 'defaultValue' | 'size'
@@ -131,6 +132,9 @@ const Select = <T, D = undefined>({
     value: value as SelectValue<T, undefined>,
     focus: () => {
       valueRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue(null);
     },
   }));
 

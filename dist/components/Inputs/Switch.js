@@ -60,6 +60,9 @@ const Switch = (_a) => {
             var _a;
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
+        reset: () => {
+            setInternalChecked(false);
+        },
     }));
     const helperMessage = errorProp || helperText;
     const handleChange = () => {

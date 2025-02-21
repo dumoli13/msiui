@@ -3,8 +3,9 @@ export interface TextfieldRef {
     element: HTMLInputElement | null;
     value: string;
     focus: () => void;
+    reset: () => void;
 }
-interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
     value?: string | number;
     defaultValue?: string | number;
     label?: string;

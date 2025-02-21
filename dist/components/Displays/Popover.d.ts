@@ -1,5 +1,5 @@
 import React, { ReactNode, RefObject } from 'react';
-interface PopoverProps {
+export interface PopoverProps {
     children: ReactNode;
     className?: string;
     open: boolean;

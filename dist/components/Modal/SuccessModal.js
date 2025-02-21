@@ -4,7 +4,6 @@ import { CheckCircle } from 'react-feather';
 import { COLORS } from '../../libs';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
- * SuccessModal Component
  *
  * A modal component used to display a success message with a customizable title, content, and a confirm button.
  * The modal includes an icon (default is a success icon) and allows for custom text on the confirm button.
@@ -19,20 +18,8 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {string} [confirmText='OK'] - The text to display on the confirm button (default is "OK").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * SuccessModal({
- *   title: 'Action Successful',
- *   content: 'Your changes have been saved successfully.',
- *   onConfirm: () => {
- *     console.log('Success action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
-const SuccessModal = ({ icon = (React.createElement(CheckCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.success.main })), title, content, confirmText = 'OK', onConfirm, }) => {
+const SuccessModal = ({ icon = (React.createElement(CheckCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.success.main })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -43,7 +30,7 @@ const SuccessModal = ({ icon = (React.createElement(CheckCircle, { height: 48, w
     root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, confirmButtonColor: "success" }, content));
+        }, confirmText: confirmText, confirmButtonColor: "success", customAction: customAction }, content));
 };
 export default SuccessModal;
 //# sourceMappingURL=SuccessModal.js.map

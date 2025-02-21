@@ -5,7 +5,7 @@ import PDFViewer from './PdfViewer';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 
-interface PdfThumbnailProps {
+export interface PdfThumbnailProps {
   file: string;
 }
 

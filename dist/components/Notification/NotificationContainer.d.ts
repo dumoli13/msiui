@@ -8,7 +8,6 @@ export interface NotificationContainerProps {
     onClose?: () => void;
 }
 /**
- * NotificationContainer Component
  *
  * A component that displays an individual notification with a title, description, icon, and a progress bar indicating the remaining time.
  * The notification automatically closes after a specified duration (default is 5 seconds), but the user can also manually close it.
@@ -28,17 +27,6 @@ export interface NotificationContainerProps {
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  * @returns {JSX.Element | null} The notification component that is displayed if `open` is `true`, otherwise `null`.
- *
- * @example Basic Usage:
- * ```tsx
- * <NotificationContainer
- *   title="Success!"
- *   description="Your changes have been saved."
- *   color="success"
- *   open={true}
- *   onClose={() => console.log('Notification closed')}
- * />
- * ```
  */
 declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => React.JSX.Element | null;
 export default NotificationContainer;

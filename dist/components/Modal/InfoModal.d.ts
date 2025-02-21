@@ -1,13 +1,5 @@
-import { ReactNode } from 'react';
-export interface InfoModalProps {
-    icon?: ReactNode;
-    title: string;
-    content: ReactNode;
-    confirmText?: string;
-    onConfirm?: () => void;
-}
+import { ConfirmModalProps } from './ConfirmModal';
 /**
- * InfoModal Component
  *
  * A modal component designed to display informational messages to the user. It is used to show information or alerts with
  * an optional confirmation action. The modal features customizable title, content, and confirm button text.
@@ -19,16 +11,6 @@ export interface InfoModalProps {
  * @property {string} [confirmText='OK'] - The text displayed on the confirm button.
  * @property {() => void} [onConfirm] - The callback function to be executed when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * <InfoModal
- *   title="Information"
- *   content="This is an informational message."
- *   onConfirm={() => console.log('Confirmed!')}
- * />
- * ```
- *
- * @returns {void} The modal is rendered to the body element and will be automatically cleaned up when the user confirms.
  */
-declare const InfoModal: ({ icon, title, content, confirmText, onConfirm, }: InfoModalProps) => void;
+declare const InfoModal: ({ icon, title, content, confirmText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default InfoModal;

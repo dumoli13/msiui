@@ -112,7 +112,7 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
     return (React.createElement("div", { className: "relative" },
         React.createElement("div", { ref: elementRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, role: "button", 
             // tabIndex={0}
-            tabIndex: -1, "aria-pressed": open ? 'true' : 'false' }, children),
+            tabIndex: -1, "aria-pressed": "true" }, children),
         open &&
             createPortal(React.createElement("div", { ref: dropdownRef, style: {
                     top: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top) || 0,

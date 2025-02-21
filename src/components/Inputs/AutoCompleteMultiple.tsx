@@ -19,9 +19,10 @@ export interface AutoCompleteMultipleRef<T, D = undefined> {
   element: HTMLDivElement | null;
   value: SelectValue<T, D>[];
   focus: () => void;
+  reset: () => void;
 }
 
-interface AutoCompleteMultipleProps<T, D = undefined>
+export interface AutoCompleteMultipleProps<T, D = undefined>
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'onChange' | 'value' | 'defaultValue' | 'size'
@@ -39,8 +40,8 @@ interface AutoCompleteMultipleProps<T, D = undefined>
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   inputRef?:
-  | RefObject<AutoCompleteMultipleRef<T> | null>
-  | RefCallback<AutoCompleteMultipleRef<T> | null>;
+    | RefObject<AutoCompleteMultipleRef<T> | null>
+    | RefCallback<AutoCompleteMultipleRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -144,6 +145,9 @@ const AutoCompleteMultiple = <T, D = undefined>({
     value: value as SelectValue<T, undefined>[],
     focus: () => {
       valueRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue([]);
     },
   }));
 

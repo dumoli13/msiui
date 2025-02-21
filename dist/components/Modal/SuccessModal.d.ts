@@ -1,13 +1,5 @@
-import { ReactNode } from 'react';
-export interface SuccessModalProps {
-    icon?: ReactNode;
-    title: string;
-    content: ReactNode;
-    confirmText?: string;
-    onConfirm?: () => void;
-}
+import { ConfirmModalProps } from './ConfirmModal';
 /**
- * SuccessModal Component
  *
  * A modal component used to display a success message with a customizable title, content, and a confirm button.
  * The modal includes an icon (default is a success icon) and allows for custom text on the confirm button.
@@ -22,18 +14,6 @@ export interface SuccessModalProps {
  * @property {string} [confirmText='OK'] - The text to display on the confirm button (default is "OK").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * SuccessModal({
- *   title: 'Action Successful',
- *   content: 'Your changes have been saved successfully.',
- *   onConfirm: () => {
- *     console.log('Success action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
-declare const SuccessModal: ({ icon, title, content, confirmText, onConfirm, }: SuccessModalProps) => void;
+declare const SuccessModal: ({ icon, title, content, confirmText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default SuccessModal;

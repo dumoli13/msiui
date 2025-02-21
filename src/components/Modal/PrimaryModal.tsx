@@ -1,19 +1,9 @@
-import React, { ReactNode } from 'react';
+import React, { JSX, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-export interface PrimaryModalProps {
-  icon?: ReactNode;
-  title: string;
-  content: ReactNode;
-  confirmText?: string;
-  cancelText?: string;
-  action?: (onClose: () => void) => ReactNode;
-  onConfirm?: () => Promise<void> | void;
-}
-
 /**
- * PrimaryModal Component
  *
  * A modal component used to display a primary action confirmation with customizable title, content, and confirm/cancel buttons.
  * The modal includes an icon (optional) and allows custom text for both the confirm and cancel buttons.
@@ -27,19 +17,6 @@ export interface PrimaryModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * PrimaryModal({
- *   title: 'Are you sure?',
- *   content: 'This action cannot be undone.',
- *   onConfirm: async () => {
- *     await someAsyncAction();
- *     console.log('Action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
 
 const PrimaryModal = ({
@@ -48,8 +25,8 @@ const PrimaryModal = ({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm,
-  action,
-}: PrimaryModalProps) => {
+  customAction,
+}: ConfirmModalProps) => {
   const container = document.createElement('div');
   const root = createRoot(container);
   document.body.appendChild(container);
@@ -75,7 +52,7 @@ const PrimaryModal = ({
       confirmText={confirmText}
       cancelText={cancelText}
       confirmButtonColor="primary"
-      action={action ? action(handleClose) : null}
+      customAction={customAction}
     >
       {content}
     </ModalConfirmContainer>,

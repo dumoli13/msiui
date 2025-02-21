@@ -70,6 +70,9 @@ const TextArea = (_a) => {
             var _a;
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
+        reset: () => {
+            setInternalValue('');
+        },
     }));
     const handleChange = (e) => {
         const newValue = e.target.value;

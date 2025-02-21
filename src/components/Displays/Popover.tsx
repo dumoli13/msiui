@@ -9,7 +9,7 @@ import React, {
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
-interface PopoverProps {
+export interface PopoverProps {
   children: ReactNode;
   className?: string;
   open: boolean;

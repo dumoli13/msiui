@@ -83,7 +83,6 @@ const FilterSearch = ({ value, label, onChange }: FilterSearchProps) => {
     >
       <IconButton
         icon={<Search width={16} height={16} />}
-        color="neutral"
         variant="outlined"
         className={cx({
           'border-primary-main text-primary-main bg-primary-surface': value,

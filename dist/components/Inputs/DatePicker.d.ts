@@ -3,6 +3,8 @@ export type InputDateValue = Date | null;
 export interface InputDatePickerRef {
     element: HTMLDivElement | null;
     value: InputDateValue;
+    focus: () => void;
+    reset: () => void;
 }
 export interface DatePickerProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
     value?: InputDateValue;

@@ -28,9 +28,10 @@ export interface NumberTextfieldRef {
   element: HTMLInputElement | null;
   value: number | null;
   focus: () => void;
+  reset: () => void;
 }
 
-interface NumberTextFieldProps
+export interface NumberTextFieldProps
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'value' | 'defaultValue' | 'onChange' | 'size'
@@ -155,6 +156,9 @@ const NumberTextField = ({
     value,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue(null);
     },
   }));
 

@@ -2,16 +2,8 @@ import React, { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
-
-export interface WarningModalProps {
-  icon?: ReactNode;
-  title: string;
-  content: ReactNode;
-  confirmText?: string;
-  cancelText?: string;
-  onConfirm?: () => void;
-}
 
 /**
  * WarningModal Component
@@ -30,18 +22,6 @@ export interface WarningModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * WarningModal({
- *   title: 'Are you sure?',
- *   content: 'This action cannot be undone.',
- *   onConfirm: () => {
- *     console.log('Action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
 
 const WarningModal = ({
@@ -58,7 +38,8 @@ const WarningModal = ({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm,
-}: WarningModalProps) => {
+  customAction,
+}: ConfirmModalProps) => {
   const container = document.createElement('div');
   const root = createRoot(container);
   document.body.appendChild(container);
@@ -81,6 +62,7 @@ const WarningModal = ({
       confirmText={confirmText}
       cancelText={cancelText}
       confirmButtonColor="warning"
+      customAction={customAction}
     >
       {content}
     </ModalConfirmContainer>,

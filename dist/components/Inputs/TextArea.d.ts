@@ -3,8 +3,9 @@ export interface TextAreaRef {
     element: HTMLTextAreaElement | null;
     value: string;
     focus: () => void;
+    reset: () => void;
 }
-interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'size'> {
+export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'size'> {
     value?: string;
     defaultValue?: string;
     label?: string;

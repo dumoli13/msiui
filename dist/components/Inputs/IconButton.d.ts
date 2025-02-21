@@ -1,7 +1,6 @@
 import React, { ButtonHTMLAttributes, JSXElementConstructor, ReactElement } from 'react';
-export type ButtonVariant = 'contained' | 'secondary' | 'outlined' | 'text';
-export type ButtonColor = 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+import { ButtonColor, ButtonVariant } from '../../const';
+export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
     color?: ButtonColor;
     loading?: boolean;

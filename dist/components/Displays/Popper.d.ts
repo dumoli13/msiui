@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-interface PopperProps {
+export interface PopperProps {
     className?: string;
     disabled?: boolean;
     content: ReactNode;

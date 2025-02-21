@@ -18,9 +18,10 @@ export interface AutoCompleteRef<T, D = undefined> {
   element: HTMLDivElement | null;
   value: SelectValue<T, D> | null;
   focus: () => void;
+  reset: () => void;
 }
 
-interface AutoCompleteProps<T, D = undefined>
+export interface AutoCompleteProps<T, D = undefined>
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'onChange' | 'value' | 'defaultValue' | 'size'
@@ -38,8 +39,8 @@ interface AutoCompleteProps<T, D = undefined>
   startIcon?: ReactNode;
   endIcon?: ReactNode;
   inputRef?:
-  | RefObject<AutoCompleteRef<T> | null>
-  | RefCallback<AutoCompleteRef<T> | null>;
+    | RefObject<AutoCompleteRef<T> | null>
+    | RefCallback<AutoCompleteRef<T> | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
@@ -148,6 +149,9 @@ const AutoComplete = <T, D = undefined>({
     value: value as SelectValue<T, undefined>,
     focus: () => {
       valueRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue(null);
     },
   }));
 
@@ -381,8 +385,9 @@ const AutoComplete = <T, D = undefined>({
       </div>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'
-            }`}
+          className={`w-full text-left mt-1 text-12px ${
+            isError ? 'text-danger-main' : 'text-neutral-60'
+          }`}
         >
           {helperMessage}
         </div>

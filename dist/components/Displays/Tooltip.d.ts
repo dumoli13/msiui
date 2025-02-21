@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-interface TooltipProps {
+export interface TooltipProps {
     children: ReactNode;
     onOpen?: (open: boolean) => void;
     verticalAlign?: 'top' | 'bottom';

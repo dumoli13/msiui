@@ -1,4 +1,11 @@
 import React from 'react';
+export interface NotificationProps {
+    id: string;
+    title: string;
+    description: string;
+    icon?: React.ReactNode;
+    color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+}
 export declare const useNotification: () => (notification: {
     title: string;
     description: string;

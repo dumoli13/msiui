@@ -1,11 +1,6 @@
-import React, { FormEvent, ReactNode } from 'react';
+import React, { FormEvent, JSX, ReactNode } from 'react';
 import { ButtonColor } from '../Inputs/Button';
 import { ConfirmModalProps } from './ConfirmModal';
-import { DangerModalProps } from './DangerModal';
-import { InfoModalProps } from './InfoModal';
-import { PrimaryModalProps } from './PrimaryModal';
-import { SuccessModalProps } from './SuccessModal';
-import { WarningModalProps } from './WarningModal';
 export interface ModalProps {
     open: boolean;
     title?: ReactNode;
@@ -22,15 +17,15 @@ export interface ModalProps {
     confirmDisabled?: boolean;
     confirmText?: string;
     confirmButtonColor?: ButtonColor;
-    action?: ReactNode;
+    customAction?: Array<JSX.Element>;
 }
 interface ExtendedModal extends React.FC<ModalProps> {
     confirm: (props: ConfirmModalProps) => void;
-    success: (props: SuccessModalProps) => void;
-    info: (props: InfoModalProps) => void;
-    warning: (props: WarningModalProps) => void;
-    danger: (props: DangerModalProps) => void;
-    primary: (props: PrimaryModalProps) => void;
+    success: (props: ConfirmModalProps) => void;
+    info: (props: ConfirmModalProps) => void;
+    warning: (props: ConfirmModalProps) => void;
+    danger: (props: ConfirmModalProps) => void;
+    primary: (props: ConfirmModalProps) => void;
 }
 declare const Modal: ExtendedModal;
 export default Modal;

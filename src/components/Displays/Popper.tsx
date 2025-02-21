@@ -8,7 +8,7 @@ import React, {
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
-interface PopperProps {
+export interface PopperProps {
   className?: string;
   disabled?: boolean;
   content: ReactNode;

@@ -4,7 +4,6 @@ import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
- * InfoModal Component
  *
  * A modal component designed to display informational messages to the user. It is used to show information or alerts with
  * an optional confirmation action. The modal features customizable title, content, and confirm button text.
@@ -16,18 +15,8 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {string} [confirmText='OK'] - The text displayed on the confirm button.
  * @property {() => void} [onConfirm] - The callback function to be executed when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * <InfoModal
- *   title="Information"
- *   content="This is an informational message."
- *   onConfirm={() => console.log('Confirmed!')}
- * />
- * ```
- *
- * @returns {void} The modal is rendered to the body element and will be automatically cleaned up when the user confirms.
  */
-const InfoModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.info.main })), title, content, confirmText = 'OK', onConfirm, }) => {
+const InfoModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.info.main })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
     document.body.appendChild(container);
@@ -38,7 +27,7 @@ const InfoModal = ({ icon = (React.createElement(AlertCircle, { height: 48, widt
     root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, confirmButtonColor: "info" }, content));
+        }, confirmText: confirmText, confirmButtonColor: "info", customAction: customAction }, content));
 };
 export default InfoModal;
 //# sourceMappingURL=InfoModal.js.map

@@ -1,19 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { JSX, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
-export interface InfoModalProps {
-  icon?: ReactNode;
-  title: string;
-  content: ReactNode;
-  confirmText?: string;
-  onConfirm?: () => void;
-}
-
 /**
- * InfoModal Component
  *
  * A modal component designed to display informational messages to the user. It is used to show information or alerts with
  * an optional confirmation action. The modal features customizable title, content, and confirm button text.
@@ -25,16 +17,6 @@ export interface InfoModalProps {
  * @property {string} [confirmText='OK'] - The text displayed on the confirm button.
  * @property {() => void} [onConfirm] - The callback function to be executed when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * <InfoModal
- *   title="Information"
- *   content="This is an informational message."
- *   onConfirm={() => console.log('Confirmed!')}
- * />
- * ```
- *
- * @returns {void} The modal is rendered to the body element and will be automatically cleaned up when the user confirms.
  */
 
 const InfoModal = ({
@@ -50,7 +32,8 @@ const InfoModal = ({
   content,
   confirmText = 'OK',
   onConfirm,
-}: InfoModalProps) => {
+  customAction,
+}: ConfirmModalProps) => {
   const container = document.createElement('div');
   const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
   document.body.appendChild(container);
@@ -71,6 +54,7 @@ const InfoModal = ({
       }}
       confirmText={confirmText}
       confirmButtonColor="info"
+      customAction={customAction}
     >
       {content}
     </ModalConfirmContainer>,

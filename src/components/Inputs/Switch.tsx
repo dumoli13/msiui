@@ -14,9 +14,10 @@ export interface SwitchRef {
   element: HTMLInputElement | null;
   checked: boolean;
   focus: () => void;
+  reset: () => void;
 }
 
-interface SwitchProps
+export interface SwitchProps
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'defaultChecked' | 'onChange' | 'size'
@@ -104,6 +105,9 @@ const Switch = ({
     checked,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalChecked(false);
     },
   }));
 

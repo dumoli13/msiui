@@ -1,7 +1,7 @@
 import React from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-interface PdfViewerProps {
+export interface PdfViewerProps {
     open: boolean;
     onClose: () => void;
     url: string | null;

@@ -79,6 +79,9 @@ const AutoCompleteMultiple = (_a) => {
             var _a;
             (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
+        reset: () => {
+            setInternalValue([]);
+        },
     }));
     const [filteredOptions, setFilteredOptions] = useState([]);
     useEffect(() => {

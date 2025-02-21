@@ -1,5 +1,5 @@
 import React, { ReactNode, RefObject } from 'react';
-interface InputDropdownProps {
+export interface InputDropdownProps {
     open: boolean;
     children: ReactNode;
     elementRef: RefObject<HTMLDivElement | null>;
@@ -8,7 +8,6 @@ interface InputDropdownProps {
     maxHeight?: number;
 }
 /**
- * InputDropdown Component
  *
  * A dropdown component that displays content below or above a reference element, dynamically positioning itself based on available space on the screen.
  * This component supports handling scroll and resize events to adjust the position of the dropdown.
@@ -19,21 +18,8 @@ interface InputDropdownProps {
  * @property {RefObject<HTMLDivElement>} dropdownRef - A reference to the dropdown element itself.
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
- *
- * @example Basic Usage:
- * ```tsx
- * <InputDropdown
- *   open={isDropdownOpen}
- *   elementRef={inputRef}
- *   dropdownRef={dropdownRef}
- *   maxHeight={200}
- * >
- *   <div>Option 1</div>
- *   <div>Option 2</div>
- * </InputDropdown>
- * ```
- *
  * @returns {JSX.Element | null} The rendered InputDropdown component, or null if not open or styles are not calculated.
+ *
  */
 declare const InputDropdown: ({ open, children, elementRef, dropdownRef, fullWidth, maxHeight, }: InputDropdownProps) => React.ReactPortal | null;
 export default InputDropdown;

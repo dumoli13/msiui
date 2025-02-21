@@ -5,8 +5,6 @@ import Checkbox from '../Inputs/Checkbox';
 import FilterSearch from './FilterSearch';
 import FilterSelect from './FilterSelect';
 /**
- * @component Table
- *
  * A dynamic and customizable table component for rendering tabular data with features such as sorting, filtering, row selection, and responsive design.
  *
  * @template T - Generic type `T` represents the structure of the data rows.
@@ -25,46 +23,6 @@ import FilterSelect from './FilterSelect';
  * @property {'default' | 'large'} [size='default'] - Determines the size of the table cells and typography.
  * @property {'top' | 'center' | 'bottom'} [verticalAlign] - Controls the vertical alignment of cell content. Defaults to `top`.
  *
- * @example Basic Usage:
- * ```tsx
- * import React, { useState } from 'react';
- * import Table from './Table';
- *
- * type DataRow = { id: number; name: string; age: number; status: string };
- *
- * const data: DataRow[] = [
- *   { id: 1, name: 'Alice', age: 30, status: 'Active' },
- *   { id: 2, name: 'Bob', age: 25, status: 'Inactive' },
- *   { id: 3, name: 'Charlie', age: 35, status: 'Active' },
- * ];
- *
- * const columns = [
- *   { key: 'name', label: 'Name', sortable: true },
- *   { key: 'age', label: 'Age', sortable: true },
- *   { key: 'status', label: 'Status', filter: 'select', option: [{ label: 'Active', value: 'Active' }, { label: 'Inactive', value: 'Inactive' }] },
- * ];
- *
- * const App = () => {
- *   const [sorting, setSorting] = useState(null);
- *   const [selectedRows, setSelectedRows] = useState<number[]>([]);
- *
- *   return (
- *     <Table
- *       columns={columns}
- *       data={data}
- *       sorting={sorting}
- *       onSort={setSorting}
- *       showSelected
- *       selectedRows={selectedRows}
- *       onRowSelect={(row, isSelected, newSelectedRows) =>
- *         setSelectedRows(newSelectedRows)
- *       }
- *     />
- *   );
- * };
- *
- * export default App;
- * ```
  *
  */
 const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedRows: selectedRowsProp, onRowSelect, sorting, showDanger, onSort, fullwidth, showSelected = false, size = 'default', verticalAlign, }) => {

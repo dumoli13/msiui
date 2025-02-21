@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AlertCircle, CheckCircle, XCircle } from 'react-feather';
-import COLORS from '../../libs/color';
+import { COLORS } from '../../libs';
 import NotificationContainer from './NotificationContainer';
+let addNotificationToStack = null;
+export const useNotification = () => {
+    return (notification) => {
+        if (addNotificationToStack) {
+            addNotificationToStack(Object.assign({ id: Math.random().toString(), color: notification.color || 'primary' }, notification));
+        }
+    };
+};
 /**
  * useNotification Hook
  *
@@ -33,14 +41,6 @@ import NotificationContainer from './NotificationContainer';
  * });
  * ```
  */
-let addNotificationToStack = null;
-export const useNotification = () => {
-    return (notification) => {
-        if (addNotificationToStack) {
-            addNotificationToStack(Object.assign({ id: Math.random().toString(), color: notification.color || 'primary' }, notification));
-        }
-    };
-};
 const NotificationStack = () => {
     const [notifications, setNotifications] = useState([]);
     useEffect(() => {

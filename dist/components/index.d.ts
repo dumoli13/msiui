@@ -1,9 +1,10 @@
 export * from './Displays';
-export * from './IconOld';
 export * from './Inputs';
-export * from './Layout';
-export * from './Modal';
 export * from './Navigations';
-export * from './Notification';
-export * from './Table';
 export { default as Icon } from './Icon';
+export type { IconNames, IconProps } from './Icon';
+export { default as Modal } from './Modal';
+export { NotificationProvider, useNotification } from './Notification';
+export type { NotificationProps } from './Notification';
+export { default as Table } from './Table';
+export type { TableProps, TableColumn, TableSortingProps, TableFilterProps, } from './Table';

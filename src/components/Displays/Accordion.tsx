@@ -2,13 +2,13 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
 import { ChevronDown } from 'react-feather';
 
-interface AccordionItem {
+export interface AccordionItem {
   key: string | number;
   title: ReactNode;
   content: ReactNode;
 }
 
-interface AccordionProps {
+export interface AccordionProps {
   items: AccordionItem[];
   collapsible?: 'icon' | 'header';
   singleCollapse?: boolean;

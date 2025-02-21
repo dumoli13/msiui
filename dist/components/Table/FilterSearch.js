@@ -55,7 +55,7 @@ const FilterSearch = ({ value, label, onChange }) => {
         }
     }, [open]);
     return (React.createElement(Popper, { open: open, onOpen: setOpen, content: React.createElement(TextField, { id: `search_${label}`, inputRef: inputRef, value: value, onChange: handleChange, placeholder: `Search ${label}`, startIcon: React.createElement(Search, { width: 16, height: 16 }), clearable: true, width: 280 }) },
-        React.createElement(IconButton, { icon: React.createElement(Search, { width: 16, height: 16 }), color: "neutral", variant: "outlined", className: cx({
+        React.createElement(IconButton, { icon: React.createElement(Search, { width: 16, height: 16 }), variant: "outlined", className: cx({
                 'border-primary-main text-primary-main bg-primary-surface': value,
             }), title: "Search by Keyword" })));
 };

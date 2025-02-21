@@ -3,8 +3,9 @@ export interface PasswordFieldRef {
     element: HTMLInputElement | null;
     value: string;
     focus: () => void;
+    reset: () => void;
 }
-interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+export interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
     value?: string;
     defaultValue?: string;
     label?: string;

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Check, X } from 'react-feather';
 
-interface StepProps {
+export interface StepProps {
   active: number;
   items: Array<{
     title: string;

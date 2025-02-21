@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-interface TooltipProps {
+export interface TooltipProps {
   children: ReactNode;
   onOpen?: (open: boolean) => void;
   verticalAlign?: 'top' | 'bottom';
@@ -149,7 +149,7 @@ const Tooltip = ({
         role="button"
         // tabIndex={0}
         tabIndex={-1}
-        aria-pressed={open ? 'true' : 'false'}
+        aria-pressed="true"
       >
         {children}
       </div>

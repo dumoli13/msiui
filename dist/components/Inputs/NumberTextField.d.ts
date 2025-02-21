@@ -3,8 +3,9 @@ export interface NumberTextfieldRef {
     element: HTMLInputElement | null;
     value: number | null;
     focus: () => void;
+    reset: () => void;
 }
-interface NumberTextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
+export interface NumberTextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
     id?: string;
     value?: number | null;
     defaultValue?: number | null;

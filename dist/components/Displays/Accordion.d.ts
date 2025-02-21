@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
-interface AccordionItem {
+export interface AccordionItem {
     key: string | number;
     title: ReactNode;
     content: ReactNode;
 }
-interface AccordionProps {
+export interface AccordionProps {
     items: AccordionItem[];
     collapsible?: 'icon' | 'header';
     singleCollapse?: boolean;

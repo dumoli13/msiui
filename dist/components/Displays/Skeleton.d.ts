@@ -1,5 +1,5 @@
 import React from 'react';
-interface SkeletonProps {
+export interface SkeletonProps {
     width?: number;
     height?: number;
     type?: 'circle' | 'rounded' | 'rect';

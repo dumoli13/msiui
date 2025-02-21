@@ -15,9 +15,10 @@ export interface TextfieldRef {
   element: HTMLInputElement | null;
   value: string;
   focus: () => void;
+  reset: () => void;
 }
 
-interface TextFieldProps
+export interface TextFieldProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   value?: string | number;
   defaultValue?: string | number;
@@ -115,6 +116,9 @@ const TextField = ({
     value,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue('');
     },
   }));
 

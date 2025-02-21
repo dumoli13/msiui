@@ -15,9 +15,10 @@ export interface PasswordFieldRef {
   element: HTMLInputElement | null;
   value: string;
   focus: () => void;
+  reset: () => void;
 }
 
-interface PasswordFieldProps
+export interface PasswordFieldProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   value?: string;
   defaultValue?: string;
@@ -116,6 +117,9 @@ const PasswordField = ({
     value,
     focus: () => {
       elementRef.current?.focus();
+    },
+    reset: () => {
+      setInternalValue('');
     },
   }));
 

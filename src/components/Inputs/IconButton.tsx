@@ -5,18 +5,11 @@ import React, {
 } from 'react';
 import cx from 'classnames';
 import { Loader } from 'react-feather';
+import { ButtonColor, ButtonVariant } from '../../const';
 import Tooltip from '../Displays/Tooltip';
 
-export type ButtonVariant = 'contained' | 'secondary' | 'outlined' | 'text';
-export type ButtonColor =
-  | 'primary'
-  | 'success'
-  | 'danger'
-  | 'warning'
-  | 'info'
-  | 'neutral';
-
-interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface IconButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   color?: ButtonColor;
   loading?: boolean;
@@ -86,7 +79,7 @@ const IconButton = ({
             'bg-info-main hover:bg-info-hover active:bg-info-pressed focus:bg-info-hover focus:ring-info-surface':
               color === 'info' && variant === 'contained',
             'bg-neutral-70 hover:bg-neutral-50 active:bg-neutral-80 focus:bg-neutral-50 focus:ring-neutral-30':
-              color === 'neutral' && variant === 'contained',
+              variant === 'contained',
 
             // secondary
             'focus:ring-3 disabled:border disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 drop-shadow':
@@ -102,7 +95,7 @@ const IconButton = ({
             'text-info-main bg-info-surface hover:text-info-hover active:text-info-pressed focus:ring-info-surface':
               color === 'info' && variant === 'secondary',
             'text-neutral-70 bg-info-surface hover:text-neutral-50 active:text-neutral-80 focus:ring-neutral-30':
-              color === 'neutral' && variant === 'secondary',
+              variant === 'secondary',
 
             // outlined
             'bg-neutral-10 hover:bg-neutral-20 active:bg-neutral-30 border focus:ring-3 border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 drop-shadow disabled:border-neutral-40':
@@ -117,8 +110,7 @@ const IconButton = ({
               color === 'warning' && variant === 'outlined',
             'text-info-main focus:ring-info-focus':
               color === 'info' && variant === 'outlined',
-            'text-neutral-70 focus:ring-neutral-30':
-              color === 'neutral' && variant === 'outlined',
+            'text-neutral-70 focus:ring-neutral-30': variant === 'outlined',
 
             // text
             'focus:ring-3 disabled:text-neutral-60': variant === 'text',
@@ -133,7 +125,7 @@ const IconButton = ({
             'text-info-main hover:text-info-hover active:text-info-pressed focus:ring-info-focus':
               color === 'info' && variant === 'text',
             'text-neutral-70 hover:text-neutral-50 active:text-neutral-80 focus:ring-neutral-30':
-              color === 'neutral' && variant === 'text',
+              variant === 'text',
           },
           className,
         )}

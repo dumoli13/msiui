@@ -4,8 +4,9 @@ export interface AutoCompleteMultipleRef<T, D = undefined> {
     element: HTMLDivElement | null;
     value: SelectValue<T, D>[];
     focus: () => void;
+    reset: () => void;
 }
-interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
+export interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
     value?: SelectValue<T, D>[];
     defaultValue?: T[];
     label?: string;

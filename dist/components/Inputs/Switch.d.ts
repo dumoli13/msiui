@@ -3,8 +3,9 @@ export interface SwitchRef {
     element: HTMLInputElement | null;
     checked: boolean;
     focus: () => void;
+    reset: () => void;
 }
-interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'defaultChecked' | 'onChange' | 'size'> {
+export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'defaultChecked' | 'onChange' | 'size'> {
     defaultChecked?: boolean;
     label?: string;
     labelPosition?: 'top' | 'left';

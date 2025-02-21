@@ -4,8 +4,9 @@ export interface AutoCompleteRef<T, D = undefined> {
     element: HTMLDivElement | null;
     value: SelectValue<T, D> | null;
     focus: () => void;
+    reset: () => void;
 }
-interface AutoCompleteProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
+export interface AutoCompleteProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
     value?: SelectValue<T, D> | null;
     defaultValue?: T | null;
     label?: string;

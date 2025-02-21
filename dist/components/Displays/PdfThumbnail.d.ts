@@ -1,5 +1,5 @@
 import React from 'react';
-interface PdfThumbnailProps {
+export interface PdfThumbnailProps {
     file: string;
 }
 /**

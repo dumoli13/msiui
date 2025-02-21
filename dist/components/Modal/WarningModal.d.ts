@@ -1,12 +1,4 @@
-import { ReactNode } from 'react';
-export interface WarningModalProps {
-    icon?: ReactNode;
-    title: string;
-    content: ReactNode;
-    confirmText?: string;
-    cancelText?: string;
-    onConfirm?: () => void;
-}
+import { ConfirmModalProps } from './ConfirmModal';
 /**
  * WarningModal Component
  *
@@ -24,18 +16,6 @@ export interface WarningModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * WarningModal({
- *   title: 'Are you sure?',
- *   content: 'This action cannot be undone.',
- *   onConfirm: () => {
- *     console.log('Action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
-declare const WarningModal: ({ icon, title, content, confirmText, cancelText, onConfirm, }: WarningModalProps) => void;
+declare const WarningModal: ({ icon, title, content, confirmText, cancelText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default WarningModal;

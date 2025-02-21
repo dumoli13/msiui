@@ -90,6 +90,9 @@ const NumberTextField = (_a) => {
             var _a;
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
+        reset: () => {
+            setInternalValue(null);
+        },
     }));
     const handleFocus = () => {
         if (isControlled) {

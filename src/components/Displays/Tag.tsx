@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { X } from 'react-feather';
 
-interface TagProps {
+export interface TagProps {
   className?: string;
   children: string;
   color: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';

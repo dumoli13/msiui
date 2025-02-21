@@ -1,5 +1,5 @@
 import React from 'react';
-interface PaginationButtonProps {
+export interface PaginationButtonProps {
     onClick: () => void;
     disabled?: boolean;
 }

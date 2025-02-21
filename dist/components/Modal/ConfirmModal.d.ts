@@ -1,15 +1,15 @@
-import { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 export interface ConfirmModalProps {
     icon?: ReactNode;
     title: string;
     content: ReactNode;
     confirmText?: string;
     cancelText?: string;
-    onConfirm?: () => void;
+    onConfirm?: () => void | Promise<void>;
     onCancel?: () => void;
+    customAction?: Array<JSX.Element>;
 }
 /**
- * ConfirmModal Component
  *
  * A modal dialog to request confirmation from the user for an action, such as deleting or updating
  * an item. This modal typically presents a warning message and two options for the user: Confirm or Cancel.
@@ -21,18 +21,7 @@ export interface ConfirmModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {() => void} [onConfirm] - Callback function called when the user confirms the action.
  * @property {() => void} [onCancel] - Callback function called when the user cancels the action or closes the modal.
- *
- * @example Basic Usage:
- * ```tsx
- * <ConfirmModal
- *   title="Are you sure?"
- *   content="This action cannot be undone. Do you want to continue?"
- *   onConfirm={() => performAction()}
- *   onCancel={() => console.log("Action canceled")}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered confirm modal component.
+ 
  */
-declare const ConfirmModal: ({ icon, title, content, confirmText, cancelText, onConfirm, onCancel, }: ConfirmModalProps) => void;
+declare const ConfirmModal: ({ icon, title, content, confirmText, cancelText, onConfirm, onCancel, customAction, }: ConfirmModalProps) => void;
 export default ConfirmModal;

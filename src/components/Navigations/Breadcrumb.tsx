@@ -8,7 +8,7 @@ export type BreadcrumbItem = {
   href?: string; // Optional URL to link the breadcrumb item
 };
 
-interface BreadcrumbProps {
+export interface BreadcrumbProps {
   items: BreadcrumbItem[];
   maxDisplay?: number; // Maximum number of breadcrumb items to display, defaults to 4
   isFormEdited?: boolean;
@@ -62,7 +62,6 @@ const BreadcrumbLink = ({
 };
 
 /**
- * Breadcrumb Component
  *
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
  * If more than `maxDisplay` items are provided, it will show the first few, followed by an ellipsis, and then the last few.

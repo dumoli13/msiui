@@ -20,20 +20,8 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
- * @example Basic Usage:
- * ```tsx
- * WarningModal({
- *   title: 'Are you sure?',
- *   content: 'This action cannot be undone.',
- *   onConfirm: () => {
- *     console.log('Action confirmed');
- *   }
- * });
- * ```
- *
- * @returns {void} The modal is rendered directly into the DOM and doesn't return any JSX from the component itself.
  */
-const WarningModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.warning.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, }) => {
+const WarningModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.warning.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -44,7 +32,7 @@ const WarningModal = ({ icon = (React.createElement(AlertCircle, { height: 48, w
     root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onClose: handleClose, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "warning" }, content));
+        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "warning", customAction: customAction }, content));
 };
 export default WarningModal;
 //# sourceMappingURL=WarningModal.js.map

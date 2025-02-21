@@ -64,7 +64,7 @@ const FilterSelect = ({ type, value, option, label, onChange, }) => {
     return (React.createElement(Popper, { open: open, onOpen: setOpen, content: React.createElement(React.Fragment, null,
             type === 'select' && (React.createElement(Select, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 })),
             type === 'autocomplete' && (React.createElement(AutoComplete, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 }))) },
-        React.createElement(IconButton, { icon: React.createElement(ChevronDown, { width: 16, height: 16 }), color: "neutral", variant: "outlined", className: cx({
+        React.createElement(IconButton, { icon: React.createElement(ChevronDown, { width: 16, height: 16 }), variant: "outlined", className: cx({
                 'border-primary-main text-primary-main bg-primary-surface': value,
             }), title: "Select Option" })));
 };

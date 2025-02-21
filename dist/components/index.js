@@ -1,10 +1,8 @@
 export * from './Displays';
-export * from './IconOld';
 export * from './Inputs';
-export * from './Layout';
-export * from './Modal';
 export * from './Navigations';
-export * from './Notification';
-export * from './Table';
 export { default as Icon } from './Icon';
+export { default as Modal } from './Modal';
+export { NotificationProvider, useNotification } from './Notification';
+export { default as Table } from './Table';
 //# sourceMappingURL=index.js.map

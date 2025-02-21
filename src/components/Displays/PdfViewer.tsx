@@ -19,7 +19,7 @@ import { useDebouncedCallback } from 'use-debounce';
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 
-interface PdfViewerProps {
+export interface PdfViewerProps {
   open: boolean;
   onClose: () => void;
   url: string | null;

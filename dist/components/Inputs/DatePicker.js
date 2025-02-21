@@ -14,28 +14,9 @@ import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react'
 import cx from 'classnames';
 import dayjs from 'dayjs';
 import { Calendar, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, X, } from 'react-feather';
-import { SUNDAY_DATE, areDatesEqual, isToday, } from '../../libs/inputValidation';
+import { MONTH_LIST } from '../../const/datePicker';
+import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday, } from '../../libs/inputValidation';
 import InputDropdown from './InputDropdown';
-const MONTH_LIST = [
-    { value: 0, label: 'Jan' },
-    { value: 1, label: 'Feb' },
-    { value: 2, label: 'Mar' },
-    { value: 3, label: 'Apr' },
-    { value: 4, label: 'May' },
-    { value: 5, label: 'Jun' },
-    { value: 6, label: 'Jul' },
-    { value: 7, label: 'Aug' },
-    { value: 8, label: 'Sep' },
-    { value: 9, label: 'Oct' },
-    { value: 10, label: 'Nov' },
-    { value: 11, label: 'Dec' },
-];
-function getYearRange(year) {
-    const step = 12;
-    const lowerBound = Math.floor(year / step) * step;
-    const upperBound = lowerBound + step;
-    return Array.from({ length: upperBound - lowerBound }, (_, i) => lowerBound + i);
-}
 /**
  * DatePicker Component
  *
@@ -101,6 +82,9 @@ const DatePicker = (_a) => {
         focus: () => {
             var _a;
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+        },
+        reset: () => {
+            setInternalValue(null);
         },
     }));
     useEffect(() => {

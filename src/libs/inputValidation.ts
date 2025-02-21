@@ -17,3 +17,56 @@ export function areDatesEqual(dateA: Date, dateB: Date): boolean {
     dateA.getDate() === dateB.getDate()
   );
 }
+
+export function isDateABeforeDateB(dateA: Date, dateB: Date): boolean {
+  return (
+    dateA.getFullYear() < dateB.getFullYear() ||
+    (dateA.getFullYear() === dateB.getFullYear() &&
+      dateA.getMonth() < dateB.getMonth()) ||
+    (dateA.getFullYear() === dateB.getFullYear() &&
+      dateA.getMonth() === dateB.getMonth() &&
+      dateA.getDate() < dateB.getDate())
+  );
+}
+
+export function isDateTimeABeforeOrEqualToDateB(
+  dateA: Date,
+  dateB: Date,
+): boolean {
+  const isTimeABeforeOrEqualToTimeB =
+    dateA.getHours() < dateB.getHours() ||
+    (dateA.getHours() === dateB.getHours() &&
+      dateA.getMinutes() < dateB.getMinutes()) ||
+    (dateA.getHours() === dateB.getHours() &&
+      dateA.getMinutes() === dateB.getMinutes() &&
+      dateA.getSeconds() <= dateB.getSeconds());
+  return (
+    isDateABeforeDateB(dateA, dateB) ||
+    (areDatesEqual(dateA, dateB) && isTimeABeforeOrEqualToTimeB)
+  );
+}
+
+export function isDateBetween({
+  date,
+  startDate,
+  endDate,
+}: {
+  date: Date;
+  startDate: Date;
+  endDate: Date;
+}): boolean {
+  const isAfterStartDate = isDateABeforeDateB(startDate, date);
+  const isBeforeEndDate = isDateABeforeDateB(date, endDate);
+  return isAfterStartDate && isBeforeEndDate;
+}
+
+export function getYearRange(year: number) {
+  const step = 12;
+
+  const lowerBound = Math.floor(year / step) * step;
+  const upperBound = lowerBound + step;
+  return Array.from(
+    { length: upperBound - lowerBound },
+    (_, i) => lowerBound + i,
+  );
+}

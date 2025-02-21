@@ -12,56 +12,56 @@ export type TableColumn<
   FilterType = string | SelectValue<T[keyof T], D> | null,
 > =
   | {
-    filter: 'textfield';
-    key: string;
-    dataIndex?: keyof T;
-    label: string;
-    subLabel?: string;
-    sortable?: boolean;
-    width?: number | string;
-    minWidth?: number;
-    render?: (
-      value: T[keyof T] | null,
-      record: T,
-      index: number,
-    ) => ReactNode;
-    filterValue: string;
-    onChange: (value: string) => void;
-  }
+      filter: 'textfield';
+      key: string;
+      dataIndex?: keyof T;
+      label: string;
+      subLabel?: string;
+      sortable?: boolean;
+      width?: number | string;
+      minWidth?: number;
+      render?: (
+        value: T[keyof T] | null,
+        record: T,
+        index: number,
+      ) => ReactNode;
+      filterValue: string;
+      onChange: (value: string) => void;
+    }
   | {
-    filter: 'select' | 'autocomplete';
-    key: string;
-    dataIndex?: keyof T;
-    label: string;
-    subLabel?: string;
-    sortable?: boolean;
-    width?: number | string;
-    minWidth?: number;
-    render?: (
-      value: T[keyof T] | null,
-      record: T,
-      index: number,
-    ) => ReactNode;
-    filterValue: FilterType;
-    onChange: (value: FilterType) => void;
-    option: Array<SelectValue<T[keyof T], D>>;
-  }
+      filter: 'select' | 'autocomplete';
+      key: string;
+      dataIndex?: keyof T;
+      label: string;
+      subLabel?: string;
+      sortable?: boolean;
+      width?: number | string;
+      minWidth?: number;
+      render?: (
+        value: T[keyof T] | null,
+        record: T,
+        index: number,
+      ) => ReactNode;
+      filterValue: FilterType;
+      onChange: (value: FilterType) => void;
+      option: Array<SelectValue<T[keyof T], D>>;
+    }
   | {
-    filter?: 'none';
-    key: string;
-    dataIndex?: keyof T;
-    label: string;
-    subLabel?: string;
-    sortable?: boolean;
-    width?: number | string;
-    minWidth?: number;
-    render?: (
-      value: T[keyof T] | null,
-      record: T,
-      index: number,
-    ) => ReactNode;
-    filterValue?: FilterType;
-  };
+      filter?: 'none';
+      key: string;
+      dataIndex?: keyof T;
+      label: string;
+      subLabel?: string;
+      sortable?: boolean;
+      width?: number | string;
+      minWidth?: number;
+      render?: (
+        value: T[keyof T] | null,
+        record: T,
+        index: number,
+      ) => ReactNode;
+      filterValue?: FilterType;
+    };
 
 export type TableSortingProps<T> = {
   direction: 'asc' | 'desc' | null;
@@ -72,7 +72,7 @@ export type TableFilterProps<T> = {
   [key in keyof T]?: string | SelectValue<T[keyof T]> | null;
 };
 
-interface TableProps<T> {
+export interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
   stickyHeader?: boolean;
@@ -90,8 +90,6 @@ interface TableProps<T> {
 }
 
 /**
- * @component Table
- *
  * A dynamic and customizable table component for rendering tabular data with features such as sorting, filtering, row selection, and responsive design.
  *
  * @template T - Generic type `T` represents the structure of the data rows.
@@ -110,46 +108,6 @@ interface TableProps<T> {
  * @property {'default' | 'large'} [size='default'] - Determines the size of the table cells and typography.
  * @property {'top' | 'center' | 'bottom'} [verticalAlign] - Controls the vertical alignment of cell content. Defaults to `top`.
  *
- * @example Basic Usage:
- * ```tsx
- * import React, { useState } from 'react';
- * import Table from './Table';
- *
- * type DataRow = { id: number; name: string; age: number; status: string };
- *
- * const data: DataRow[] = [
- *   { id: 1, name: 'Alice', age: 30, status: 'Active' },
- *   { id: 2, name: 'Bob', age: 25, status: 'Inactive' },
- *   { id: 3, name: 'Charlie', age: 35, status: 'Active' },
- * ];
- *
- * const columns = [
- *   { key: 'name', label: 'Name', sortable: true },
- *   { key: 'age', label: 'Age', sortable: true },
- *   { key: 'status', label: 'Status', filter: 'select', option: [{ label: 'Active', value: 'Active' }, { label: 'Inactive', value: 'Inactive' }] },
- * ];
- *
- * const App = () => {
- *   const [sorting, setSorting] = useState(null);
- *   const [selectedRows, setSelectedRows] = useState<number[]>([]);
- *
- *   return (
- *     <Table
- *       columns={columns}
- *       data={data}
- *       sorting={sorting}
- *       onSort={setSorting}
- *       showSelected
- *       selectedRows={selectedRows}
- *       onRowSelect={(row, isSelected, newSelectedRows) =>
- *         setSelectedRows(newSelectedRows)
- *       }
- *     />
- *   );
- * };
- *
- * export default App;
- * ```
  *
  */
 
@@ -279,18 +237,20 @@ const Table = <T extends { [key: string]: any }>({
                         {col.sortable && (
                           <div className="flex flex-col gap-0.5">
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${
+                                col.key === sortConfig.key &&
                                 sortConfig.direction === 'asc'
-                                ? 'border-primary-main'
-                                : 'border-neutral-60'
-                                }`}
+                                  ? 'border-primary-main'
+                                  : 'border-neutral-60'
+                              }`}
                             />
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${
+                                col.key === sortConfig.key &&
                                 sortConfig.direction === 'desc'
-                                ? 'border-primary-main'
-                                : 'border-neutral-60'
-                                }`}
+                                  ? 'border-primary-main'
+                                  : 'border-neutral-60'
+                              }`}
                             />
                           </div>
                         )}
@@ -318,18 +278,18 @@ const Table = <T extends { [key: string]: any }>({
                     )}
                     {(col.filter === 'select' ||
                       col.filter === 'autocomplete') && (
-                        <FilterSelect
-                          type={col.filter}
-                          label={col.label}
-                          value={
-                            col.filterValue as SelectValue<T[keyof T]> | null
-                          }
-                          option={col.option || []}
-                          onChange={(value) =>
-                            col.onChange?.(value as SelectValue<T[keyof T]>)
-                          }
-                        />
-                      )}
+                      <FilterSelect
+                        type={col.filter}
+                        label={col.label}
+                        value={
+                          col.filterValue as SelectValue<T[keyof T]> | null
+                        }
+                        option={col.option || []}
+                        onChange={(value) =>
+                          col.onChange?.(value as SelectValue<T[keyof T]>)
+                        }
+                      />
+                    )}
                   </div>
                 </th>
               ))}

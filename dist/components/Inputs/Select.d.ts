@@ -8,8 +8,9 @@ export interface SelectRef<T, D = undefined> {
     element: HTMLDivElement | null;
     value: SelectValue<T, D> | null;
     focus: () => void;
+    reset: () => void;
 }
-interface SelectProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
+export interface SelectProps<T, D = undefined> extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size'> {
     value?: SelectValue<T, D> | null;
     defaultValue?: SelectValue<T, D> | null;
     label?: string;

@@ -1,1 +1,0 @@
-export { IconProps } from './icon';

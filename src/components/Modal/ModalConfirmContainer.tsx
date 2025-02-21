@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, ReactNode, useEffect } from 'react';
+import React, { JSX, KeyboardEvent, ReactNode, useEffect } from 'react';
 import cx from 'classnames';
 import Button, { ButtonColor } from '../Inputs/Button';
 
@@ -15,12 +15,12 @@ export interface ModalProps {
   cancelText?: string;
   cancelButtonColor?: ButtonColor;
 
-  action?: ReactNode;
   onConfirm?: () => Promise<void> | void;
   confirmLoading?: boolean;
   confirmDisabled?: boolean;
   confirmText?: string;
   confirmButtonColor?: ButtonColor;
+  customAction?: Array<JSX.Element>;
 }
 
 /**
@@ -76,12 +76,12 @@ const ModalConfirmContainer = ({
   cancelText = 'Cancel',
   cancelButtonColor = 'primary',
 
-  action,
   onConfirm,
   confirmLoading = false,
   confirmDisabled = false,
   confirmText = 'Confirm',
   confirmButtonColor = 'primary',
+  customAction,
 }: ModalProps) => {
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape' && onClose) {
@@ -129,7 +129,6 @@ const ModalConfirmContainer = ({
       ) : (
         <div className="fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" />
       )}
-
       <div
         className={cx(
           'border border-neutral-40 rounded-xl drop-shadow-sm bg-neutral-10 m-8 flex flex-col max-h-[90vh]',
@@ -177,7 +176,7 @@ const ModalConfirmContainer = ({
               {confirmText}
             </Button>
           )}
-          {action}
+          {customAction && customAction.map((action) => action)}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-interface TagProps {
+export interface TagProps {
     className?: string;
     children: string;
     color: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 import { ButtonColor } from '../Inputs/Button';
 export interface ModalProps {
     open: boolean;
@@ -11,12 +11,12 @@ export interface ModalProps {
     onClose?: () => void;
     cancelText?: string;
     cancelButtonColor?: ButtonColor;
-    action?: ReactNode;
     onConfirm?: () => Promise<void> | void;
     confirmLoading?: boolean;
     confirmDisabled?: boolean;
     confirmText?: string;
     confirmButtonColor?: ButtonColor;
+    customAction?: Array<JSX.Element>;
 }
 /**
  * ModalConfirmContainer Component
@@ -57,5 +57,5 @@ export interface ModalProps {
  *
  * @returns {JSX.Element|null} The modal component or null if `open` is false.
  */
-declare const ModalConfirmContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, action, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, }: ModalProps) => React.JSX.Element | null;
+declare const ModalConfirmContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => JSX.Element | null;
 export default ModalConfirmContainer;

@@ -1,5 +1,5 @@
 import React from 'react';
-interface StepProps {
+export interface StepProps {
     active: number;
     items: Array<{
         title: string;

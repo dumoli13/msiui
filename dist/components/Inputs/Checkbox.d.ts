@@ -4,7 +4,7 @@ export interface CheckboxRef {
     value: boolean;
     focus: () => void;
 }
-interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
     label?: string;
     labelPosition?: 'top' | 'left';
     checked?: boolean;
