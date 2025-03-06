@@ -1,7 +1,7 @@
 {
-  "name": "mis-design",
+  "name": "dumoli-ui",
   "license": "MIT",
-  "version": "0.0.26",
+  "version": "0.0.24",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/es/index.js",
