@@ -15,12 +15,8 @@ export interface AccordionProps {
     className?: string;
 }
 /**
- * Accordion Component
  *
  * This component renders a collapsible accordion interface. You can configure the accordion to allow single or multiple panels to be open simultaneously and control the collapsible behavior via props.
- *
- * For full design specifications, visit:
- * [Figma Documentation](https://www.figma.com/design/JJLvT4QpNhnT2InWV5boVj/QCIS-for-SME---Website?node-id=424-21719&node-type=frame&t=xEPdjGtNP9PPWmjd-0)
  *
  * @interface AccordionItem
  * @property {string | number} key - A unique identifier for the accordion item.
@@ -36,23 +32,6 @@ export interface AccordionProps {
  * @property {Array<string | number>} [defaultActiveKey=[]] - The keys of the panels that should be open by default on initial render.
  * @property {Array<string | number>} [activeKey] - Keys of the currently active panels, for external control.
  * @property {(key: Array<string | number>) => void} [onChangeActiveKey] - Callback fired with the new active panel keys when the panel changes.
- *
- * Example usage:
- *
- * ```tsx
- * const items = [
- *   { key: '1', title: 'Panel 1', content: 'Content for panel 1' },
- *   { key: '2', title: 'Panel 2', content: 'Content for panel 2' },
- * ];
- *
- * <Accordion
- *   items={items}
- *   collapsible="header"
- *   singleCollapse
- *   defaultActiveKey={['1']}
- *   onChangeActiveKey={(keys) => console.log(keys)}
- * />
- * ```
  */
 declare const Accordion: ({ items, collapsible, singleCollapse, defaultActiveKey, activeKey, onChangeActiveKey, size, className, }: AccordionProps) => React.JSX.Element;
 export default Accordion;

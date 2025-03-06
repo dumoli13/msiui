@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
-import { ChevronDown } from 'react-feather';
+import Icon from '../Icon';
 /**
- * Accordion Component
  *
  * This component renders a collapsible accordion interface. You can configure the accordion to allow single or multiple panels to be open simultaneously and control the collapsible behavior via props.
- *
- * For full design specifications, visit:
- * [Figma Documentation](https://www.figma.com/design/JJLvT4QpNhnT2InWV5boVj/QCIS-for-SME---Website?node-id=424-21719&node-type=frame&t=xEPdjGtNP9PPWmjd-0)
  *
  * @interface AccordionItem
  * @property {string | number} key - A unique identifier for the accordion item.
@@ -23,23 +19,6 @@ import { ChevronDown } from 'react-feather';
  * @property {Array<string | number>} [defaultActiveKey=[]] - The keys of the panels that should be open by default on initial render.
  * @property {Array<string | number>} [activeKey] - Keys of the currently active panels, for external control.
  * @property {(key: Array<string | number>) => void} [onChangeActiveKey] - Callback fired with the new active panel keys when the panel changes.
- *
- * Example usage:
- *
- * ```tsx
- * const items = [
- *   { key: '1', title: 'Panel 1', content: 'Content for panel 1' },
- *   { key: '2', title: 'Panel 2', content: 'Content for panel 2' },
- * ];
- *
- * <Accordion
- *   items={items}
- *   collapsible="header"
- *   singleCollapse
- *   defaultActiveKey={['1']}
- *   onChangeActiveKey={(keys) => console.log(keys)}
- * />
- * ```
  */
 const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaultActiveKey = [], activeKey, onChangeActiveKey, size = 'default', className, }) => {
     // Validation: Prevent using both `defaultActiveKey` and `activeKey`
@@ -97,7 +76,7 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
                 }) },
                 React.createElement("div", { className: cx('w-full text-24px font-medium text-neutral-100', { 'py-4': size === 'default', 'py-8': size === 'large' }) }, item.title),
                 React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300', { 'rotate-180': isOpen }) },
-                    React.createElement(ChevronDown, { height: 24, width: 24 })))) : (React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('flex justify-between items-center text-24px', {
+                    React.createElement(Icon, { name: "chevron-down", size: 24 })))) : (React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('flex justify-between items-center text-24px', {
                     'px-6': size === 'default',
                     'px-10': size === 'large',
                 }) },
@@ -106,7 +85,7 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
                         'py-8 ': size === 'large',
                     }) }, item.title),
                 React.createElement("div", { className: cx('text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300', { 'rotate-180': isOpen }) },
-                    React.createElement(ChevronDown, { height: 24, width: 24 })))),
+                    React.createElement(Icon, { name: "chevron-down", size: 24 })))),
             React.createElement("div", { ref: (el) => {
                     refs.current[index] = el;
                 }, style: { maxHeight: isOpen ? `${height[index]}px` : '0px' }, className: "overflow-hidden transition-all duration-300 " },

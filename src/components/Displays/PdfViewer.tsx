@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  Maximize2,
-  Minimize2,
-  MinusCircle,
-  PlusCircle,
-  X,
-} from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
 import {
   DocumentCallback,
@@ -15,6 +8,8 @@ import {
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useDebouncedCallback } from 'use-debounce';
+import { COLORS } from '../../libs';
+import Icon from '../Icon';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
@@ -26,7 +21,6 @@ export interface PdfViewerProps {
 }
 
 /**
- * PDFViewer Component
  *
  * This component provides a full-screen modal viewer for displaying PDF documents.
  * It allows users to zoom in and out of the document, navigate between pages, and resize the viewer to fit the screen.
@@ -37,25 +31,8 @@ export interface PdfViewerProps {
  * @property {boolean} open - A flag that determines if the viewer modal is open or closed.
  * @property {function} onClose - A function to close the viewer modal.
  * @property {string | null} url - The URL or path to the PDF document to be viewed.
- *
- * @example Basic Usage:
- * ```tsx
- * import PDFViewer from './PDFViewer';
- *
- * const MyComponent = () => {
- *   const [open, setOpen] = useState(false);
- *   const toggleViewer = () => setOpen(!open);
- *
- *   return (
- *     <div>
- *       <button onClick={toggleViewer}>Open PDF Viewer</button>
- *       <PDFViewer open={open} onClose={toggleViewer} url="path/to/document.pdf" />
- *     </div>
- *   );
- * };
- * ```
- *
  * @returns {JSX.Element | null} A modal viewer for the PDF document, or `null` if `open` is `false`.
+ *
  */
 
 const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
@@ -202,7 +179,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
           onClick={onClose}
           className="absolute top-8 right-8 text-white bg-neutral-100/70 hover:bg-opacity-20 z-50 rounded-full cursor-pointer h-[56px] w-[56px] flex justify-center items-center"
         >
-          <X className="text-neutral-10" />
+          <Icon name="x-mark" size={16} color={COLORS.neutral[10]} />
         </div>
         <div
           className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2 overflow-auto max-w-full"
@@ -252,7 +229,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
               role="button"
               aria-label="zoom out"
             >
-              <MinusCircle />
+              <Icon name="minus-circle" />
             </div>
             <div className="bg-neutral-90 rounded-full py-1 px-3">
               <label htmlFor="scale">
@@ -265,14 +242,14 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
                 />
                 %
               </label>
-            </div>{' '}
+            </div>
             <div
               className="cursor-pointer text-opacity-60 hover:text-opacity-100 rounded-full text-white"
               onClick={() => handleZoom(true)}
               role="button"
               aria-label="zoom in"
             >
-              <PlusCircle />
+              <Icon name="plus-circle" size={16} />
             </div>
           </div>
 
@@ -284,7 +261,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
               role="button"
               aria-label="zoom in"
             >
-              {showFullSize ? <Minimize2 /> : <Maximize2 />}
+              {<Icon name={showFullSize ? 'minimize2' : 'maximize2'} />}
             </div>
           </div>
         </div>

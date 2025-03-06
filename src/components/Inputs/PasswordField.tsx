@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, Eye, EyeOff } from 'react-feather';
+import Icon from '../Icon';
 
 export interface PasswordFieldRef {
   element: HTMLInputElement | null;
@@ -42,8 +42,6 @@ export interface PasswordFieldProps
 }
 
 /**
- * PasswordField Component
- *
  * A customizable password input field that allows users to enter a password with the option to show/hide it.
  * It supports various features including label positioning, password visibility toggling, loading state, and validation feedback.
  *
@@ -65,18 +63,6 @@ export interface PasswordFieldProps
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <PasswordField
- *   value={password}
- *   onChange={handlePasswordChange}
- *   label="Password"
- *   placeholder="Enter your password"
- *   error="Password is too weak"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered PasswordField component.
  */
 
 const PasswordField = ({
@@ -201,15 +187,11 @@ const PasswordField = ({
           role="button"
           onClick={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? (
-            <Eye width={16} height={16} strokeWidth={2} />
-          ) : (
-            <EyeOff width={16} height={16} strokeWidth={2} />
-          )}
+          <Icon name={showPassword ? 'eye' : 'eye-slash'} size={16} />
         </div>
         {successProp && (
           <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-            <Check width={10} height={10} strokeWidth={3} />
+            <Icon name="check" size={10} strokeWidth={3} />
           </div>
         )}
         {isError && (

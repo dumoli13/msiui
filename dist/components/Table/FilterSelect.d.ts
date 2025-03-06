@@ -21,38 +21,6 @@ interface FilterSearchProps<T, D> {
  * @property {string} [label] - A label for the input, displayed in the placeholder text.
  * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function triggered whenever the selected value changes. Passes the new value or `null` if cleared.
  *
- * @example Basic Usage:
- *
- * ```tsx
- * import React, { useState } from 'react';
- * import FilterSelect from './FilterSelect';
- *
- * const options = [
- *   { id: 1, label: 'Option 1' },
- *   { id: 2, label: 'Option 2' },
- *   { id: 3, label: 'Option 3' },
- * ];
- *
- * const App = () => {
- *   const [selected, setSelected] = useState(null);
- *
- *   return (
- *     <div>
- *       <FilterSelect
- *         type="select"
- *         value={selected}
- *         option={options}
- *         label="Example"
- *         onChange={(value) => setSelected(value)}
- *       />
- *       <p>Selected: {selected?.label || 'None'}</p>
- *     </div>
- *   );
- * };
- *
- * export default App;
- * ```
- *
  */
 declare const FilterSelect: <T extends {
     [key: string]: any;

@@ -27,7 +27,6 @@ export interface AutoCompleteProps<T, D = undefined> extends Omit<InputHTMLAttri
     width?: number;
 }
 /**
- * AutoComplete Component
  *
  * A customizable input component that allows users to search through a list of options and select one.
  * It supports both controlled and uncontrolled states, offers an interactive dropdown with filtering options,
@@ -52,26 +51,6 @@ export interface AutoCompleteProps<T, D = undefined> extends Omit<InputHTMLAttri
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @returns {JSX.Element} The AutoComplete component with search, selection, and dropdown functionality.
- *
- * @example Basic Usage:
- * ```tsx
- * const options = [
- *   { label: 'Option 1', value: 1 },
- *   { label: 'Option 2', value: 2 },
- *   { label: 'Option 3', value: 3 },
- * ];
- *
- * const [selectedValue, setSelectedValue] = useState<SelectValue<number, undefined> | null>(null);
- *
- * <AutoComplete
- *   label="Select Option"
- *   options={options}
- *   value={selectedValue}
- *   onChange={(value) => setSelectedValue(value)}
- *   placeholder="Search for an option"
- * />
- * ```
  *
  */
 declare const AutoComplete: <T, D = undefined>({ id, value: valueProp, defaultValue, label, labelPosition, placeholder, options, onChange, className, helperText, disabled, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, width, ...props }: AutoCompleteProps<T, D>) => React.JSX.Element;

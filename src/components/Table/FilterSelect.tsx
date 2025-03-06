@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import cx from 'classnames';
-import { ChevronDown } from 'react-feather';
 import Popper from '../Displays/Popper';
+import Icon from '../Icon';
 import AutoComplete from '../Inputs/AutoComplete';
 import IconButton from '../Inputs/IconButton';
 import Select, { SelectRef, SelectValue } from '../Inputs/Select';
@@ -27,38 +27,6 @@ interface FilterSearchProps<T, D> {
  * @property {Array<SelectValue<T, D>>} option - The list of options available for selection. Each option is represented as a `SelectValue` object.
  * @property {string} [label] - A label for the input, displayed in the placeholder text.
  * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function triggered whenever the selected value changes. Passes the new value or `null` if cleared.
- *
- * @example Basic Usage:
- *
- * ```tsx
- * import React, { useState } from 'react';
- * import FilterSelect from './FilterSelect';
- *
- * const options = [
- *   { id: 1, label: 'Option 1' },
- *   { id: 2, label: 'Option 2' },
- *   { id: 3, label: 'Option 3' },
- * ];
- *
- * const App = () => {
- *   const [selected, setSelected] = useState(null);
- *
- *   return (
- *     <div>
- *       <FilterSelect
- *         type="select"
- *         value={selected}
- *         option={options}
- *         label="Example"
- *         onChange={(value) => setSelected(value)}
- *       />
- *       <p>Selected: {selected?.label || 'None'}</p>
- *     </div>
- *   );
- * };
- *
- * export default App;
- * ```
  *
  */
 
@@ -109,7 +77,7 @@ const FilterSelect = <T extends { [key: string]: any }, D>({
       }
     >
       <IconButton
-        icon={<ChevronDown width={16} height={16} />}
+        icon={<Icon name="chevron-down" size={16} />}
         variant="outlined"
         className={cx({
           'border-primary-main text-primary-main bg-primary-surface': value,

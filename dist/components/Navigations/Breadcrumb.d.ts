@@ -1,4 +1,4 @@
-import React from 'react';
+import { JSX } from 'react';
 import { ReactNode } from 'react';
 export type BreadcrumbItem = {
     label: ReactNode;
@@ -17,21 +17,7 @@ export interface BreadcrumbProps {
  *
  * @property {BreadcrumbItem[]} items - Array of breadcrumb items.
  * @property {number} [maxDisplay=4] - The maximum number of breadcrumb items to display before truncation.
- * @returns {JSX.Element} A breadcrumb navigation component.
- *
- * @example Basic Usage:
- * ```tsx
- * const items = [
- *   { label: 'Home', href: '/' },
- *   { label: 'Products', href: '/products' },
- *   { label: 'Electronics', href: '/products/electronics' },
- *   { label: 'Mobile Phones', href: '/products/electronics/mobiles' },
- *   { label: 'Smartphones', href: '/products/electronics/mobiles/smartphones' },
- * ];
- *
- * <Breadcrumb items={items} maxDisplay={4} />
- * ```
  *
  */
-declare const Breadcrumb: ({ items, maxDisplay, isFormEdited, }: BreadcrumbProps) => React.JSX.Element;
+declare const Breadcrumb: ({ items, maxDisplay, isFormEdited, }: BreadcrumbProps) => JSX.Element;
 export default Breadcrumb;

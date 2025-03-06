@@ -10,7 +10,6 @@ export interface TooltipProps {
     title: string;
 }
 /**
- * Tooltip Component
  *
  * A customizable tooltip component that displays a small overlay with a message when the user hovers over a target element.
  * The tooltip can have customizable alignment, delay times, and an optional arrow indicator. The position of the tooltip
@@ -26,20 +25,6 @@ export interface TooltipProps {
  * @property {number} [mouseLeaveDelay=0] - The delay (in milliseconds) before the tooltip disappears after the mouse leaves the target element.
  * @property {string} title - The content of the tooltip, which will be displayed inside the tooltip box.
  *
- * @example Basic Usage:
- * ```tsx
- * import Tooltip from './Tooltip';
- *
- * const MyComponent = () => {
- *   return (
- *     <Tooltip title="This is a tooltip" verticalAlign="top" horizontalAlign="right">
- *       <button>Hover over me!</button>
- *     </Tooltip>
- *   );
- * };
- * ```
- *
- * @returns {JSX.Element} The Tooltip component that displays the tooltip when hovered over the child element.
  */
 declare const Tooltip: ({ children, verticalAlign, horizontalAlign, arrow, mouseEnterDelay, mouseLeaveDelay, title, }: TooltipProps) => React.JSX.Element;
 export default Tooltip;

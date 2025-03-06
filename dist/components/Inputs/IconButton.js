@@ -1,20 +1,9 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React from 'react';
 import cx from 'classnames';
-import { Loader } from 'react-feather';
 import Tooltip from '../Displays/Tooltip';
+import Icon from '../Icon';
 /**
- * IconButton Component
  *
  * The `IconButton` component is a flexible and highly customizable button component that supports various styles, colors, and states. It can display an icon, show a loading spinner, and include tooltip support.
  *
@@ -24,7 +13,6 @@ import Tooltip from '../Displays/Tooltip';
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
  * @property {IconButtonProps} props The properties for the IconButton component.
  *
- * @returns {JSX.Element} A styled button component with optional icon and loading state.
  */
 const IconButton = (_a) => {
     var { variant = 'contained', color = 'primary', className, disabled = false, loading = false, icon, size = 'default', onClick, title, titleVerticalAlign = 'bottom', titleHorizontalAlign = 'center' } = _a, props = __rest(_a, ["variant", "color", "className", "disabled", "loading", "icon", "size", "onClick", "title", "titleVerticalAlign", "titleHorizontalAlign"]);
@@ -69,7 +57,7 @@ const IconButton = (_a) => {
                     invisible: loading,
                 }) }, icon),
             loading && (React.createElement("span", { className: "absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center" },
-                React.createElement(Loader, { className: "animate-spin" }))))));
+                React.createElement(Icon, { name: "loader", size: 16, className: "animate-spin" }))))));
 };
 export default IconButton;
 //# sourceMappingURL=IconButton.js.map

@@ -25,8 +25,6 @@ export interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputEl
     width?: number;
 }
 /**
- * PasswordField Component
- *
  * A customizable password input field that allows users to enter a password with the option to show/hide it.
  * It supports various features including label positioning, password visibility toggling, loading state, and validation feedback.
  *
@@ -48,18 +46,6 @@ export interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTMLInputEl
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <PasswordField
- *   value={password}
- *   onChange={handlePasswordChange}
- *   label="Password"
- *   placeholder="Enter your password"
- *   error="Password is too weak"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered PasswordField component.
  */
 declare const PasswordField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, inputRef, size, type, error: errorProp, success: successProp, width, ...props }: PasswordFieldProps) => React.JSX.Element;
 export default PasswordField;

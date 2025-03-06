@@ -1,11 +1,11 @@
 import React, { forwardRef } from 'react';
 import cx from 'classnames';
-import COLORS from '../libs/color';
+import icon from '../assets/icon.svg';
 const Icon = forwardRef((props, ref) => {
-    const { name, color = COLORS.neutral[100], size = 24, strokeWidth = 1, className, onClick, } = props;
+    const { name, color = 'currentColor', size = 24, strokeWidth = 1, className, onClick, } = props;
     return (React.createElement("span", Object.assign({ ref: ref, "aria-label": name, className: cx({ 'cursor-pointer': !!onClick }, className) }, (onClick && { onClick, role: 'button', tabIndex: 0 })),
         React.createElement("svg", { width: size, height: size, stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round" },
-            React.createElement("use", { xlinkHref: `/icons/icon.svg#${name}` }))));
+            React.createElement("use", { xlinkHref: `${icon}#${name}` }))));
 });
 Icon.displayName = 'Icon';
 export default Icon;

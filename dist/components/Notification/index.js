@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { AlertCircle, CheckCircle, XCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import NotificationContainer from './NotificationContainer';
 let addNotificationToStack = null;
 export const useNotification = () => {
@@ -31,15 +31,6 @@ export const useNotification = () => {
  *
  * @returns {void} This hook does not return a value, but it adds a notification to the stack.
  *
- * @example Basic Usage:
- * ```tsx
- * const showNotification = useNotification();
- * showNotification({
- *   title: "Success",
- *   description: "Your changes have been saved successfully.",
- *   color: "success",
- * });
- * ```
  */
 const NotificationStack = () => {
     const [notifications, setNotifications] = useState([]);
@@ -55,19 +46,19 @@ const NotificationStack = () => {
         let icon;
         switch (notification.color) {
             case 'primary':
-                icon = (React.createElement(AlertCircle, { height: 24, width: 24, strokeWidth: 3, stroke: COLORS.primary.main }));
+                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.primary.main }));
                 break;
             case 'success':
-                icon = (React.createElement(CheckCircle, { height: 24, width: 24, strokeWidth: 3, stroke: COLORS.success.main }));
+                icon = (React.createElement(Icon, { name: "check-circle", size: 24, strokeWidth: 3, color: COLORS.success.main }));
                 break;
             case 'danger':
-                icon = (React.createElement(XCircle, { height: 24, width: 24, strokeWidth: 3, stroke: COLORS.danger.main }));
+                icon = (React.createElement(Icon, { name: "x-circle", size: 24, strokeWidth: 3, color: COLORS.danger.main }));
                 break;
             case 'warning':
-                icon = (React.createElement(AlertCircle, { height: 24, width: 24, strokeWidth: 3, stroke: COLORS.warning.main }));
+                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.warning.main }));
                 break;
             case 'info':
-                icon = (React.createElement(AlertCircle, { height: 24, width: 24, strokeWidth: 3, stroke: COLORS.info.main }));
+                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.info.main }));
                 break;
             default:
                 icon = notification.icon;

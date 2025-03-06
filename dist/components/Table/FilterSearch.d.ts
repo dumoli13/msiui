@@ -15,29 +15,6 @@ interface FilterSearchProps {
  * @property {string} [label] - A label for the search input, displayed as part of the placeholder text.
  * @property {(value: string) => void} onChange - Callback function triggered whenever the value of the search input changes.
  *
- * @example Basic Usage:
- * ```tsx
- * import React, { useState } from 'react';
- * import FilterSearch from './FilterSearch';
- *
- * const App = () => {
- *   const [searchTerm, setSearchTerm] = useState('');
- *
- *   return (
- *     <div>
- *       <FilterSearch
- *         value={searchTerm}
- *         label="Items"
- *         onChange={(value) => setSearchTerm(value)}
- *       />
- *       <p>Search Term: {searchTerm}</p>
- *     </div>
- *   );
- * };
- *
- * export default App;
- * ```
- *
  */
 declare const FilterSearch: ({ value, label, onChange }: FilterSearchProps) => React.JSX.Element;
 export default FilterSearch;

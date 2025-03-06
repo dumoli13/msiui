@@ -1,19 +1,8 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check, X } from 'react-feather';
+import Icon from '../Icon';
 /**
- * TextField Component
  *
  * A customizable input field component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to clear the input value. It can be used for both controlled and uncontrolled form inputs.
@@ -36,19 +25,6 @@ import { Check, X } from 'react-feather';
  * @property {boolean} [success] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextField
- *   label="Username"
- *   value={username}
- *   onChange={(value) => setUsername(value)}
- *   placeholder="Enter your username"
- *   size="large"
- *   success={isValidUsername}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextField component.
  */
 const TextField = (_a) => {
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', onChange, className, helperText, placeholder = '', disabled = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "width"]);
@@ -110,10 +86,10 @@ const TextField = (_a) => {
                     'py-[12.5px]': size === 'large',
                 }), disabled: disabled, "aria-label": label, ref: elementRef })),
             clearable && focused && !!value && (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color" },
-                React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))),
+                React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))),
             !!endIcon && React.createElement("div", { className: "text-neutral-70" }, endIcon),
             successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
             isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!"))),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage))));
 };

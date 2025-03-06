@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { XCircle } from 'react-feather';
 import COLORS from '../../libs/color';
+import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
  *
@@ -18,7 +18,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onCancel] - Callback function when the user cancels the action.
  *
  */
-const DangerModal = ({ icon = (React.createElement(XCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.danger.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
+const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size: 48, strokeWidth: 3, color: COLORS.danger.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);

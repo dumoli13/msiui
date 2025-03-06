@@ -1,5 +1,6 @@
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/index.ts',
@@ -17,7 +18,14 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'], // Handles CSS files
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.svg$/, // Handle SVG imports
+        type: 'asset/resource',
+        generator: {
+          filename: 'icons/[name][ext]', // Store in dist/icons/
+        },
       },
     ],
   },
@@ -26,7 +34,14 @@ module.exports = {
     plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
   },
   externals: {
-    react: 'react', // Peer dependency - prevent React from being bundled
+    react: 'react',
     'react-dom': 'react-dom',
   },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, 'public'), to: 'dist/public' },
+      ],
+    }),
+  ],
 };

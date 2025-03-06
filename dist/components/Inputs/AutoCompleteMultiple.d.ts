@@ -28,7 +28,6 @@ export interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<InputH
     width?: number;
 }
 /**
- * AutoCompleteMultiple Component
  *
  * A multi-select input component that allows users to select multiple values from a list of options with autocomplete functionality.
  * It supports both controlled and uncontrolled states, displaying selected options as tags, and allows filtering options as users type.
@@ -53,20 +52,6 @@ export interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<InputH
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {boolean} [isClearable=false] - Whether the input has a clear button to remove selected values.
  * @property {number} [width] - Optional custom width for the input field.
- *
- * @returns {JSX.Element} The rendered AutoCompleteMultiple component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedValues, setSelectedValues] = useState([]);
- *
- * <AutoCompleteMultiple
- *   label="Select Options"
- *   options={options}
- *   value={selectedValues}
- *   onChange={setSelectedValues}
- * />
- * ```
  *
  */
 declare const AutoCompleteMultiple: <T, D = undefined>({ id, value: valueProp, defaultValue, label, labelPosition, placeholder, options, onChange, className, helperText, disabled, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, isClearable, width, ...props }: AutoCompleteMultipleProps<T, D>) => React.JSX.Element;

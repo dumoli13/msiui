@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import { SelectValue } from './Select';
 
@@ -49,7 +49,6 @@ export interface AutoCompleteProps<T, D = undefined>
 }
 
 /**
- * AutoComplete Component
  *
  * A customizable input component that allows users to search through a list of options and select one.
  * It supports both controlled and uncontrolled states, offers an interactive dropdown with filtering options,
@@ -74,26 +73,6 @@ export interface AutoCompleteProps<T, D = undefined>
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @returns {JSX.Element} The AutoComplete component with search, selection, and dropdown functionality.
- *
- * @example Basic Usage:
- * ```tsx
- * const options = [
- *   { label: 'Option 1', value: 1 },
- *   { label: 'Option 2', value: 2 },
- *   { label: 'Option 3', value: 3 },
- * ];
- *
- * const [selectedValue, setSelectedValue] = useState<SelectValue<number, undefined> | null>(null);
- *
- * <AutoComplete
- *   label="Select Option"
- *   options={options}
- *   value={selectedValue}
- *   onChange={(value) => setSelectedValue(value)}
- *   placeholder="Search for an option"
- * />
- * ```
  *
  */
 
@@ -350,7 +329,7 @@ const AutoComplete = <T, D = undefined>({
               onMouseDown={handleClearValue}
               className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
             >
-              <X width={16} height={16} strokeWidth={2} />
+              <Icon name="x-mark" size={16} strokeWidth={2} />
             </div>
           )}
           <div
@@ -363,16 +342,16 @@ const AutoComplete = <T, D = undefined>({
               'rotate-180': isDropdownOpen,
             })}
           >
-            <ChevronDown width={16} height={16} strokeWidth={2} />
+            <Icon name="chevron-down" size={16} strokeWidth={2} />
           </div>
           {loading && (
             <div className="text-neutral-70">
-              <Loader width={16} height={16} className="animate-spin" />
+              <Icon name="loader" size={16} className="animate-spin" />
             </div>
           )}
           {successProp && (
             <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-              <Check width={10} height={10} strokeWidth={3} />
+              <Icon name="check" size={10} strokeWidth={3} />
             </div>
           )}
           {isError && (

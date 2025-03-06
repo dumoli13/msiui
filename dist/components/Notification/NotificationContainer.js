@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X } from 'react-feather';
 import COLORS from '../../libs/color';
+import Icon from '../Icon';
 /**
  *
  * A component that displays an individual notification with a title, description, icon, and a progress bar indicating the remaining time.
@@ -79,7 +79,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
             React.createElement("div", null,
                 React.createElement("div", { className: "text-24px mb-2 break-words" }, title),
                 React.createElement("p", { className: "text-20px break-words" }, description)),
-            React.createElement(X, { width: 22, height: 22, onClick: handleClose, className: "shrink-0 cursor-pointer text-neutral-60" }),
+            React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2, color: COLORS.neutral[60], className: "shrink-0", onClick: handleClose }),
             React.createElement("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30" },
                 React.createElement("div", { className: "h-full transition-all ease-linear bg-primary-main", style: {
                         width: `${progressWidth}%`,

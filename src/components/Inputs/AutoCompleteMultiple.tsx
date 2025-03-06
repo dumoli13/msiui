@@ -10,8 +10,9 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import { COLORS } from '../../libs';
 import Tag from '../Displays/Tag';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import { SelectValue } from './Select';
 
@@ -51,7 +52,6 @@ export interface AutoCompleteMultipleProps<T, D = undefined>
 }
 
 /**
- * AutoCompleteMultiple Component
  *
  * A multi-select input component that allows users to select multiple values from a list of options with autocomplete functionality.
  * It supports both controlled and uncontrolled states, displaying selected options as tags, and allows filtering options as users type.
@@ -76,20 +76,6 @@ export interface AutoCompleteMultipleProps<T, D = undefined>
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {boolean} [isClearable=false] - Whether the input has a clear button to remove selected values.
  * @property {number} [width] - Optional custom width for the input field.
- *
- * @returns {JSX.Element} The rendered AutoCompleteMultiple component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedValues, setSelectedValues] = useState([]);
- *
- * <AutoCompleteMultiple
- *   label="Select Options"
- *   options={options}
- *   value={selectedValues}
- *   onChange={setSelectedValues}
- * />
- * ```
  *
  */
 
@@ -256,11 +242,11 @@ const AutoCompleteMultiple = <T, D = undefined>({
             )}
           >
             <span>{option.label}</span>
-            <Check
-              width={10}
-              height={10}
+            <Icon
+              name="check"
+              size={10}
               strokeWidth={3}
-              className="text-primary-main"
+              color={COLORS.primary.main}
             />
           </div>
         ) : (
@@ -379,7 +365,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
               onMouseDown={handleClearValue}
               className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
             >
-              <X width={16} height={16} strokeWidth={2} />
+              <Icon name="x-mark" size={16} strokeWidth={2} />
             </div>
           )}
           <div
@@ -392,16 +378,16 @@ const AutoCompleteMultiple = <T, D = undefined>({
               'rotate-180': isDropdownOpen,
             })}
           >
-            <ChevronDown width={16} height={16} strokeWidth={2} />
+            <Icon name="chevron-down" size={16} strokeWidth={2} />
           </div>
           {loading && (
             <div className="text-neutral-70">
-              <Loader width={16} height={16} className="animate-spin" />
+              <Icon name="loader" size={16} className="animate-spin" />
             </div>
           )}
           {successProp && (
             <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-              <Check width={10} height={10} strokeWidth={3} />
+              <Icon name="check" size={10} strokeWidth={3} />
             </div>
           )}
           {isError && (

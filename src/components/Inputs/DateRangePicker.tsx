@@ -11,15 +11,6 @@ import React, {
 } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import {
-  Calendar,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  X,
-} from 'react-feather';
 import { MONTH_LIST } from '../../const/datePicker';
 import {
   SUNDAY_DATE,
@@ -27,9 +18,9 @@ import {
   getYearRange,
   isDateABeforeDateB,
   isDateBetween,
-  isDateTimeABeforeOrEqualToDateB,
   isToday,
 } from '../../libs';
+import Icon from '../Icon';
 import Button from './Button';
 import InputDropdown from './InputDropdown';
 
@@ -398,7 +389,7 @@ const DateRangePicker = ({
                 onMouseDown={handlePrevYear}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronsLeft width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-double-left" size={20} strokeWidth={2} />
               </div>
               <div
                 role="button"
@@ -406,7 +397,7 @@ const DateRangePicker = ({
                 onMouseDown={handlePrevMonth}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronLeft width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-left" size={20} strokeWidth={2} />
               </div>
             </div>
             <div className="flex items-center gap-4 text-16px font-medium">
@@ -432,7 +423,7 @@ const DateRangePicker = ({
                 onMouseDown={handleNextMonth}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronRight width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-right" size={20} strokeWidth={2} />
               </div>
               <div
                 role="button"
@@ -440,7 +431,7 @@ const DateRangePicker = ({
                 onMouseDown={handleNextYear}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronsRight width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-double-right" size={20} strokeWidth={2} />
               </div>
             </div>
           </div>
@@ -544,7 +535,7 @@ const DateRangePicker = ({
               onMouseDown={handlePrevYear}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsLeft width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
             </div>
             <div
               role="button"
@@ -559,7 +550,7 @@ const DateRangePicker = ({
               onMouseDown={handleNextYear}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsRight width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
             </div>
           </div>
           <div className="grid grid-cols-3 p-2 border-t border-neutral-40 gap-y-1 text-14px">
@@ -617,7 +608,7 @@ const DateRangePicker = ({
               onMouseDown={handlePrev12Year}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsLeft width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
             </div>
             <div className="text-16px font-medium">
               {`${yearRange[0]} - ${yearRange[yearRange.length - 1]}`}
@@ -628,7 +619,7 @@ const DateRangePicker = ({
               onMouseDown={handleNext12Year}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsRight width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
             </div>
           </div>
           <div className="grid grid-cols-3 p-2 border-t border-neutral-40 gap-y-1 text-14px">
@@ -753,7 +744,7 @@ const DateRangePicker = ({
               onMouseDown={handleClearValue}
               className="rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color"
             >
-              <X width={16} height={16} strokeWidth={2} />
+              <Icon name="x-mark" size={16} strokeWidth={2} />
             </div>
           ) : (
             <div
@@ -762,12 +753,12 @@ const DateRangePicker = ({
               onClick={handleDropdown}
               className="rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color"
             >
-              <Calendar width={16} height={16} />
+              <Icon name="calendar" size={16} />
             </div>
           )}
           {successProp && (
             <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-              <Check width={10} height={10} strokeWidth={3} />
+              <Icon name="check" size={10} strokeWidth={3} />
             </div>
           )}
           {isError && (

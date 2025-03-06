@@ -100,7 +100,8 @@ const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedR
                                     col.filter === 'autocomplete') && (React.createElement(FilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })))))))),
                 React.createElement("tbody", null, data.map((row, rowIndex) => {
                     const isDanger = showDanger && showDanger(row);
-                    const isSelected = showSelected && selectedRows.includes(rowIndex);
+                    const isSelected = showSelected &&
+                        selectedRows.some((index) => index === rowIndex);
                     return (React.createElement("tr", { key: rowIndex, className: cx('group border-b border-neutral-30 last:border-none', {
                             'text-18px': size === 'large',
                             'text-14px': size === 'default',

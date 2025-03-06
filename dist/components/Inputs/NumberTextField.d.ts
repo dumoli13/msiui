@@ -52,18 +52,6 @@ export interface NumberTextFieldProps extends Omit<InputHTMLAttributes<HTMLInput
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <NumberTextField
- *   value={amount}
- *   onChange={handleAmountChange}
- *   label="Amount"
- *   placeholder="Enter the amount"
- *   error="Invalid amount"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered NumberTextField component.
  */
 declare const NumberTextField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, clearable, inputRef, size, error: errorProp, success: successProp, width, ...props }: NumberTextFieldProps) => React.JSX.Element;
 export default NumberTextField;

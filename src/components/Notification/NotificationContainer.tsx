@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { X } from 'react-feather';
 import COLORS from '../../libs/color';
+import Icon from '../Icon';
 
 export interface NotificationContainerProps {
   title: string;
@@ -115,11 +115,13 @@ const NotificationContainer = ({
           <div className="text-24px mb-2 break-words">{title}</div>
           <p className="text-20px break-words">{description}</p>
         </div>
-        <X
-          width={22}
-          height={22}
+        <Icon
+          name="x-mark"
+          size={16}
+          strokeWidth={2}
+          color={COLORS.neutral[60]}
+          className="shrink-0"
           onClick={handleClose}
-          className="shrink-0 cursor-pointer text-neutral-60"
         />
         <div className="absolute bottom-0 left-0 w-full h-1 bg-neutral-30">
           <div

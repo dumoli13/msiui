@@ -1,20 +1,9 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 /**
- * AutoComplete Component
  *
  * A customizable input component that allows users to search through a list of options and select one.
  * It supports both controlled and uncontrolled states, offers an interactive dropdown with filtering options,
@@ -39,26 +28,6 @@ import InputDropdown from './InputDropdown';
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @returns {JSX.Element} The AutoComplete component with search, selection, and dropdown functionality.
- *
- * @example Basic Usage:
- * ```tsx
- * const options = [
- *   { label: 'Option 1', value: 1 },
- *   { label: 'Option 2', value: 2 },
- *   { label: 'Option 3', value: 3 },
- * ];
- *
- * const [selectedValue, setSelectedValue] = useState<SelectValue<number, undefined> | null>(null);
- *
- * <AutoComplete
- *   label="Select Option"
- *   options={options}
- *   value={selectedValue}
- *   onChange={(value) => setSelectedValue(value)}
- *   placeholder="Search for an option"
- * />
- * ```
  *
  */
 const AutoComplete = (_a) => {
@@ -198,17 +167,17 @@ const AutoComplete = (_a) => {
                 }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef })),
             React.createElement("div", { className: "flex gap-0.5 items-center" },
                 focused && !!value && (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color" },
-                    React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))),
+                    React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))),
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 cursor-pointer transition-color': !disabled,
                         'rotate-180': isDropdownOpen,
                     }) },
-                    React.createElement(ChevronDown, { width: 16, height: 16, strokeWidth: 2 })),
+                    React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70" },
-                    React.createElement(Loader, { width: 16, height: 16, className: "animate-spin" }))),
+                    React.createElement(Icon, { name: "loader", size: 16, className: "animate-spin" }))),
                 successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                    React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                    React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
                 isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!")),
                 endIcon && React.createElement("div", { className: "text-neutral-70" }, endIcon))),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage)),

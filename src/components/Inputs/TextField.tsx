@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, X } from 'react-feather';
+import Icon from '../Icon';
 
 export interface TextfieldRef {
   element: HTMLInputElement | null;
@@ -40,7 +40,6 @@ export interface TextFieldProps
 }
 
 /**
- * TextField Component
  *
  * A customizable input field component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to clear the input value. It can be used for both controlled and uncontrolled form inputs.
@@ -63,19 +62,6 @@ export interface TextFieldProps
  * @property {boolean} [success] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextField
- *   label="Username"
- *   value={username}
- *   onChange={(value) => setUsername(value)}
- *   placeholder="Enter your username"
- *   size="large"
- *   success={isValidUsername}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextField component.
  */
 
 const TextField = ({
@@ -210,13 +196,13 @@ const TextField = ({
             onMouseDown={handleClearValue}
             className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
           >
-            <X width={16} height={16} strokeWidth={2} />
+            <Icon name="x-mark" size={16} strokeWidth={2} />
           </div>
         )}
         {!!endIcon && <div className="text-neutral-70">{endIcon}</div>}
         {successProp && (
           <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-            <Check width={10} height={10} strokeWidth={3} />
+            <Icon name="check" size={10} strokeWidth={3} />
           </div>
         )}
         {isError && (

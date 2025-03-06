@@ -1,7 +1,7 @@
 import React, { JSX, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
@@ -21,11 +21,11 @@ import ModalConfirmContainer from './ModalConfirmContainer';
 
 const InfoModal = ({
   icon = (
-    <AlertCircle
-      height={48}
-      width={48}
+    <Icon
+      name="alert-circle"
+      size={48}
       strokeWidth={3}
-      stroke={COLORS.info.main}
+      color={COLORS.info.main}
     />
   ),
   title,

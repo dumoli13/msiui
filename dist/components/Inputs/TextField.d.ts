@@ -25,7 +25,6 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
     width?: number;
 }
 /**
- * TextField Component
  *
  * A customizable input field component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to clear the input value. It can be used for both controlled and uncontrolled form inputs.
@@ -48,19 +47,6 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
  * @property {boolean} [success] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextField
- *   label="Username"
- *   value={username}
- *   onChange={(value) => setUsername(value)}
- *   placeholder="Enter your username"
- *   size="large"
- *   success={isValidUsername}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextField component.
  */
 declare const TextField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, inputRef, size, clearable, error: errorProp, success: successProp, width, ...props }: TextFieldProps) => React.JSX.Element;
 export default TextField;

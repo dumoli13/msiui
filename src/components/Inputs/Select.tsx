@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 
 export type SelectValue<T, D = undefined> = {
@@ -301,7 +301,7 @@ const Select = <T, D = undefined>({
               onMouseDown={handleClearValue}
               className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
             >
-              <X width={16} height={16} strokeWidth={2} />
+              <Icon name="x-mark" size={16} strokeWidth={2} />
             </div>
           )}
           <div
@@ -314,16 +314,16 @@ const Select = <T, D = undefined>({
               'rotate-180': isDropdownOpen,
             })}
           >
-            <ChevronDown width={16} height={16} strokeWidth={2} />
+            <Icon name="chevron-down" size={16} strokeWidth={2} />
           </div>
           {loading && (
             <div className="text-neutral-70">
-              <Loader width={16} height={16} className="animate-spin" />
+              <Icon name="loader" size={16} className="animate-spin" />
             </div>
           )}
           {successProp && (
             <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-              <Check width={10} height={10} strokeWidth={3} />
+              <Icon name="check" size={10} strokeWidth={3} />
             </div>
           )}
           {isError && (

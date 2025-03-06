@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { AlertCircle, CheckCircle, XCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import NotificationContainer from './NotificationContainer';
 
 export interface NotificationProps {
@@ -52,15 +52,6 @@ export const useNotification = () => {
  *
  * @returns {void} This hook does not return a value, but it adds a notification to the stack.
  *
- * @example Basic Usage:
- * ```tsx
- * const showNotification = useNotification();
- * showNotification({
- *   title: "Success",
- *   description: "Your changes have been saved successfully.",
- *   color: "success",
- * });
- * ```
  */
 
 const NotificationStack = () => {
@@ -83,51 +74,51 @@ const NotificationStack = () => {
         switch (notification.color) {
           case 'primary':
             icon = (
-              <AlertCircle
-                height={24}
-                width={24}
+              <Icon
+                name="alert-circle"
+                size={24}
                 strokeWidth={3}
-                stroke={COLORS.primary.main}
+                color={COLORS.primary.main}
               />
             );
             break;
           case 'success':
             icon = (
-              <CheckCircle
-                height={24}
-                width={24}
+              <Icon
+                name="check-circle"
+                size={24}
                 strokeWidth={3}
-                stroke={COLORS.success.main}
+                color={COLORS.success.main}
               />
             );
             break;
           case 'danger':
             icon = (
-              <XCircle
-                height={24}
-                width={24}
+              <Icon
+                name="x-circle"
+                size={24}
                 strokeWidth={3}
-                stroke={COLORS.danger.main}
+                color={COLORS.danger.main}
               />
             );
             break;
           case 'warning':
             icon = (
-              <AlertCircle
-                height={24}
-                width={24}
+              <Icon
+                name="alert-circle"
+                size={24}
                 strokeWidth={3}
-                stroke={COLORS.warning.main}
+                color={COLORS.warning.main}
               />
             );
             break;
           case 'info':
             icon = (
-              <AlertCircle
-                height={24}
-                width={24}
+              <Icon
+                name="alert-circle"
+                size={24}
                 strokeWidth={3}
-                stroke={COLORS.info.main}
+                color={COLORS.info.main}
               />
             );
             break;

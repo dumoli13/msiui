@@ -11,15 +11,6 @@ import React, {
 } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import {
-  Calendar,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  X,
-} from 'react-feather';
 import { MONTH_LIST } from '../../const/datePicker';
 import {
   SUNDAY_DATE,
@@ -27,6 +18,7 @@ import {
   getYearRange,
   isToday,
 } from '../../libs/inputValidation';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 
 export type InputDateValue = Date | null;
@@ -83,21 +75,6 @@ export interface DatePickerProps
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
  * @property {number} [width] - Optional custom width for the input field.
- *
- * @returns {JSX.Element} The rendered DatePicker component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedDate, setSelectedDate] = useState<Date | null>(null);
- *
- * <DatePicker
- *   value={selectedDate}
- *   onChange={(date) => setSelectedDate(date)}
- *   label="Select Date"
- *   placeholder="Choose a date"
- *   error="Date is required"
- * />
- * ```
  *
  */
 
@@ -379,7 +356,7 @@ const DatePicker = ({
                 onMouseDown={handlePrevYear}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronsLeft width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-double-left" size={20} strokeWidth={2} />
               </div>
               <div
                 role="button"
@@ -387,7 +364,7 @@ const DatePicker = ({
                 onMouseDown={handlePrevMonth}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronLeft width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-left" size={20} strokeWidth={2} />
               </div>
             </div>
             <div className="flex items-center gap-4 text-16px font-medium">
@@ -413,7 +390,7 @@ const DatePicker = ({
                 onMouseDown={handleNextMonth}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronRight width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-right" size={20} strokeWidth={2} />
               </div>
               <div
                 role="button"
@@ -421,7 +398,7 @@ const DatePicker = ({
                 onMouseDown={handleNextYear}
                 className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
               >
-                <ChevronsRight width={20} height={20} strokeWidth={2} />
+                <Icon name="chevron-double-right" size={20} strokeWidth={2} />
               </div>
             </div>
           </div>
@@ -512,7 +489,7 @@ const DatePicker = ({
               onMouseDown={handlePrevYear}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsLeft width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
             </div>
             <div
               role="button"
@@ -527,7 +504,7 @@ const DatePicker = ({
               onMouseDown={handleNextYear}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsRight width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
             </div>
           </div>
           <div className="grid grid-cols-3 p-2">
@@ -567,7 +544,7 @@ const DatePicker = ({
               onMouseDown={handlePrev12Year}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsLeft width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
             </div>
             <div className="text-16px font-medium">
               {`${yearRange[0]} - ${yearRange[yearRange.length - 1]}`}
@@ -578,7 +555,7 @@ const DatePicker = ({
               onMouseDown={handleNext12Year}
               className="rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25"
             >
-              <ChevronsRight width={20} height={20} strokeWidth={2} />
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
             </div>
           </div>
           <div className="grid grid-cols-3 p-2">
@@ -685,7 +662,7 @@ const DatePicker = ({
               onMouseDown={handleClearValue}
               className="rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color"
             >
-              <X width={16} height={16} strokeWidth={2} />
+              <Icon name="x-mark" size={16} strokeWidth={2} />
             </div>
           ) : (
             <div
@@ -694,12 +671,12 @@ const DatePicker = ({
               onClick={handleDropdown}
               className="rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color"
             >
-              <Calendar width={16} height={16} />
+              <Icon name="calendar" size={16} />
             </div>
           )}
           {successProp && (
             <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-              <Check width={10} height={10} strokeWidth={3} />
+              <Icon name="check" size={10} strokeWidth={3} />
             </div>
           )}
           {isError && (

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState, } from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 /**
- * Popper Component
  *
  * A flexible and customizable popper component designed to display a floating or dropdown-like content
  * relative to a target element. It can handle positioning and alignment adjustments, including dynamic changes
@@ -21,26 +20,6 @@ import { createPortal } from 'react-dom';
  * @property {('top' | 'center' | 'bottom')} [transformOriginVertical='top'] - The vertical transform origin for popper animations.
  * @property {('left' | 'center' | 'right')} [transformOriginHorizontal='left'] - The horizontal transform origin for popper animations.
  *
- * @example Basic Usage:
- * ```tsx
- * import Popper from './Popper';
- *
- * const MyComponent = () => {
- *   const [open, setOpen] = useState(false);
- *
- *   return (
- *     <Popper
- *       open={open}
- *       onOpen={(openState) => setOpen(openState)}
- *       content={<p>Here is the popper content!</p>}
- *     >
- *       <button>Toggle Popper</button>
- *     </Popper>
- *   );
- * };
- * ```
- *
- * @returns {JSX.Element} The Popper component that displays the content in a portal when open.
  */
 const Popper = ({ className, disabled = false, content, children, open: openProp, onOpen = () => { }, verticalAlign = 'bottom', horizontalAlign = 'left', transformOriginVertical = 'top', transformOriginHorizontal = 'left', }) => {
     const elementRef = useRef(null);

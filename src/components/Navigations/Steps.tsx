@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
-import { Check, X } from 'react-feather';
+import Icon from '../Icon';
 
 export interface StepProps {
   active: number;
@@ -27,33 +27,9 @@ export interface StepProps {
  * @property {number} active - The index of the currently active step.
  * @property {Array} items - An array of step items, each containing the following properties:
  * @property {function} [onChange] - A callback function triggered when the active step is changed.
- * @property {boolean} [disabled=false] - A flag that disables the ability to change steps.
- *
- * @example Basic Usage:
- * ```tsx
- * import Steps from './Steps';
- *
- * const MyComponent = () => {
- *   const [activeStep, setActiveStep] = useState(0);
- *
- *   const stepItems = [
- *     { title: 'Step 1', description: 'Description for step 1' },
- *     { title: 'Step 2', description: 'Description for step 2', success: true },
- *     { title: 'Step 3', description: 'Description for step 3', error: true },
- *     { title: 'Step 4', description: 'Description for step 4', available: true },
- *   ];
- *
- *   return (
- *     <Steps
- *       active={activeStep}
- *       items={stepItems}
- *       onChange={setActiveStep}
- *     />
- *   );
- * };
- * ```
- *
+ * @property {boolean} [disabled=false] - A flag that disables the ability to change steps.*
  * @returns {JSX.Element} The Steps component that displays the steps and allows navigation between them.
+ *
  */
 
 function Steps({ active, items, onChange, disabled = false }: StepProps) {
@@ -96,11 +72,11 @@ function Steps({ active, items, onChange, disabled = false }: StepProps) {
           >
             {item.success ? (
               <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-primary-main border-primary-main">
-                <Check width={16} height={16} />
+                <Icon name="check" size={16} />
               </div>
             ) : (
               <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-danger-main border-danger-main">
-                <X width={16} height={16} />
+                <Icon name="x-mark" size={16} />
               </div>
             )}
             <div className="flex-1">

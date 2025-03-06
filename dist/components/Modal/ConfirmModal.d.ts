@@ -21,7 +21,7 @@ export interface ConfirmModalProps {
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
  * @property {() => void} [onConfirm] - Callback function called when the user confirms the action.
  * @property {() => void} [onCancel] - Callback function called when the user cancels the action or closes the modal.
- 
+ *
  */
 declare const ConfirmModal: ({ icon, title, content, confirmText, cancelText, onConfirm, onCancel, customAction, }: ConfirmModalProps) => void;
 export default ConfirmModal;

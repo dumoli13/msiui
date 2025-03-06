@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Loader } from 'react-feather';
+import Icon from '../Icon';
 
 export interface SwitchRef {
   element: HTMLInputElement | null;
@@ -38,7 +38,6 @@ export interface SwitchProps
 }
 
 /**
- * Switch Component
  *
  * A toggle switch component that allows users to switch between two states, typically used for on/off or yes/no selections.
  * It can be customized with various features such as labels, loading state, error messages, and more.
@@ -58,19 +57,6 @@ export interface SwitchProps
  * @param {number} [width] - Optional custom width for the input field.
  * @param {boolean} [loading=false] - Whether the input is in a loading state.
  *
- * @example Basic Usage:
- * ```tsx
- * <Switch
- *   checked={isActive}
- *   onChange={(checked) => setIsActive(checked)}
- *   label="Activate Feature"
- *   size="large"
- *   loading={isLoading}
- *   error="Failed to update"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered Switch component.
  */
 
 const Switch = ({
@@ -166,7 +152,7 @@ const Switch = ({
           {loading ? (
             <div className="w-7 h-4 rounded-full transition-colors relative bg-neutral-50">
               <div className="absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10">
-                <Loader className="animate-spin" width={12} height={12} />
+                <Icon name="loader" size={12} className="animate-spin" />
               </div>
             </div>
           ) : (

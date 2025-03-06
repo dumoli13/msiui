@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check, X } from 'react-feather';
+import Icon from '../Icon';
 
 const formatValue = (value: string | number | null | undefined) => {
   if (value === '' || value === null || value === undefined) {
@@ -85,18 +85,6 @@ export interface NumberTextFieldProps
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <NumberTextField
- *   value={amount}
- *   onChange={handleAmountChange}
- *   label="Amount"
- *   placeholder="Enter the amount"
- *   error="Invalid amount"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered NumberTextField component.
  */
 
 const NumberTextField = ({
@@ -274,12 +262,12 @@ const NumberTextField = ({
             onMouseDown={handleClearValue}
             className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
           >
-            <X width={16} height={16} strokeWidth={2} />
+            <Icon name="x-mark" size={16} strokeWidth={2} />
           </div>
         )}
         {successProp && (
           <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-            <Check width={10} height={10} strokeWidth={3} />
+            <Icon name="check" size={10} strokeWidth={3} />
           </div>
         )}
         {isError && (

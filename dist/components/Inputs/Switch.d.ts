@@ -21,7 +21,6 @@ export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
     loading?: boolean;
 }
 /**
- * Switch Component
  *
  * A toggle switch component that allows users to switch between two states, typically used for on/off or yes/no selections.
  * It can be customized with various features such as labels, loading state, error messages, and more.
@@ -41,19 +40,6 @@ export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
  * @param {number} [width] - Optional custom width for the input field.
  * @param {boolean} [loading=false] - Whether the input is in a loading state.
  *
- * @example Basic Usage:
- * ```tsx
- * <Switch
- *   checked={isActive}
- *   onChange={(checked) => setIsActive(checked)}
- *   label="Activate Feature"
- *   size="large"
- *   loading={isLoading}
- *   error="Failed to update"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered Switch component.
  */
 declare const Switch: ({ id, defaultChecked, checked: checkedProp, label, labelPosition, onChange, className, helperText, disabled, inputRef, size, fullWidth, error: errorProp, trueLabel, falseLabel, width, loading, ...props }: SwitchProps) => React.JSX.Element;
 export default Switch;

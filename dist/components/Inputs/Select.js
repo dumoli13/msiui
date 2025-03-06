@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 /**
  * Select Component
@@ -157,17 +157,17 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
                 }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef }, (value === null || value === void 0 ? void 0 : value.label) || placeholder),
             React.createElement("div", { className: "flex gap-0.5 items-center" },
                 focused && !!value && (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color" },
-                    React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))),
+                    React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))),
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 cursor-pointer transition-color': !disabled,
                         'rotate-180': isDropdownOpen,
                     }) },
-                    React.createElement(ChevronDown, { width: 16, height: 16, strokeWidth: 2 })),
+                    React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70" },
-                    React.createElement(Loader, { width: 16, height: 16, className: "animate-spin" }))),
+                    React.createElement(Icon, { name: "loader", size: 16, className: "animate-spin" }))),
                 successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                    React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                    React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
                 isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!")))),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage)),
         React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));

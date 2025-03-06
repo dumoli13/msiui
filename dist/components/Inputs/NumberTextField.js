@@ -1,17 +1,7 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check, X } from 'react-feather';
+import Icon from '../Icon';
 const formatValue = (value) => {
     if (value === '' || value === null || value === undefined) {
         return '';
@@ -47,18 +37,6 @@ const formatValue = (value) => {
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <NumberTextField
- *   value={amount}
- *   onChange={handleAmountChange}
- *   label="Amount"
- *   placeholder="Enter the amount"
- *   error="Invalid amount"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered NumberTextField component.
  */
 const NumberTextField = (_a) => {
     var { id, value: valueProp, defaultValue = valueProp, label, labelPosition = 'top', onChange, className, helperText, placeholder = '', disabled = false, fullWidth, startIcon, endIcon, clearable = false, inputRef, size = 'default', error: errorProp, success: successProp, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "clearable", "inputRef", "size", "error", "success", "width"]);
@@ -152,9 +130,9 @@ const NumberTextField = (_a) => {
                     'py-[12.5px]': size === 'large',
                 }), disabled: disabled, autoComplete: "off" })),
             clearable && focused && !!value && (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color" },
-                React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))),
+                React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))),
             successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
             isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center shrink-0" }, "!")),
             endIcon && React.createElement("div", { className: "text-neutral-70" }, endIcon)),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage))));

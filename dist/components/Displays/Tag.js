@@ -1,15 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
-import { X } from 'react-feather';
+import Icon from '../Icon';
 /**
- * Tag Component
- *
- * visit this link for full documentation:
- * https://www.figma.com/design/JJLvT4QpNhnT2InWV5boVj/SME'-Website?node-id=416-3124&node-type=frame&t=dgTCEUBbfJ6leKHY-0
  *
  * @property {string} [props.className] - Additional class names to apply to the tag.
  * @property {string} props.children - The content to be displayed inside the tag.
- * @property {'primary' | 'success' | 'danger' | 'warning' | 'info'} props.color - The color theme for the tag.
+ * @property {'primary' | 'success' | 'danger' | 'warning' | 'info'} props.color - The color theme for the tag
+ * .
  */
 function Tag({ className, children, color, size = 'default', onRemove, }) {
     return (React.createElement("div", { className: cx('ring-[1.5px] border-box truncate flex items-center justify-center w-fit py-1.5 px-3 rounded-lg font-medium', {
@@ -23,7 +20,7 @@ function Tag({ className, children, color, size = 'default', onRemove, }) {
             'text-18px': size === 'large',
         }, className) },
         children,
-        onRemove && (React.createElement(X, { width: 12, height: 12, onClick: onRemove, className: "cursor-pointer ml-1" }))));
+        onRemove && (React.createElement(Icon, { name: "x-mark", size: 12, onClick: onRemove, className: "cursor-pointer ml-1" }))));
 }
 export default Tag;
 //# sourceMappingURL=Tag.js.map

@@ -299,7 +299,8 @@ const Table = <T extends { [key: string]: any }>({
             {data.map((row, rowIndex) => {
               const isDanger = showDanger && showDanger(row);
               const isSelected =
-                showSelected && selectedRows.includes(rowIndex);
+                showSelected &&
+                selectedRows.some((index) => index === rowIndex);
               return (
                 <tr
                   key={rowIndex}

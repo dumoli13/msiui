@@ -1,19 +1,8 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check } from 'react-feather';
+import Icon from '../Icon';
 /**
- * TextArea Component
  *
  * A customizable multi-line text input component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to handle dynamic height (min/max lines). This component is ideal for longer form inputs
@@ -38,21 +27,6 @@ import { Check } from 'react-feather';
  * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextArea
- *   label="Description"
- *   value={description}
- *   onChange={(value) => setDescription(value)}
- *   placeholder="Enter your description here"
- *   size="large"
- *   minLines={4}
- *   maxLines={8}
- *   success={isValidDescription}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextArea component.
  */
 const TextArea = (_a) => {
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', onChange, className, helperText, placeholder = '', disabled = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, minLines = 2, maxLines, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "minLines", "maxLines", "width"]);
@@ -115,7 +89,7 @@ const TextArea = (_a) => {
                     'my-[12.5px]': size === 'large',
                 }) }, endIcon)),
             successProp && (React.createElement("div", { className: cx('rounded-full bg-success-main p-0.5 text-neutral-10', { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' }) },
-                React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
             isError && (React.createElement("div", { className: cx('rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center', { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' }) }, "!"))),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage))));
 };

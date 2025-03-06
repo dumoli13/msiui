@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check } from 'react-feather';
+import Icon from '../Icon';
 
 export interface TextAreaRef {
   element: HTMLTextAreaElement | null;
@@ -44,7 +44,6 @@ export interface TextAreaProps
 }
 
 /**
- * TextArea Component
  *
  * A customizable multi-line text input component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to handle dynamic height (min/max lines). This component is ideal for longer form inputs
@@ -69,21 +68,6 @@ export interface TextAreaProps
  * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextArea
- *   label="Description"
- *   value={description}
- *   onChange={(value) => setDescription(value)}
- *   placeholder="Enter your description here"
- *   size="large"
- *   minLines={4}
- *   maxLines={8}
- *   success={isValidDescription}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextArea component.
  */
 
 const TextArea = ({
@@ -232,7 +216,7 @@ const TextArea = ({
               { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' },
             )}
           >
-            <Check width={10} height={10} strokeWidth={3} />
+            <Icon name="check" size={10} strokeWidth={3} />
           </div>
         )}
         {isError && (

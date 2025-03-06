@@ -1,19 +1,9 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check } from 'react-feather';
+import { COLORS } from '../../libs';
+import Icon from '../Icon';
 /**
- * Checkbox Component
  *
  * A customizable checkbox input that allows users to select or deselect an option. It supports both controlled
  * and uncontrolled modes, provides an indeterminate state, and handles accessibility features like `aria-label`.
@@ -31,19 +21,6 @@ import { Check } from 'react-feather';
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {number} [width] - Optional custom width for the input field.
  * @property {string} [aria-label] - The ARIA label for accessibility purposes.
- *
- * @returns {JSX.Element} The rendered Checkbox component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [isChecked, setIsChecked] = useState(false);
- *
- * <Checkbox
- *   label="Accept terms and conditions"
- *   checked={isChecked}
- *   onChange={(checked) => setIsChecked(checked)}
- * />
- * ```
  *
  */
 const Checkbox = (_a) => {
@@ -94,7 +71,7 @@ const Checkbox = (_a) => {
                     }
                 } },
                 React.createElement("input", Object.assign({ id: id, tabIndex: !disabled ? 0 : -1, type: "checkbox", className: "hidden", checked: value, onChange: handleChange, disabled: disabled, "aria-label": ariaLabel, ref: elementRef, onFocus: handleFocus, onBlur: handleBlur }, props)),
-                value && !indeterminate && (React.createElement(Check, { className: `absolute w-3.5 h-3.5 ${disabled ? 'text-neutral-60' : 'text-neutral-10'}`, strokeWidth: 4 })),
+                value && !indeterminate && (React.createElement(Icon, { name: "check", strokeWidth: 4, className: "absolute", size: 14, color: disabled ? COLORS.neutral[60] : COLORS.neutral[10] })),
                 indeterminate && !value && (React.createElement("span", { className: "absolute w-2.5 h-2.5 rounded-sm bg-primary-main" }))),
             label && React.createElement("span", { className: "text-14px text-neutral-90" }, label)),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage))));

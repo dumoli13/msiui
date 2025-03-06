@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState, } from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 /**
- * Popover Component
  *
  * A customizable popover component that can display a dropdown or floating content
  * relative to a target element on the page. It allows you to configure the position,
@@ -20,30 +19,6 @@ import { createPortal } from 'react-dom';
  * @property {('top' | 'center' | 'bottom')} [transformOriginVertical='top'] - The vertical transform origin for the popover's animation.
  * @property {('left' | 'center' | 'right')} [transformOriginHorizontal='left'] - The horizontal transform origin for the popover's animation.
  *
- * @example Basic Usage:
- * ```tsx
- * import Popover from './Popover';
- *
- * const MyComponent = () => {
- *   const [open, setOpen] = useState(false);
- *   const targetElementRef = useRef<HTMLDivElement>(null);
- *
- *   return (
- *     <div>
- *       <button ref={targetElementRef} onClick={() => setOpen(!open)}>Toggle Popover</button>
- *       <Popover
- *         open={open}
- *         elementRef={targetElementRef}
- *         onClose={() => setOpen(false)}
- *       >
- *         <p>Popover content goes here!</p>
- *       </Popover>
- *     </div>
- *   );
- * };
- * ```
- *
- * @returns {JSX.Element | null} The popover content wrapped in a portal, or `null` if `open` is `false`.
  */
 const Popover = ({ children, className, open, elementRef, onClose, verticalAlign = 'bottom', horizontalAlign = 'left', transformOriginVertical = 'top', transformOriginHorizontal = 'left', }) => {
     const popoverRef = useRef(null);

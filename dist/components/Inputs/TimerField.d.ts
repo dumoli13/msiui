@@ -26,7 +26,6 @@ export interface TimerFieldProps extends Omit<InputHTMLAttributes<HTMLInputEleme
     width?: number;
 }
 /**
- * TimerField Component
  *
  * A customizable input field designed for numeric values. This component formats and displays numbers with thousand separators, and it supports various features including label positioning, value clearing, validation feedback, and more.
  *
@@ -49,17 +48,6 @@ export interface TimerFieldProps extends Omit<InputHTMLAttributes<HTMLInputEleme
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TimerField
- *   value={amount}
- *   onChange={handleAmountChange}
- *   label="Amount"
- *   error="Invalid amount"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TimerField component.
  */
 declare const TimerField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, disabled, fullWidth, startIcon, endIcon, clearable, inputRef, size, error: errorProp, success: successProp, width, ...props }: TimerFieldProps) => React.JSX.Element;
 export default TimerField;

@@ -1,6 +1,6 @@
-import React, { forwardRef } from 'react';
-import { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, forwardRef } from 'react';
 import cx from 'classnames';
+import icon from '../assets/icon.svg';
 import COLORS from '../libs/color';
 
 export type IconNames =
@@ -230,7 +230,7 @@ export type IconNames =
   | 'megaphone'
   | 'microphone'
   | 'minimize'
-  | 'minimize'
+  | 'minimize2'
   | 'minus-circle'
   | 'minus'
   | 'moon'
@@ -335,7 +335,7 @@ export interface IconProps {
 const Icon = forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
   const {
     name,
-    color = COLORS.neutral[100],
+    color = 'currentColor',
     size = 24,
     strokeWidth = 1,
     className,
@@ -357,7 +357,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <use xlinkHref={`/icons/icon.svg#${name}`} />
+        <use xlinkHref={`${icon}#${name}`} />
       </svg>
     </span>
   );

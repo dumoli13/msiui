@@ -18,7 +18,6 @@ export interface InputDropdownProps {
  * @property {RefObject<HTMLDivElement>} dropdownRef - A reference to the dropdown element itself.
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
- * @returns {JSX.Element | null} The rendered InputDropdown component, or null if not open or styles are not calculated.
  *
  */
 declare const InputDropdown: ({ open, children, elementRef, dropdownRef, fullWidth, maxHeight, }: InputDropdownProps) => React.ReactPortal | null;

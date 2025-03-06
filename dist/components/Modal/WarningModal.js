@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
  * WarningModal Component
@@ -21,10 +21,11 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-const WarningModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.warning.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, customAction, }) => {
+const WarningModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", size: 48, strokeWidth: 3, color: COLORS.warning.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
+    const handleOpen = () => { };
     const handleClose = () => {
         root.unmount();
         document.body.removeChild(container);

@@ -43,19 +43,6 @@ export interface ModalProps {
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {ButtonColor} [confirmButtonColor='primary'] - The color for the confirm button.
  *
- * @example Basic Usage:
- * ```tsx
- * <ModalConfirmContainer
- *   open={isOpen}
- *   title="Confirm Action"
- *   onClose={handleClose}
- *   onConfirm={handleConfirm}
- * >
- *   <p>Are you sure you want to proceed?</p>
- * </ModalConfirmContainer>
- * ```
- *
- * @returns {JSX.Element|null} The modal component or null if `open` is false.
  */
 declare const ModalConfirmContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => JSX.Element | null;
 export default ModalConfirmContainer;

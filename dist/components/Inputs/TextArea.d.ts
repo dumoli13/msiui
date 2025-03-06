@@ -26,7 +26,6 @@ export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
     width?: number;
 }
 /**
- * TextArea Component
  *
  * A customizable multi-line text input component that supports various features such as labels, icons, error/success states,
  * placeholder text, and the ability to handle dynamic height (min/max lines). This component is ideal for longer form inputs
@@ -51,21 +50,6 @@ export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
  * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @example Basic Usage:
- * ```tsx
- * <TextArea
- *   label="Description"
- *   value={description}
- *   onChange={(value) => setDescription(value)}
- *   placeholder="Enter your description here"
- *   size="large"
- *   minLines={4}
- *   maxLines={8}
- *   success={isValidDescription}
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered TextArea component.
  */
 declare const TextArea: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, minLines, maxLines, width, ...props }: TextAreaProps) => React.JSX.Element;
 export default TextArea;

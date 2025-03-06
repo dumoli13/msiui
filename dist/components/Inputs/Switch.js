@@ -1,19 +1,8 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Loader } from 'react-feather';
+import Icon from '../Icon';
 /**
- * Switch Component
  *
  * A toggle switch component that allows users to switch between two states, typically used for on/off or yes/no selections.
  * It can be customized with various features such as labels, loading state, error messages, and more.
@@ -33,19 +22,6 @@ import { Loader } from 'react-feather';
  * @param {number} [width] - Optional custom width for the input field.
  * @param {boolean} [loading=false] - Whether the input is in a loading state.
  *
- * @example Basic Usage:
- * ```tsx
- * <Switch
- *   checked={isActive}
- *   onChange={(checked) => setIsActive(checked)}
- *   label="Activate Feature"
- *   size="large"
- *   loading={isLoading}
- *   error="Failed to update"
- * />
- * ```
- *
- * @returns {JSX.Element} The rendered Switch component.
  */
 const Switch = (_a) => {
     var { id, defaultChecked, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false } = _a, props = __rest(_a, ["id", "defaultChecked", "checked", "label", "labelPosition", "onChange", "className", "helperText", "disabled", "inputRef", "size", "fullWidth", "error", "trueLabel", "falseLabel", "width", "loading"]);
@@ -89,7 +65,7 @@ const Switch = (_a) => {
                 React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, type: "checkbox", className: "sr-only", checked: checked, readOnly: true, ref: elementRef })),
                 loading ? (React.createElement("div", { className: "w-7 h-4 rounded-full transition-colors relative bg-neutral-50" },
                     React.createElement("div", { className: "absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10" },
-                        React.createElement(Loader, { className: "animate-spin", width: 12, height: 12 })))) : (React.createElement("div", { className: cx('w-7 h-4 rounded-full transition-colors relative', {
+                        React.createElement(Icon, { name: "loader", size: 12, className: "animate-spin" })))) : (React.createElement("div", { className: cx('w-7 h-4 rounded-full transition-colors relative', {
                         'bg-neutral-40': !checked && !disabled,
                         'bg-primary-main': checked && !disabled,
                         'bg-neutral-60 cursor-not-allowed': disabled,

@@ -1,21 +1,11 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
-import { Check, ChevronDown, Loader, X } from 'react-feather';
+import { COLORS } from '../../libs';
 import Tag from '../Displays/Tag';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 /**
- * AutoCompleteMultiple Component
  *
  * A multi-select input component that allows users to select multiple values from a list of options with autocomplete functionality.
  * It supports both controlled and uncontrolled states, displaying selected options as tags, and allows filtering options as users type.
@@ -40,20 +30,6 @@ import InputDropdown from './InputDropdown';
  * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {boolean} [isClearable=false] - Whether the input has a clear button to remove selected values.
  * @property {number} [width] - Optional custom width for the input field.
- *
- * @returns {JSX.Element} The rendered AutoCompleteMultiple component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedValues, setSelectedValues] = useState([]);
- *
- * <AutoCompleteMultiple
- *   label="Select Options"
- *   options={options}
- *   value={selectedValues}
- *   onChange={setSelectedValues}
- * />
- * ```
  *
  */
 const AutoCompleteMultiple = (_a) => {
@@ -162,7 +138,7 @@ const AutoCompleteMultiple = (_a) => {
             const selected = value === null || value === void 0 ? void 0 : value.some((v) => v.value === option.value);
             return selected ? (React.createElement("div", { role: "button", key: String(option.value), onMouseDown: handleRemoveSelected(option), className: cx('cursor-pointer p-4 hover:bg-neutral-20 text-left break-words flex items-center justify-between gap-2.5 bg-primary-surface text-primary-main', { 'text-14x': size === 'default', 'text-16px': size === 'large' }) },
                 React.createElement("span", null, option.label),
-                React.createElement(Check, { width: 10, height: 10, strokeWidth: 3, className: "text-primary-main" }))) : (React.createElement("div", { role: "button", key: String(option.value), onMouseDown: handleOptionSelect(option), className: cx('cursor-pointer p-4 hover:bg-neutral-20 text-left break-words text-neutral-100', { 'text-14x': size === 'default', 'text-16px': size === 'large' }) }, option.label));
+                React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3, color: COLORS.primary.main }))) : (React.createElement("div", { role: "button", key: String(option.value), onMouseDown: handleOptionSelect(option), className: cx('cursor-pointer p-4 hover:bg-neutral-20 text-left break-words text-neutral-100', { 'text-14x': size === 'default', 'text-16px': size === 'large' }) }, option.label));
         }),
         filteredOptions.length === 0 && (React.createElement("div", { className: "flex flex-col items-center gap-4 text center text-neutral-60 text-16px" },
             React.createElement("div", { className: "h-12 w-12 bg-neutral-60 flex items-center justify-center rounded-full text-neutral-10 text-36px font-semibold mt-1" }, "!"),
@@ -197,17 +173,17 @@ const AutoCompleteMultiple = (_a) => {
                     }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus }))),
             React.createElement("div", { className: "flex gap-0.5 items-center" },
                 isClearable && focused && !!value && (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color" },
-                    React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))),
+                    React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))),
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 cursor-pointer transition-color': !disabled,
                         'rotate-180': isDropdownOpen,
                     }) },
-                    React.createElement(ChevronDown, { width: 16, height: 16, strokeWidth: 2 })),
+                    React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70" },
-                    React.createElement(Loader, { width: 16, height: 16, className: "animate-spin" }))),
+                    React.createElement(Icon, { name: "loader", size: 16, className: "animate-spin" }))),
                 successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                    React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                    React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
                 isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!")),
                 endIcon && React.createElement("div", { className: "text-neutral-70" }, endIcon))),
         helperMessage && (React.createElement("div", { className: cx('text-left', {

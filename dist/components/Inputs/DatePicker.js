@@ -1,21 +1,11 @@
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
+import { __rest } from "tslib";
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import { Calendar, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, X, } from 'react-feather';
 import { MONTH_LIST } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday, } from '../../libs/inputValidation';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 /**
  * DatePicker Component
@@ -40,21 +30,6 @@ import InputDropdown from './InputDropdown';
  * @property {boolean} [success=false] - Whether the input field is in a success state.
  * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
  * @property {number} [width] - Optional custom width for the input field.
- *
- * @returns {JSX.Element} The rendered DatePicker component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedDate, setSelectedDate] = useState<Date | null>(null);
- *
- * <DatePicker
- *   value={selectedDate}
- *   onChange={(date) => setSelectedDate(date)}
- *   label="Select Date"
- *   placeholder="Choose a date"
- *   error="Date is required"
- * />
- * ```
  *
  */
 const DatePicker = (_a) => {
@@ -235,17 +210,17 @@ const DatePicker = (_a) => {
             React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40" },
                 React.createElement("div", { className: "flex items-center" },
                     React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(ChevronsLeft, { width: 20, height: 20, strokeWidth: 2 })),
+                        React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
                     React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevMonth, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(ChevronLeft, { width: 20, height: 20, strokeWidth: 2 }))),
+                        React.createElement(Icon, { name: "chevron-left", size: 20, strokeWidth: 2 }))),
                 React.createElement("div", { className: "flex items-center gap-4 text-16px font-medium" },
                     React.createElement("div", { role: "button", className: "hover:text-primary-hover w-[84px]", onMouseDown: handleViewMonth }, monthFormatter.format(displayedDate)),
                     React.createElement("div", { role: "button", className: "hover:text-primary-hover w-10", onMouseDown: handleViewYear }, displayedDate.getFullYear())),
                 React.createElement("div", { className: "flex items-center" },
                     React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextMonth, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(ChevronRight, { width: 20, height: 20, strokeWidth: 2 })),
+                        React.createElement(Icon, { name: "chevron-right", size: 20, strokeWidth: 2 })),
                     React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(ChevronsRight, { width: 20, height: 20, strokeWidth: 2 })))),
+                        React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 })))),
             React.createElement("div", { className: "text-14px p-2 border-b border-neutral-40" },
                 React.createElement("table", { className: "w-full" },
                     React.createElement("thead", null,
@@ -277,10 +252,10 @@ const DatePicker = (_a) => {
         calendarView === 'month' && (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40" },
                 React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                    React.createElement(ChevronsLeft, { width: 20, height: 20, strokeWidth: 2 })),
+                    React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
                 React.createElement("div", { role: "button", className: "text-16px font-medium hover:text-primary-hover", onMouseDown: handleViewYear }, displayedDate.getFullYear()),
                 React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                    React.createElement(ChevronsRight, { width: 20, height: 20, strokeWidth: 2 }))),
+                    React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
             React.createElement("div", { className: "grid grid-cols-3 p-2" }, MONTH_LIST.map((item) => {
                 const isDateSelected = (value === null || value === void 0 ? void 0 : value.getMonth()) === item.value;
                 return (React.createElement("div", { className: "flex justify-center items-center h-12", key: item.value },
@@ -292,10 +267,10 @@ const DatePicker = (_a) => {
         calendarView === 'year' && (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40" },
                 React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrev12Year, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                    React.createElement(ChevronsLeft, { width: 20, height: 20, strokeWidth: 2 })),
+                    React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
                 React.createElement("div", { className: "text-16px font-medium" }, `${yearRange[0]} - ${yearRange[yearRange.length - 1]}`),
                 React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNext12Year, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                    React.createElement(ChevronsRight, { width: 20, height: 20, strokeWidth: 2 }))),
+                    React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
             React.createElement("div", { className: "grid grid-cols-3 p-2" }, yearRange.map((item) => {
                 const isDateSelected = displayedDate.getMonth() === item;
                 return (React.createElement("div", { className: "flex justify-center items-center h-12 w-20", key: item },
@@ -329,10 +304,10 @@ const DatePicker = (_a) => {
                 }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: () => { } })),
             React.createElement("div", { className: "flex gap-0.5 items-center" },
                 focused && !!value ? (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color" },
-                    React.createElement(X, { width: 16, height: 16, strokeWidth: 2 }))) : (React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: "rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color" },
-                    React.createElement(Calendar, { width: 16, height: 16 }))),
+                    React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))) : (React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: "rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color" },
+                    React.createElement(Icon, { name: "calendar", size: 16 }))),
                 successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                    React.createElement(Check, { width: 10, height: 10, strokeWidth: 3 }))),
+                    React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
                 isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!")))),
         helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage)),
         React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 305 }, dropdownContent)));

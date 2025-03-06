@@ -4,9 +4,9 @@ import React, {
   ReactElement,
 } from 'react';
 import cx from 'classnames';
-import { Loader } from 'react-feather';
 import { ButtonColor, ButtonVariant } from '../../const';
 import Tooltip from '../Displays/Tooltip';
+import Icon from '../Icon';
 
 export interface IconButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -21,7 +21,6 @@ export interface IconButtonProps
 }
 
 /**
- * IconButton Component
  *
  * The `IconButton` component is a flexible and highly customizable button component that supports various styles, colors, and states. It can display an icon, show a loading spinner, and include tooltip support.
  *
@@ -31,7 +30,6 @@ export interface IconButtonProps
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
  * @property {IconButtonProps} props The properties for the IconButton component.
  *
- * @returns {JSX.Element} A styled button component with optional icon and loading state.
  */
 const IconButton = ({
   variant = 'contained',
@@ -139,7 +137,7 @@ const IconButton = ({
         </span>
         {loading && (
           <span className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center">
-            <Loader className="animate-spin" />
+            <Icon name="loader" size={16} className="animate-spin" />
           </span>
         )}
       </button>

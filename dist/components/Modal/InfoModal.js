@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
  *
@@ -16,7 +16,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onConfirm] - The callback function to be executed when the confirm button is clicked.
  *
  */
-const InfoModal = ({ icon = (React.createElement(AlertCircle, { height: 48, width: 48, strokeWidth: 3, stroke: COLORS.info.main })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
+const InfoModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", size: 48, strokeWidth: 3, color: COLORS.info.main })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
     document.body.appendChild(container);

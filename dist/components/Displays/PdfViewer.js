@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Maximize2, Minimize2, MinusCircle, PlusCircle, X, } from 'react-feather';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useDebouncedCallback } from 'use-debounce';
+import { COLORS } from '../../libs';
+import Icon from '../Icon';
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 /**
- * PDFViewer Component
  *
  * This component provides a full-screen modal viewer for displaying PDF documents.
  * It allows users to zoom in and out of the document, navigate between pages, and resize the viewer to fit the screen.
@@ -19,25 +19,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/l
  * @property {boolean} open - A flag that determines if the viewer modal is open or closed.
  * @property {function} onClose - A function to close the viewer modal.
  * @property {string | null} url - The URL or path to the PDF document to be viewed.
- *
- * @example Basic Usage:
- * ```tsx
- * import PDFViewer from './PDFViewer';
- *
- * const MyComponent = () => {
- *   const [open, setOpen] = useState(false);
- *   const toggleViewer = () => setOpen(!open);
- *
- *   return (
- *     <div>
- *       <button onClick={toggleViewer}>Open PDF Viewer</button>
- *       <PDFViewer open={open} onClose={toggleViewer} url="path/to/document.pdf" />
- *     </div>
- *   );
- * };
- * ```
- *
  * @returns {JSX.Element | null} A modal viewer for the PDF document, or `null` if `open` is `false`.
+ *
  */
 const PDFViewer = ({ open, onClose, url }) => {
     const [numPages, setNumPages] = useState(1);
@@ -151,7 +134,7 @@ const PDFViewer = ({ open, onClose, url }) => {
         React.createElement("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" }),
         React.createElement("div", { className: "fixed top-0 left-0 w-full h-full" },
             React.createElement("div", { role: "button", "aria-label": "Close", onClick: onClose, className: "absolute top-8 right-8 text-white bg-neutral-100/70 hover:bg-opacity-20 z-50 rounded-full cursor-pointer h-[56px] w-[56px] flex justify-center items-center" },
-                React.createElement(X, { className: "text-neutral-10" })),
+                React.createElement(Icon, { name: "x-mark", size: 16, color: COLORS.neutral[10] })),
             React.createElement("div", { className: "absolute top-4 bottom-4 left-1/2 -translate-x-1/2 overflow-auto max-w-full", ref: viewerRef }, url && (React.createElement(Document, { file: url, onLoadSuccess: onDocumentLoadSuccess },
                 React.createElement("div", { className: "flex flex-col gap-1" }, Array.from(new Array(numPages), (el, index) => (React.createElement("div", { ref: index === 0 ? pageRef : null, key: `page_${index + 1}` },
                     React.createElement(Page, { pageNumber: index + 1, scale: scale / 100, renderAnnotationLayer: false, renderTextLayer: false, className: "react-pdf__Page", onLoadSuccess: index === 0 ? onPageLoadSuccess : undefined })))))))),
@@ -165,17 +148,16 @@ const PDFViewer = ({ open, onClose, url }) => {
                     React.createElement("div", { className: `${scale > 50
                             ? 'cursor-pointer text-opacity-60 hover:text-opacity-100'
                             : 'cursor-not-allowed text-opacity-40'} rounded-full text-white`, onClick: () => handleZoom(false), role: "button", "aria-label": "zoom out" },
-                        React.createElement(MinusCircle, null)),
+                        React.createElement(Icon, { name: "minus-circle" })),
                     React.createElement("div", { className: "bg-neutral-90 rounded-full py-1 px-3" },
                         React.createElement("label", { htmlFor: "scale" },
                             React.createElement("input", { id: "scale", value: tempScale, className: "w-10 bg-transparent outline-none text-center", onChange: handleChange, "aria-label": "Scale percentage" }),
                             "%")),
-                    ' ',
                     React.createElement("div", { className: "cursor-pointer text-opacity-60 hover:text-opacity-100 rounded-full text-white", onClick: () => handleZoom(true), role: "button", "aria-label": "zoom in" },
-                        React.createElement(PlusCircle, null))),
+                        React.createElement(Icon, { name: "plus-circle", size: 16 }))),
                 React.createElement("div", { className: "h-6 w-0 border-r border-neutral-10" }),
                 React.createElement("div", { className: "px-6" },
-                    React.createElement("div", { className: "cursor-pointer text-opacity-60 hover:text-opacity-100 rounded-full text-white", onClick: handleShowFullSize, role: "button", "aria-label": "zoom in" }, showFullSize ? React.createElement(Minimize2, null) : React.createElement(Maximize2, null)))))), document.body);
+                    React.createElement("div", { className: "cursor-pointer text-opacity-60 hover:text-opacity-100 rounded-full text-white", onClick: handleShowFullSize, role: "button", "aria-label": "zoom in" }, React.createElement(Icon, { name: showFullSize ? 'minimize2' : 'maximize2' })))))), document.body);
 };
 export default PDFViewer;
 //# sourceMappingURL=PdfViewer.js.map

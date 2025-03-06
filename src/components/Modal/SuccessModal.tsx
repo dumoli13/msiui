@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { CheckCircle } from 'react-feather';
 import { COLORS } from '../../libs';
+import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
@@ -24,12 +24,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
 
 const SuccessModal = ({
   icon = (
-    <CheckCircle
-      height={48}
-      width={48}
-      strokeWidth={3}
-      stroke={COLORS.success.main}
-    />
+    <Icon name="check" size={48} strokeWidth={3} color={COLORS.success.main} />
   ),
   title,
   content,

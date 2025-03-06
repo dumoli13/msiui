@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
-import { Search } from 'react-feather';
 import Popper from '../Displays/Popper';
+import Icon from '../Icon';
 import IconButton from '../Inputs/IconButton';
 import TextField, { TextfieldRef } from '../Inputs/TextField';
 
@@ -21,29 +21,6 @@ interface FilterSearchProps {
  * @property {string} [value] - The current value of the search input. Used for controlled input behavior.
  * @property {string} [label] - A label for the search input, displayed as part of the placeholder text.
  * @property {(value: string) => void} onChange - Callback function triggered whenever the value of the search input changes.
- *
- * @example Basic Usage:
- * ```tsx
- * import React, { useState } from 'react';
- * import FilterSearch from './FilterSearch';
- *
- * const App = () => {
- *   const [searchTerm, setSearchTerm] = useState('');
- *
- *   return (
- *     <div>
- *       <FilterSearch
- *         value={searchTerm}
- *         label="Items"
- *         onChange={(value) => setSearchTerm(value)}
- *       />
- *       <p>Search Term: {searchTerm}</p>
- *     </div>
- *   );
- * };
- *
- * export default App;
- * ```
  *
  */
 
@@ -75,14 +52,14 @@ const FilterSearch = ({ value, label, onChange }: FilterSearchProps) => {
           value={value}
           onChange={handleChange}
           placeholder={`Search ${label}`}
-          startIcon={<Search width={16} height={16} />}
+          startIcon={<Icon name="magnifying-glass" size={16} />}
           clearable
           width={280}
         />
       }
     >
       <IconButton
-        icon={<Search width={16} height={16} />}
+        icon={<Icon name="magnifying-glass" size={16} />}
         variant="outlined"
         className={cx({
           'border-primary-main text-primary-main bg-primary-surface': value,

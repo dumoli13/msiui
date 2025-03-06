@@ -11,7 +11,6 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
     titleHorizontalAlign?: 'left' | 'center' | 'right';
 }
 /**
- * IconButton Component
  *
  * The `IconButton` component is a flexible and highly customizable button component that supports various styles, colors, and states. It can display an icon, show a loading spinner, and include tooltip support.
  *
@@ -21,7 +20,6 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
  * @property {IconButtonProps} props The properties for the IconButton component.
  *
- * @returns {JSX.Element} A styled button component with optional icon and loading state.
  */
 declare const IconButton: ({ variant, color, className, disabled, loading, icon, size, onClick, title, titleVerticalAlign, titleHorizontalAlign, ...props }: IconButtonProps) => React.JSX.Element;
 export default IconButton;

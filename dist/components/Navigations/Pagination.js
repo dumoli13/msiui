@@ -4,7 +4,6 @@ import PaginationButton from './PaginationButton';
 export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_ITEMS_PER_PAGE = [5, 10, 20, 30, 40, 50, 100];
 /**
- * Pagination Component
  *
  * This component provides a pagination UI to navigate through paginated data. It allows users to select a page, change the number of items per page, and navigate between pages using next and previous buttons.
  *
@@ -15,30 +14,6 @@ export const DEFAULT_ITEMS_PER_PAGE = [5, 10, 20, 30, 40, 50, 100];
  * @property {Array<number>} [itemPerPage] - An array of options for the number of items per page (e.g., [10, 20, 50]).
  * @property {(data: PaginationDataType) => void} [onPageChange] - A callback function to handle page change with `page` and `limit` data.
  *
- * @example Basic Usage:
- * ```tsx
- * import Pagination from './Pagination';
- *
- * const MyComponent = () => {
- *   const [currentPage, setCurrentPage] = useState(1);
- *   const totalItems = 100;
- *
- *   const handlePageChange = (data) => {
- *     setCurrentPage(data.page);
- *   };
- *
- *   return (
- *     <Pagination
- *       total={totalItems}
- *       currentPage={currentPage}
- *       onPageChange={handlePageChange}
- *     />
- *   );
- * };
- * ```
- *
- * @property {PaginationProps} props - The props for the Pagination component.
- * @returns {JSX.Element} A pagination UI that allows navigation between pages and selection of items per page.
  */
 const pageButtonStyle = cx('text-neutral-100 text-16px h-8 min-w-8 px-2 shadow-box-1  rounded border border-neutral-40 bg-neutral-10', 'disabled:bg-primary-surface disabled:text-primary-main disabled:border-primary-surface disabled:cursor-not-allowed', 'hover:bg-primary-hover hover:text-neutral-10');
 const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, pageSize, onPageChange, }) => {

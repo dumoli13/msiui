@@ -1,7 +1,7 @@
-import React, { JSX, ReactNode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { XCircle } from 'react-feather';
 import COLORS from '../../libs/color';
+import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
@@ -23,12 +23,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
 
 const DangerModal = ({
   icon = (
-    <XCircle
-      height={48}
-      width={48}
-      strokeWidth={3}
-      stroke={COLORS.danger.main}
-    />
+    <Icon name="x-mark" size={48} strokeWidth={3} color={COLORS.danger.main} />
   ),
   title,
   content,

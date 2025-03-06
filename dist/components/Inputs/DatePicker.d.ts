@@ -47,21 +47,6 @@ export interface DatePickerProps extends Omit<InputHTMLAttributes<HTMLInputEleme
  * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
  * @property {number} [width] - Optional custom width for the input field.
  *
- * @returns {JSX.Element} The rendered DatePicker component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [selectedDate, setSelectedDate] = useState<Date | null>(null);
- *
- * <DatePicker
- *   value={selectedDate}
- *   onChange={(date) => setSelectedDate(date)}
- *   label="Select Date"
- *   placeholder="Choose a date"
- *   error="Date is required"
- * />
- * ```
- *
  */
 declare const DatePicker: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, inputRef, size, error: errorProp, success: successProp, disabledDate, width, ...props }: DatePickerProps) => React.JSX.Element;
 export default DatePicker;

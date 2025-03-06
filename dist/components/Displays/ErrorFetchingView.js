@@ -5,18 +5,6 @@ import React from 'react';
  * This component provides a styled placeholder for error states, particularly when a request cannot be processed.
  * It is designed to convey the issue clearly and provide context or guidance to the user.
  *
- * @example Basic Usage:
- * ```tsx
- * import ErrorFetchingView from './ErrorFetchingView';
- *
- * const MyComponent = () => (
- *   <div>
- *     <ErrorFetchingView />
- *   </div>
- * );
- * ```
- *
- * @returns {JSX.Element} A placeholder view for error states.
  */
 function ErrorFetchingView() {
     return (React.createElement("div", { className: "flex flex-col items-center justify-center gap-6 py-24" },

@@ -9,7 +9,8 @@ import React, {
   useState,
 } from 'react';
 import cx from 'classnames';
-import { Check } from 'react-feather';
+import { COLORS } from '../../libs';
+import Icon from '../Icon';
 
 export interface CheckboxRef {
   element: HTMLInputElement | null;
@@ -33,7 +34,6 @@ export interface CheckboxProps
 }
 
 /**
- * Checkbox Component
  *
  * A customizable checkbox input that allows users to select or deselect an option. It supports both controlled
  * and uncontrolled modes, provides an indeterminate state, and handles accessibility features like `aria-label`.
@@ -51,19 +51,6 @@ export interface CheckboxProps
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {number} [width] - Optional custom width for the input field.
  * @property {string} [aria-label] - The ARIA label for accessibility purposes.
- *
- * @returns {JSX.Element} The rendered Checkbox component.
- *
- * @example Basic Usage:
- * ```tsx
- * const [isChecked, setIsChecked] = useState(false);
- *
- * <Checkbox
- *   label="Accept terms and conditions"
- *   checked={isChecked}
- *   onChange={(checked) => setIsChecked(checked)}
- * />
- * ```
  *
  */
 
@@ -169,9 +156,12 @@ const Checkbox = ({
             {...props}
           />
           {value && !indeterminate && (
-            <Check
-              className={`absolute w-3.5 h-3.5 ${disabled ? 'text-neutral-60' : 'text-neutral-10'}`}
+            <Icon
+              name="check"
               strokeWidth={4}
+              className="absolute"
+              size={14}
+              color={disabled ? COLORS.neutral[60] : COLORS.neutral[10]}
             />
           )}
           {indeterminate && !value && (
