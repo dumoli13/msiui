@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 /**
@@ -21,13 +21,13 @@ import { createPortal } from 'react-dom';
  *
  */
 const Popover = ({ children, className, open, elementRef, onClose, verticalAlign = 'bottom', horizontalAlign = 'left', transformOriginVertical = 'top', transformOriginHorizontal = 'left', }) => {
-    const popoverRef = useRef(null);
-    const [dropdownPosition, setDropdownPosition] = useState({
+    const popoverRef = React.useRef(null);
+    const [dropdownPosition, setDropdownPosition] = React.useState({
         top: 0,
         left: 0,
         width: 0,
     });
-    useEffect(() => {
+    React.useEffect(() => {
         if (open) {
             document.body.style.overflow = 'hidden';
         }
@@ -38,7 +38,7 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
             document.body.style.overflow = '';
         };
     }, [open]);
-    const calculateDropdownPosition = useCallback(() => {
+    const calculateDropdownPosition = React.useCallback(() => {
         if (elementRef.current && popoverRef.current) {
             const rect = elementRef.current.getBoundingClientRect();
             const dropdownRect = popoverRef.current.getBoundingClientRect();
@@ -91,12 +91,12 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
             });
         }
     }, [verticalAlign, horizontalAlign]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (open) {
             calculateDropdownPosition();
         }
     }, [open, calculateDropdownPosition]);
-    useEffect(() => {
+    React.useEffect(() => {
         const handleScrollOrResize = () => {
             if (open) {
                 calculateDropdownPosition();
@@ -115,7 +115,6 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
                 top: dropdownPosition.top,
                 left: dropdownPosition.left,
                 transformOrigin: `${transformOriginHorizontal} ${transformOriginVertical}`,
-            }, className: cx('bg-neutral-10 shadow-box-2 rounded-lg p-4 mt-1 absolute z-[2100]', className) }, children), document.body))) : null;
+            }, className: cx('text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[2100]', className) }, children), document.body))) : null;
 };
 export default Popover;
-//# sourceMappingURL=Popover.js.map

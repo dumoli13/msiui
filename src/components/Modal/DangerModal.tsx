@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import COLORS from '../../libs/color';
 import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -23,7 +22,12 @@ import ModalConfirmContainer from './ModalConfirmContainer';
 
 const DangerModal = ({
   icon = (
-    <Icon name="x-mark" size={48} strokeWidth={3} color={COLORS.danger.main} />
+    <Icon
+      name="x-mark"
+      size={24}
+      strokeWidth={3}
+      className="text-danger-main dark:text-danger-main-dark"
+    />
   ),
   title,
   content,

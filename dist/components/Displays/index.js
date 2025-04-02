@@ -8,4 +8,3 @@ export { default as Popper } from './Popper';
 export { default as Skeleton } from './Skeleton';
 export { default as Tag } from './Tag';
 export { default as Tooltip } from './Tooltip';
-//# sourceMappingURL=index.js.map

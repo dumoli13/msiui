@@ -1,7 +1,6 @@
-import React, { MouseEventHandler, forwardRef } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import icon from '../assets/icon.svg';
-import COLORS from '../libs/color';
 
 export type IconNames =
   | 'academic-cap'
@@ -329,36 +328,84 @@ export interface IconProps {
   size?: number;
   strokeWidth?: number;
   className?: string;
-  onClick?: MouseEventHandler<HTMLSpanElement>;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
+  animation?: 'spin' | 'pulse' | 'bounce' | 'ping';
 }
 
-const Icon = forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
+const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
   const {
     name,
     color = 'currentColor',
-    size = 24,
+    size = '1em',
     strokeWidth = 1,
     className,
     onClick,
+    animation,
   } = props;
+
+  const animationStyle = React.useMemo(() => {
+    const baseStyle: React.CSSProperties = {
+      display: 'inline-block',
+      verticalAlign: 'middle',
+    };
+
+    switch (animation) {
+      case 'spin':
+        return { ...baseStyle, animation: 'spin 1s linear infinite' };
+      case 'pulse':
+        return {
+          ...baseStyle,
+          animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        };
+      case 'bounce':
+        return { ...baseStyle, animation: 'bounce 1s infinite' };
+      case 'ping':
+        return {
+          ...baseStyle,
+          animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+        };
+      default:
+        return baseStyle;
+    }
+  }, [animation]);
 
   return (
     <span
       ref={ref}
       aria-label={name}
-      className={cx({ 'cursor-pointer': !!onClick }, className)}
+      className={cx(className, { 'cursor-pointer': !!onClick })}
       {...(onClick && { onClick, role: 'button', tabIndex: 0 })}
     >
       <svg
+        viewBox="0 0 24 24" // Maintain aspect ratio
         width={size}
         height={size}
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
+        style={animationStyle}
       >
         <use xlinkHref={`${icon}#${name}`} />
       </svg>
+
+      {/* Add global keyframes */}
+      <style>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+            50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+          }
+          @keyframes ping {
+            75%, 100% { transform: scale(2); opacity: 0; }
+          }
+        `}</style>
     </span>
   );
 });

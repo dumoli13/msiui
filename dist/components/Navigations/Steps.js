@@ -1,8 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
+import cx from 'classnames';
 import Icon from '../Icon';
 /**
- * Steps Component
  *
  * A component that renders a multi-step progress tracker. Each step can represent a process or a task.
  * The component displays the title and description for each step, along with visual indicators for success, error,
@@ -14,7 +14,6 @@ import Icon from '../Icon';
  * @property {Array} items - An array of step items, each containing the following properties:
  * @property {function} [onChange] - A callback function triggered when the active step is changed.
  * @property {boolean} [disabled=false] - A flag that disables the ability to change steps.*
- * @returns {JSX.Element} The Steps component that displays the steps and allows navigation between them.
  *
  */
 function Steps({ active, items, onChange, disabled = false }) {
@@ -26,38 +25,49 @@ function Steps({ active, items, onChange, disabled = false }) {
     return (React.createElement("div", { className: "flex items-start justify-between gap-4 w-full" }, items.map((item, index) => {
         return active === index ? (
         // Active Step
-        React.createElement("div", { key: index, className: "flex items-start gap-2 relative flex-1" },
-            React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none bg-primary-main text-neutral-10" }, index + 1),
+        React.createElement("div", { key: index, className: cx('flex gap-2 relative flex-1', {
+                'items-start': !!item.description,
+                'items-center': !item.description,
+            }) },
+            React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark" }, index + 1),
             React.createElement("div", { className: "flex-1" },
                 React.createElement("div", { className: "flex items-center gap-4" },
-                    React.createElement("h4", { className: "text-neutral-90 font-black text-24px" }, item.title),
-                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40" }))),
-                React.createElement("p", { className: "text-neutral-90 text-14px" }, item.description)))) : item.error || item.success ? (
+                    React.createElement("h4", { className: "text-neutral-90 dark:text-neutral-90-dark" }, item.title),
+                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" }))),
+                React.createElement("p", { className: "text-neutral-90 dark:text-neutral-90-dark text-14px" }, item.description)))) : item.error || item.success ? (
         // Inactive Step but has error or success indicator
-        React.createElement("div", { key: index, className: `flex items-start gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 cursor-pointer' : 'cursor-default'}`, role: "button", onClick: () => {
+        React.createElement("div", { key: index, className: cx(`flex gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer' : 'cursor-default'}`, {
+                'items-start': !!item.description,
+                'items-center': !item.description,
+            }), role: "button", onClick: () => {
                 if (item.available)
                     handleChangePage === null || handleChangePage === void 0 ? void 0 : handleChangePage(index);
             } },
-            item.success ? (React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-primary-main border-primary-main" },
-                React.createElement(Icon, { name: "check", size: 16 }))) : (React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-danger-main border-danger-main" },
+            item.success ? (React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-primary-main dark:text-primary-main-dark border-primary-main dark:border-primary-main-dark" },
+                React.createElement(Icon, { name: "check", size: 16 }))) : (React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-danger-main dark:text-danger-main-dark border-danger-main dark:border-danger-main-dark" },
                 React.createElement(Icon, { name: "x-mark", size: 16 }))),
             React.createElement("div", { className: "flex-1" },
                 React.createElement("div", { className: "flex items-center gap-4" },
-                    React.createElement("h4", { className: "font-black text-24px text-neutral-90" }, item.title),
-                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40" }))),
-                React.createElement("p", { className: "text-14px text-neutral-90" }, item.description)))) : (
+                    React.createElement("h4", { className: "text-primary-main dark:text-primary-main-dark" }, item.title),
+                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" }))),
+                React.createElement("p", { className: cx('text-14px', {
+                        'text-primary-main dark:text-primary-main-dark': item.error,
+                        'text-neutral-50 dark:text-neutral-50-dark': item.success,
+                    }) }, item.description)))) : (
         // Inactive Step
-        React.createElement("div", { key: index, className: `flex items-start gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 cursor-pointer' : 'cursor-default'}`, role: "button", onClick: () => {
+        React.createElement("div", { key: index, className: cx(`flex gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer' : 'cursor-default'}`, {
+                'items-start': !!item.description,
+                'items-center': !item.description,
+            }), role: "button", onClick: () => {
                 if (item.available)
                     handleChangePage === null || handleChangePage === void 0 ? void 0 : handleChangePage(index);
             } },
-            React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-neutral-50 border-neutral-50" }, index + 1),
+            React.createElement("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-neutral-50 dark:text-neutral-50-dark border-neutral-50 dark:border-neutral-50-dark" }, index + 1),
             React.createElement("div", { className: "flex-1" },
                 React.createElement("div", { className: "flex items-center gap-4" },
-                    React.createElement("h4", { className: "font-black text-24px text-neutral-50" }, item.title),
-                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40" }))),
-                React.createElement("p", { className: "text-14px text-neutral-50" }, item.description))));
+                    React.createElement("h4", { className: "text-neutral-50 dark:text-neutral-50-dark" }, item.title),
+                    index < items.length - 1 && (React.createElement("div", { className: "h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" }))),
+                React.createElement("p", { className: "text-14px text-neutral-50 dark:text-neutral-50-dark" }, item.description))));
     })));
 }
 export default Steps;
-//# sourceMappingURL=Steps.js.map

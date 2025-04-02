@@ -27,6 +27,13 @@ export type {
   DateRangePickerProps,
 } from './DateRangePicker';
 
+export { default as MultipleDatePicker } from './MultipleDatePicker';
+export type {
+  InputMultipleDateValue,
+  InputMultipleDatePickerRef,
+  MultipleDatePickerProps,
+} from './MultipleDatePicker';
+
 export { default as IconButton } from './IconButton';
 export type { IconButtonProps } from './IconButton';
 

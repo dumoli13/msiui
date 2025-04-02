@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
@@ -37,8 +37,8 @@ const FilterSelect = <T extends { [key: string]: any }, D>({
   label,
   onChange,
 }: FilterSearchProps<T, D>) => {
-  const inputRef = useRef<SelectRef<T>>(null);
-  const [open, setOpen] = useState(false);
+  const inputRef = React.useRef<SelectRef<T>>(null);
+  const [open, setOpen] = React.useState(false);
 
   const handleChange = (value: SelectValue<T, D> | null) => {
     onChange?.(value);
@@ -77,10 +77,19 @@ const FilterSelect = <T extends { [key: string]: any }, D>({
       }
     >
       <IconButton
-        icon={<Icon name="chevron-down" size={16} />}
+        icon={
+          <Icon
+            name="chevron-down"
+            size={16}
+            className={cx({
+              'text-primary-main dark:text-primary-main-dark': value,
+            })}
+          />
+        }
         variant="outlined"
         className={cx({
-          'border-primary-main text-primary-main bg-primary-surface': value,
+          'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark':
+            value,
         })}
         title="Select Option"
       />

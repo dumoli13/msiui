@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 /**
@@ -22,16 +22,16 @@ import { createPortal } from 'react-dom';
  *
  */
 const Popper = ({ className, disabled = false, content, children, open: openProp, onOpen = () => { }, verticalAlign = 'bottom', horizontalAlign = 'left', transformOriginVertical = 'top', transformOriginHorizontal = 'left', }) => {
-    const elementRef = useRef(null);
-    const popperRef = useRef(null);
-    const [open, setOpen] = useState(openProp !== null && openProp !== void 0 ? openProp : false);
-    const [dropdownPosition, setDropdownPosition] = useState({
+    const elementRef = React.useRef(null);
+    const popperRef = React.useRef(null);
+    const [open, setOpen] = React.useState(openProp !== null && openProp !== void 0 ? openProp : false);
+    const [dropdownPosition, setDropdownPosition] = React.useState({
         top: 0,
         left: 0,
         width: 0,
     });
     const isDropdownOpen = openProp !== undefined ? openProp : open;
-    const calculateDropdownPosition = useCallback(() => {
+    const calculateDropdownPosition = React.useCallback(() => {
         if (elementRef.current && popperRef.current) {
             const rect = elementRef.current.getBoundingClientRect();
             const dropdownRect = popperRef.current.getBoundingClientRect();
@@ -77,15 +77,19 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
                 left =
                     rect.left + window.scrollX + rect.width / 2 - dropdownRect.width / 2;
             }
-            setDropdownPosition({ top, left, width: rect.width });
+            setDropdownPosition({
+                top,
+                left,
+                width: rect.width,
+            });
         }
     }, [verticalAlign, horizontalAlign]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (isDropdownOpen) {
             calculateDropdownPosition();
         }
     }, [isDropdownOpen, calculateDropdownPosition]);
-    useEffect(() => {
+    React.useEffect(() => {
         const handleScrollOrResize = () => {
             if (isDropdownOpen) {
                 calculateDropdownPosition();
@@ -98,12 +102,12 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
             window.removeEventListener('resize', handleScrollOrResize);
         };
     }, [isDropdownOpen, calculateDropdownPosition]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (openProp !== undefined) {
             setOpen(openProp);
         }
     }, [openProp]);
-    useEffect(() => {
+    React.useEffect(() => {
         onOpen(open);
     }, [open, onOpen]);
     const handleDropdownToggle = () => {
@@ -119,7 +123,7 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
             setOpen(false);
         }
     };
-    useEffect(() => {
+    React.useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -127,13 +131,12 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
     }, []);
     return (React.createElement("div", { className: cx('relative', className) },
         React.createElement("div", { ref: elementRef },
-            React.createElement("div", { role: "button", tabIndex: -1, "aria-pressed": "true", onClick: handleDropdownToggle }, children)),
+            React.createElement("div", { role: "button", tabIndex: -1, "aria-pressed": isDropdownOpen ? 'true' : 'false', onClick: handleDropdownToggle }, children)),
         isDropdownOpen &&
             createPortal(React.createElement("div", { ref: popperRef, style: {
                     top: dropdownPosition.top,
                     left: dropdownPosition.left,
                     transformOrigin: `${transformOriginHorizontal} ${transformOriginVertical}`,
-                }, className: "bg-neutral-10 shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]" }, content), document.body)));
+                }, className: "text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]" }, content), document.body)));
 };
 export default Popper;
-//# sourceMappingURL=Popper.js.map

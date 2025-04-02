@@ -1,30 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState, } from 'react';
+import React from 'react';
+import cx from 'classnames';
 import { createPortal } from 'react-dom';
-/**
- *
- * A customizable tooltip component that displays a small overlay with a message when the user hovers over a target element.
- * The tooltip can have customizable alignment, delay times, and an optional arrow indicator. The position of the tooltip
- * is dynamically calculated based on the target element's position on the screen and the viewport size.
- *
- * @interface TooltipProps
- * @property {ReactNode} children - The content or elements to which the component's behavior or functionality is applied.
- * @property {function} [onOpen] - A callback function triggered when the tooltip opens or closes.
- * @property {string} [verticalAlign='bottom'] - The vertical alignment of the tooltip relative to the target element. Can be 'top', 'bottom', or 'center'.
- * @property {string} [horizontalAlign='center'] - The horizontal alignment of the tooltip relative to the target element. Can be 'left', 'center', or 'right'.
- * @property {boolean} [arrow=true] - A flag to control whether the tooltip shows an arrow indicating its direction.
- * @property {number} [mouseEnterDelay=500] - The delay (in milliseconds) before the tooltip appears after the mouse enters the target element.
- * @property {number} [mouseLeaveDelay=0] - The delay (in milliseconds) before the tooltip disappears after the mouse leaves the target element.
- * @property {string} title - The content of the tooltip, which will be displayed inside the tooltip box.
- *
- */
-const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center', arrow = true, mouseEnterDelay = 500, mouseLeaveDelay = 0, title, }) => {
-    const elementRef = useRef(null);
-    const dropdownRef = useRef(null);
-    const [open, setOpen] = useState(false);
-    const [dropdownStyles, setDropdownStyles] = useState(null); // Set to `null` initially
-    const enterTimeout = useRef(null);
-    const leaveTimeout = useRef(null);
-    const calculateDropdownPosition = useCallback(() => {
+const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center', arrow = true, mouseEnterDelay = 500, mouseLeaveDelay = 0, title, disabled = false, }) => {
+    const elementRef = React.useRef(null);
+    const dropdownRef = React.useRef(null);
+    const [open, setOpen] = React.useState(false);
+    const [dropdownStyles, setDropdownStyles] = React.useState(null);
+    const enterTimeout = React.useRef(null);
+    const leaveTimeout = React.useRef(null);
+    const calculateDropdownPosition = React.useCallback(() => {
         if (elementRef.current && dropdownRef.current) {
             const rect = elementRef.current.getBoundingClientRect();
             const dropdownRect = dropdownRef.current.getBoundingClientRect();
@@ -66,10 +50,11 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
                 top,
                 left,
                 width: rect.width,
+                opacity: 1, // Make visible only after position calculation
             });
         }
     }, [verticalAlign, horizontalAlign]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (open) {
             calculateDropdownPosition();
             const handleScrollOrResize = () => calculateDropdownPosition();
@@ -95,16 +80,18 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
         leaveTimeout.current = setTimeout(() => setOpen(false), mouseLeaveDelay);
     };
     return (React.createElement("div", { className: "relative" },
-        React.createElement("div", { ref: elementRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, role: "button", 
-            // tabIndex={0}
-            tabIndex: -1, "aria-pressed": "true" }, children),
+        React.createElement("div", { ref: elementRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, role: "button", tabIndex: -1, className: cx('inline-block', {
+                'cursor-not-allowed': disabled,
+            }) }, disabled ? (React.createElement("span", { className: "pointer-events-none" }, children)) : (children)),
         open &&
             createPortal(React.createElement("div", { ref: dropdownRef, style: {
                     top: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top) || 0,
                     left: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left) || 0,
+                    opacity: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.opacity) || 0,
                     transformOrigin: 'center center',
-                }, className: "absolute z-[100] bg-neutral-90 text-neutral-10 rounded-sm px-2 py-1.5 mt-1 text-14px" },
-                arrow && (React.createElement("div", { className: "absolute bg-neutral-90 w-2 h-2 transform rotate-45", style: {
+                    transition: 'opacity 0.15s ease-out',
+                }, className: "absolute z-[100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px" },
+                arrow && (React.createElement("div", { className: "absolute bg-neutral-90 dark:bg-neutral-90-dark w-2 h-2 transform rotate-45", style: {
                         top: verticalAlign === 'top'
                             ? '100%'
                             : verticalAlign === 'bottom'
@@ -124,4 +111,3 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
                 title), document.body)));
 };
 export default Tooltip;
-//# sourceMappingURL=Tooltip.js.map

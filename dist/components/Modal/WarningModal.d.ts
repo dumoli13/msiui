@@ -19,3 +19,4 @@ import { ConfirmModalProps } from './ConfirmModal';
  */
 declare const WarningModal: ({ icon, title, content, confirmText, cancelText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default WarningModal;
+//# sourceMappingURL=WarningModal.d.ts.map

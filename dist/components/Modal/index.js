@@ -16,4 +16,3 @@ Modal.warning = WarningModal;
 Modal.danger = DangerModal;
 Modal.primary = PrimaryModal;
 export default Modal;
-//# sourceMappingURL=index.js.map

@@ -10,11 +10,16 @@ export function isToday(date: Date | null): boolean {
   );
 }
 
-export function areDatesEqual(dateA: Date, dateB: Date): boolean {
-  return (
-    dateA.getFullYear() === dateB.getFullYear() &&
-    dateA.getMonth() === dateB.getMonth() &&
-    dateA.getDate() === dateB.getDate()
+export function areDatesEqual(dateA: Date, dateB: Date | Date[]): boolean {
+  if (!Array.isArray(dateB)) {
+    dateB = [dateB];
+  }
+
+  return dateB.some(
+    (b) =>
+      dateA.getFullYear() === b.getFullYear() &&
+      dateA.getMonth() === b.getMonth() &&
+      dateA.getDate() === b.getDate(),
   );
 }
 

@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 export interface AccordionItem {
     key: string | number;
-    title: ReactNode;
-    content: ReactNode;
+    title: React.ReactNode;
+    content: React.ReactNode;
 }
 export interface AccordionProps {
     items: AccordionItem[];
@@ -35,3 +35,4 @@ export interface AccordionProps {
  */
 declare const Accordion: ({ items, collapsible, singleCollapse, defaultActiveKey, activeKey, onChangeActiveKey, size, className, }: AccordionProps) => React.JSX.Element;
 export default Accordion;
+//# sourceMappingURL=Accordion.d.ts.map

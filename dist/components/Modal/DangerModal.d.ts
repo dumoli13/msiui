@@ -16,3 +16,4 @@ import { ConfirmModalProps } from './ConfirmModal';
  */
 declare const DangerModal: ({ icon, title, content, confirmText, cancelText, onConfirm, onCancel, customAction, }: ConfirmModalProps) => void;
 export default DangerModal;
+//# sourceMappingURL=DangerModal.d.ts.map

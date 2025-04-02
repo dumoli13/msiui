@@ -1,26 +1,27 @@
-import React, { ReactNode, RefCallback, RefObject, TextareaHTMLAttributes } from 'react';
+import React from 'react';
 export interface TextAreaRef {
     element: HTMLTextAreaElement | null;
     value: string;
     focus: () => void;
     reset: () => void;
 }
-export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'size'> {
+export interface TextAreaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'size'> {
     value?: string;
     defaultValue?: string;
     label?: string;
     labelPosition?: 'top' | 'left';
     autoHideLabel?: boolean;
     onChange?: (value: string) => void;
-    helperText?: ReactNode;
+    helperText?: React.ReactNode;
     placeholder?: string;
     fullWidth?: boolean;
-    startIcon?: ReactNode;
-    endIcon?: ReactNode;
-    inputRef?: RefObject<TextAreaRef | null> | RefCallback<TextAreaRef | null>;
+    startIcon?: React.ReactNode;
+    endIcon?: React.ReactNode;
+    inputRef?: React.RefObject<TextAreaRef | null> | React.RefCallback<TextAreaRef | null>;
     size?: 'default' | 'large';
     error?: string;
     success?: boolean;
+    loading?: boolean;
     minLines?: number;
     maxLines?: number;
     width?: number;
@@ -42,14 +43,16 @@ export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<TextAreaRef> | RefCallback<TextAreaRef>} [inputRef] - A ref to access the textarea element directly.
+ * @property {RefObject<TextAreaRef> | React.RefCallback<TextAreaRef>} [inputRef] - A ref to access the textarea element directly.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [minLines=2] - The minimum number of lines (rows) visible in the textarea.
  * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
  * @property {number} [width] - Optional custom width for the input field.
  *
  */
-declare const TextArea: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, minLines, maxLines, width, ...props }: TextAreaProps) => React.JSX.Element;
+declare const TextArea: ({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, minLines, maxLines, width, ...props }: TextAreaProps) => React.JSX.Element;
 export default TextArea;
+//# sourceMappingURL=TextArea.d.ts.map

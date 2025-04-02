@@ -1,18 +1,12 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
 export interface PopperProps {
   className?: string;
   disabled?: boolean;
-  content: ReactNode;
-  children: ReactNode;
+  content: React.ReactNode;
+  children: React.ReactNode;
   open?: boolean;
   onOpen?: (open: boolean) => void;
   verticalAlign?: 'top' | 'center' | 'bottom'; // Vertical position on the anchor element
@@ -54,10 +48,10 @@ const Popper = ({
   transformOriginVertical = 'top',
   transformOriginHorizontal = 'left',
 }: PopperProps) => {
-  const elementRef = useRef<HTMLDivElement>(null);
-  const popperRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(openProp ?? false);
-  const [dropdownPosition, setDropdownPosition] = useState({
+  const elementRef = React.useRef<HTMLDivElement>(null);
+  const popperRef = React.useRef<HTMLDivElement>(null);
+  const [open, setOpen] = React.useState(openProp ?? false);
+  const [dropdownPosition, setDropdownPosition] = React.useState({
     top: 0,
     left: 0,
     width: 0,
@@ -65,7 +59,7 @@ const Popper = ({
 
   const isDropdownOpen = openProp !== undefined ? openProp : open;
 
-  const calculateDropdownPosition = useCallback(() => {
+  const calculateDropdownPosition = React.useCallback(() => {
     if (elementRef.current && popperRef.current) {
       const rect = elementRef.current.getBoundingClientRect();
       const dropdownRect = popperRef.current.getBoundingClientRect();
@@ -111,17 +105,21 @@ const Popper = ({
           rect.left + window.scrollX + rect.width / 2 - dropdownRect.width / 2;
       }
 
-      setDropdownPosition({ top, left, width: rect.width });
+      setDropdownPosition({
+        top,
+        left,
+        width: rect.width,
+      });
     }
   }, [verticalAlign, horizontalAlign]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isDropdownOpen) {
       calculateDropdownPosition();
     }
   }, [isDropdownOpen, calculateDropdownPosition]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleScrollOrResize = () => {
       if (isDropdownOpen) {
         calculateDropdownPosition();
@@ -135,13 +133,13 @@ const Popper = ({
     };
   }, [isDropdownOpen, calculateDropdownPosition]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (openProp !== undefined) {
       setOpen(openProp);
     }
   }, [openProp]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     onOpen(open);
   }, [open, onOpen]);
 
@@ -161,7 +159,7 @@ const Popper = ({
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -174,7 +172,7 @@ const Popper = ({
         <div
           role="button"
           tabIndex={-1}
-          aria-pressed="true"
+          aria-pressed={isDropdownOpen ? 'true' : 'false'}
           onClick={handleDropdownToggle}
         >
           {children}
@@ -189,7 +187,7 @@ const Popper = ({
               left: dropdownPosition.left,
               transformOrigin: `${transformOriginHorizontal} ${transformOriginVertical}`,
             }}
-            className="bg-neutral-10 shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]"
+            className="text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]"
           >
             {content}
           </div>,

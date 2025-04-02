@@ -1,35 +1,33 @@
-import React, {
-  ChangeEvent,
-  InputHTMLAttributes,
-  ReactNode,
-  RefCallback,
-  RefObject,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 
 export interface CheckboxRef {
   element: HTMLInputElement | null;
   value: boolean;
   focus: () => void;
+  reset: () => void;
 }
 
 export interface CheckboxProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'onChange' | 'size' | 'placeholder'
+  > {
   label?: string;
-  labelPosition?: 'top' | 'left';
+  labelPosition?: 'top' | 'bottom' | 'left' | 'right';
   checked?: boolean;
   defaultChecked?: boolean;
   indeterminate?: boolean;
   onChange?: (checked: boolean) => void;
-  helperText?: ReactNode;
+  helperText?: React.ReactNode;
   disabled?: boolean;
-  inputRef?: RefObject<CheckboxRef | null> | RefCallback<CheckboxRef | null>;
+  inputRef?:
+    | React.RefObject<CheckboxRef | null>
+    | React.RefCallback<CheckboxRef | null>;
+  size?: 'default' | 'large';
   error?: string;
+  loading?: boolean;
   width?: number;
 }
 
@@ -37,10 +35,9 @@ export interface CheckboxProps
  *
  * A customizable checkbox input that allows users to select or deselect an option. It supports both controlled
  * and uncontrolled modes, provides an indeterminate state, and handles accessibility features like `aria-label`.
- * The component is also highly customizable with props for labels, error messages, and helper text.
  *
  * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
+ * @property {'top' | 'bottom' | 'left' | 'right'} [labelPosition='right'] - The position of the label relative to the field ('top' or 'left').
  * @property {boolean} [checked] - The controlled value of the checkbox. If provided, the component acts as a controlled component.
  * @property {boolean} [defaultChecked=false] - The default checked state if `checked` is not provided. Used in uncontrolled mode.
  * @property {boolean} [indeterminate=false] - If true, the checkbox will appear in an indeterminate state.
@@ -49,6 +46,7 @@ export interface CheckboxProps
  * @property {boolean} [disabled=false] - Disables the input field if true.
  * @property {RefObject<CheckboxRef>} [inputRef] - A reference to the checkbox element.
  * @property {string} [error] - Error message to display when the input has an error.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  * @property {string} [aria-label] - The ARIA label for accessibility purposes.
  *
@@ -56,38 +54,44 @@ export interface CheckboxProps
 
 const Checkbox = ({
   label = '',
-  labelPosition = 'top',
+  labelPosition = 'right',
   checked: valueProp,
   defaultChecked = false,
   indeterminate = false,
   onChange,
   helperText,
-  disabled,
+  disabled: disabledProp = false,
   className,
   inputRef,
+  size = 'default',
   error: errorProp,
+  loading = false,
   width,
   'aria-label': ariaLabel,
   ...props
 }: CheckboxProps) => {
-  const elementRef = useRef<HTMLInputElement>(null);
-  const [internalValue, setInternalValue] = useState(defaultChecked);
-  const [isFocused, setIsFocused] = useState(false);
+  const elementRef = React.useRef<HTMLInputElement>(null);
+  const [internalValue, setInternalValue] = React.useState(defaultChecked);
+  const [isFocused, setIsFocused] = React.useState(false);
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
   const helperMessage = errorProp || helperText;
   const isError = errorProp;
+  const disabled = loading || disabledProp;
 
-  useImperativeHandle(inputRef, () => ({
+  React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
     focus: () => {
       elementRef.current?.focus();
     },
+    reset: () => {
+      setInternalValue(defaultChecked);
+    },
   }));
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!disabled) {
       const newChecked = e.target.checked;
       onChange?.(newChecked);
@@ -103,17 +107,27 @@ const Checkbox = ({
   const id = label ? label.replace(/\s+/g, '-').toLowerCase() : undefined;
 
   return (
-    <div
-      className={cx(
-        { 'flex items-center gap-4': labelPosition === 'left' },
-        className,
-      )}
-      style={width ? { width } : undefined}
-    >
+    <div className={className} style={width ? { width } : undefined}>
       <label
-        className={cx('inline-flex gap-2 w-fit', {
+        className={cx('flex w-fit', {
           'cursor-not-allowed opacity-50': disabled,
           'cursor-pointer': !disabled,
+          'gap-0.5 items-center':
+            (labelPosition === 'top' || labelPosition === 'bottom') &&
+            size === 'default',
+          'gap-1.5 items-center':
+            (labelPosition === 'top' || labelPosition === 'bottom') &&
+            size === 'large',
+          'flex-col-reverse': labelPosition === 'top',
+          'flex-col': labelPosition === 'bottom',
+          'gap-2 && h-[42px]':
+            (labelPosition === 'left' || labelPosition === 'right') &&
+            size === 'default',
+          'gap-2 && h-[64px]':
+            (labelPosition === 'left' || labelPosition === 'right') &&
+            size === 'large',
+          'flex-row-reverse': labelPosition === 'left',
+          'flex-row': labelPosition === 'right',
         })}
       >
         <div
@@ -122,12 +136,15 @@ const Checkbox = ({
           aria-disabled="false"
           aria-label={ariaLabel}
           className={cx(
-            'shrink-0 w-5 h-5 rounded-md border flex justify-center items-center transition-all box-border relative',
+            'shrink-0rounded-md border flex justify-center items-center transition-all box-border relative',
             {
-              'bg-neutral-20 border-neutral-40': disabled,
-              'border-neutral-50 bg-neutral-10 hover:border-primary-main':
+              'w-5 h-5': size === 'default',
+              'w-7 h-7': size === 'large',
+              'bg-neutral-20 dark:bg-neutral-20-dark border-neutral-40 dark:border-neutral-40-dark':
+                disabled,
+              'bg-neutral-10 dark:bg-neutral-10-dark border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark':
                 !disabled,
-              'bg-primary-main border-primary-main':
+              'bg-primary-main dark:bg-primary-main-dark border-primary-main dark:border-primary-main-dark':
                 !disabled && value && !indeterminate,
               'ring-3 ring-primary-focus': isFocused,
             },
@@ -137,7 +154,7 @@ const Checkbox = ({
               e.preventDefault(); // Prevent scrolling
               handleChange({
                 target: { checked: !value },
-              } as ChangeEvent<HTMLInputElement>);
+              } as React.ChangeEvent<HTMLInputElement>);
             }
           }}
         >
@@ -155,26 +172,45 @@ const Checkbox = ({
             onBlur={handleBlur}
             {...props}
           />
-          {value && !indeterminate && (
+          {loading && (
+            <div className="text-neutral-70 dark:text-neutral-70-dark">
+              <Icon name="loader" animation="spin" strokeWidth={2} />
+            </div>
+          )}
+          {!loading && value && !indeterminate && (
             <Icon
               name="check"
               strokeWidth={4}
-              className="absolute"
-              size={14}
-              color={disabled ? COLORS.neutral[60] : COLORS.neutral[10]}
+              size={size === 'default' ? 14 : 18}
+              className={cx('absolute', {
+                'text-neutral-10 dark:text-neutral-10-dark': !disabled,
+                'text-neutral-60 dark:text-neutral-60-dark': disabled,
+              })}
             />
           )}
-          {indeterminate && !value && (
-            <span className="absolute w-2.5 h-2.5 rounded-sm bg-primary-main" />
+          {!loading && !value && indeterminate && (
+            <span className="absolute w-2.5 h-2.5 rounded-sm bg-primary-main dark:bg-primary-main-dark" />
           )}
         </div>
-        {label && <span className="text-14px text-neutral-90">{label}</span>}
+        {!!label && (
+          <span
+            className={cx('text-neutral-90 dark:text-neutral-90-dark', {
+              'text-14px': size === 'default',
+              'text-18px': size === 'large',
+            })}
+          >
+            {label}
+          </span>
+        )}
       </label>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${
-            isError ? 'text-danger-main' : 'text-neutral-60'
-          }`}
+          className={cx('w-full text-left mt-1', {
+            'text-danger-main dark:text-danger-main-dark': isError,
+            'text-neutral-60 dark:text-neutral-60-dark': !isError,
+            'text-12px': size === 'default',
+            'text-16px': size === 'large',
+          })}
         >
           {helperMessage}
         </div>

@@ -1,4 +1,4 @@
-import React, { JSX, ReactNode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';

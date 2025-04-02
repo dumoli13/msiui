@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useRef } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { ModalProps } from '.';
 import { Button } from '../Inputs';
@@ -25,6 +25,7 @@ import { Button } from '../Inputs';
  * @property {boolean} [confirmDisabled=false] - Whether the confirm button should be disabled.
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {string} [confirmButtonColor='primary'] - The color for the confirm button.
+ * @property {ReactNode} [footer] - Optional footer content to be displayed at the bottom of the modal.
  *
  */
 
@@ -45,10 +46,11 @@ const ModalContainer = ({
   confirmText = 'Confirm',
   confirmButtonColor = 'primary',
   customAction,
+  footer,
 }: ModalProps) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = React.useRef<HTMLDivElement>(null);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape' && onClose) {
       onClose();
     } else if (e.key === 'Tab' && open) {
@@ -56,7 +58,7 @@ const ModalContainer = ({
     }
   };
 
-  const trapFocus = (e: KeyboardEvent<HTMLDivElement>) => {
+  const trapFocus = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!modalRef.current) return;
 
     const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
@@ -77,7 +79,7 @@ const ModalContainer = ({
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -97,7 +99,6 @@ const ModalContainer = ({
       className="flex items-center justify-center z-[1300] inset-0 fixed"
       onKeyDown={handleKeyDown}
       ref={modalRef}
-      tabIndex={0}
     >
       {closeOnOverlayClick ? (
         <div
@@ -111,50 +112,61 @@ const ModalContainer = ({
       )}
       <form
         className={cx(
-          'border border-neutral-40 rounded-xl drop-shadow-sm bg-neutral-10 m-8 flex flex-col max-h-[90vh] ',
+          'border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ',
           className,
         )}
         style={{ width }}
         tabIndex={-1}
         onSubmit={onConfirm}
       >
-        <div className="pt-12 pb-4 px-12 flex items-center gap-4">
+        <div className="pt-6 pb-2 px-6 flex items-center gap-4">
           {icon}
-          <div className="text-40px font-semibold text-neutral-100 w-full break-words">
+          <div className="text-20px font-semibold text-neutral-100 dark:text-neutral-100-dark w-full break-words">
             {title}
           </div>
         </div>
         <div
           className={cx(
-            'pb-12 px-12 h-full text-neutral-80 text-28px flex-1 overflow-auto',
+            'pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto',
             { 'ml-16': !!icon },
           )}
         >
           {children}
         </div>
-        <div className="px-12 py-6 bg-neutral-20 flex justify-end items-center gap-6 rounded-b-xl">
-          {onClose && (
-            <Button
-              variant="outlined"
-              onClick={onClose}
-              color={cancelButtonColor}
-            >
-              {cancelText}
-            </Button>
-          )}
-          {onConfirm && (
-            <Button
-              type="submit"
-              variant="contained"
-              color={confirmButtonColor}
-              loading={confirmLoading}
-              disabled={confirmDisabled}
-            >
-              {confirmText}
-            </Button>
-          )}
-          {customAction && customAction.map((action) => action)}
-        </div>
+        {footer ? (
+          footer
+        ) : (
+          <div className="px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md">
+            {customAction ? (
+              customAction.map((action) => action)
+            ) : (
+              <>
+                {onClose && (
+                  <Button
+                    variant="outlined"
+                    onClick={onClose}
+                    color={cancelButtonColor}
+                    size="large"
+                  >
+                    {cancelText}
+                  </Button>
+                )}
+                {onConfirm && (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color={confirmButtonColor}
+                    loading={confirmLoading}
+                    disabled={confirmDisabled}
+                    size="large"
+                  >
+                    {confirmText}
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </form>
     </div>
   );

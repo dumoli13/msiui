@@ -1,13 +1,4 @@
-import React, {
-  ChangeEvent,
-  InputHTMLAttributes,
-  ReactNode,
-  RefCallback,
-  RefObject,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 
@@ -27,11 +18,12 @@ export interface TimerTextfieldRef {
   element: HTMLInputElement | null;
   value: number | null;
   focus: () => void;
+  reset: () => void;
 }
 
 export interface TimerFieldProps
   extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
+    React.InputHTMLAttributes<HTMLInputElement>,
     'value' | 'defaultValue' | 'onChange' | 'size'
   > {
   id?: string;
@@ -42,16 +34,19 @@ export interface TimerFieldProps
   autoHideLabel?: boolean;
   onChange?: (value: number | null) => void;
   className?: string;
-  helperText?: ReactNode;
+  helperText?: React.ReactNode;
   disabled?: boolean;
   fullWidth?: boolean;
-  startIcon?: ReactNode;
-  endIcon?: ReactNode;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
   clearable?: boolean;
-  inputRef?: RefObject<TimerTextfieldRef> | RefCallback<TimerTextfieldRef>;
+  inputRef?:
+    | React.RefObject<TimerTextfieldRef>
+    | React.RefCallback<TimerTextfieldRef>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
+  loading?: boolean;
   width?: number;
 }
 
@@ -72,10 +67,11 @@ export interface TimerFieldProps
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
  * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- * @property {RefObject<TimerTextfieldRef> | RefCallback<TimerTextfieldRef>} [inputRef] - A ref that provides access to the input element.
+ * @property {RefObject<TimerTextfieldRef> | React.RefCallback<TimerTextfieldRef>} [inputRef] - A ref that provides access to the input element.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
  */
@@ -85,11 +81,13 @@ const TimerField = ({
   value: valueProp,
   defaultValue = valueProp,
   label,
+
   labelPosition = 'top',
+  autoHideLabel = false,
   onChange,
   className,
   helperText,
-  disabled = false,
+  disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
@@ -98,23 +96,23 @@ const TimerField = ({
   size = 'default',
   error: errorProp,
   success: successProp,
+  loading = false,
   width,
   ...props
 }: TimerFieldProps) => {
-  const elementRef = useRef<HTMLInputElement>(null);
-  const [focused, setFocused] = useState<'hour' | 'minute' | 'second' | null>(
-    null,
-  );
-  const [internalValue, setInternalValue] = useState<number | null>(
+  const elementRef = React.useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = React.useState<
+    'hour' | 'minute' | 'second' | null
+  >(null);
+  const [internalValue, setInternalValue] = React.useState<number | null>(
     defaultValue !== undefined ? defaultValue : null,
   );
 
   const isControlled = valueProp !== undefined;
 
   // Sync `internalStringValue` with `valueProp` when `valueProp` changes
-
   const value = isControlled ? valueProp : internalValue;
-  const [tempValue, setTempValue] = useState({
+  const [tempValue, setTempValue] = React.useState({
     hours: internalValue ? Math.floor(internalValue / 3600) : 0,
     minutes: internalValue ? Math.floor((internalValue % 3600) / 60) : 0,
     seconds: internalValue ? internalValue % 60 : 0,
@@ -141,18 +139,22 @@ const TimerField = ({
 
   const helperMessage = errorProp || helperText;
   const isError = errorProp;
+  const disabled = loading || disabledProp;
 
-  useImperativeHandle(inputRef, () => ({
+  React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
     focus: () => {
       elementRef.current?.focus();
     },
+    reset: () => {
+      setInternalValue(defaultValue !== undefined ? defaultValue : null);
+    },
   }));
 
   const handleChange =
     (input: 'hours' | 'minutes' | 'seconds') =>
-    (e: ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
 
       // Allow only positive integers (no decimals, no negative values)
@@ -206,159 +208,179 @@ const TimerField = ({
         className,
       )}
     >
-      {label && (
+      {((autoHideLabel && focused) || !autoHideLabel) && label && (
         <label
           htmlFor={id}
-          className={cx('block text-left text-neutral-80 mb-1', {
-            'text-12px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+          className={cx(
+            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
+            {
+              'text-14px': size === 'default',
+              'text-18px': size === 'large',
+            },
+          )}
         >
           {label}
         </label>
       )}
       <div
         className={cx(
-          'bg-neutral-10 relative px-4 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
           {
             'w-full': fullWidth,
-            'border-danger-main focus:ring-danger-focus': isError,
-            'border-success-main focus:ring-success-focus':
+            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
+              isError,
+            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 hover:border-primary-main focus:ring-neutral-focus':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp && !disabled,
-            'bg-neutral-20 cursor-not-allowed text-neutral-60 hover:!border-neutral-50':
+            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
-            'shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
+            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
               !disabled,
-            'ring-3 ring-primary-focus !border-primary-main': focused,
+            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
+              focused,
           },
         )}
         style={width ? { width } : undefined}
       >
-        {startIcon && <div className="text-neutral-70">{startIcon}</div>}
-        <div className="flex items-center w-full">
-          <div
-            className={cx('mr-1 text-neutral-60', {
-              'text-14px': size === 'default',
-              'text-16px': size === 'large',
-            })}
-          >
-            Hours:
+        {!!startIcon && (
+          <div className="text-neutral-70 dark:text-neutral-70-dark">
+            {startIcon}
           </div>
+        )}
+        <div
+          className={cx('flex items-center w-full text-neutral-60', {
+            'text-14px': size === 'default',
+            'text-18px': size === 'large',
+          })}
+        >
+          <div className="mr-1">Hours:</div>
           <input
             {...props}
             tabIndex={!disabled ? 0 : -1}
             id={id}
             value={displayValue.hours}
-            // onChange={handleChange(3600)}
             onChange={handleChange('hours')}
             placeholder={focused === 'hour' ? '' : 'Input hour'}
             onFocus={() => handleFocus('hour')}
             onBlur={handleBlur}
             ref={elementRef}
             className={cx(
-              'font-semibold w-full outline-none disabled:bg-neutral-20 disabled:cursor-not-allowed',
+              'font-semibold w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
               {
-                'text-16px': size === 'default',
-                'text-18px': size === 'large',
                 'py-1.5': size === 'default',
-                'py-[12.5px]': size === 'large',
+                'py-3': size === 'large',
               },
             )}
             disabled={disabled}
             autoComplete="off"
           />
-          <div
-            className={cx('mr-1 ml-2 text-neutral-60', {
-              'text-14px': size === 'default',
-              'text-16px': size === 'large',
-            })}
-          >
-            Minutes:
-          </div>
+          <div className="mr-1">Minutes:</div>
           <input
             {...props}
             tabIndex={!disabled ? 0 : -1}
             id={id}
             value={displayValue.minutes}
-            // onChange={handleChange(60)}
             onChange={handleChange('minutes')}
             placeholder={focused === 'minute' ? '' : 'Input minute'}
             onFocus={() => handleFocus('minute')}
             onBlur={handleBlur}
             ref={elementRef}
             className={cx(
-              'font-semibold w-full outline-none disabled:bg-neutral-20 disabled:cursor-not-allowed',
+              'font-semibold w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
               {
-                'text-16px': size === 'default',
-                'text-18px': size === 'large',
                 'py-1.5': size === 'default',
-                'py-[12.5px]': size === 'large',
+                'py-3': size === 'large',
               },
             )}
             disabled={disabled}
             autoComplete="off"
           />
-          <div
-            className={cx('mr-1 ml-2 text-neutral-60', {
-              'text-14px': size === 'default',
-              'text-16px': size === 'large',
-            })}
-          >
-            Seconds:
-          </div>
+          <div className="mr-1">Seconds:</div>
           <input
             {...props}
             tabIndex={!disabled ? 0 : -1}
             id={id}
             value={displayValue.seconds}
-            // onChange={handleChange(1)}
             onChange={handleChange('seconds')}
             placeholder={focused === 'second' ? '' : 'Input second'}
             onFocus={() => handleFocus('second')}
             onBlur={handleBlur}
             ref={elementRef}
             className={cx(
-              'font-semibold w-full outline-none disabled:bg-neutral-20 disabled:cursor-not-allowed',
+              'font-semibold w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
               {
-                'text-16px': size === 'default',
-                'text-18px': size === 'large',
                 'py-1.5': size === 'default',
-                'py-[12.5px]': size === 'large',
+                'py-3': size === 'large',
               },
             )}
             disabled={disabled}
             autoComplete="off"
           />
         </div>
-        {clearable && focused && !!value && (
-          <div
-            title="Clear"
-            role="button"
-            onMouseDown={handleClearValue}
-            className="rounded-full hover:bg-neutral-30 p-0.5 text-neutral-70 transition-color"
-          >
-            <Icon name="x-mark" size={16} strokeWidth={2} />
-          </div>
-        )}
-        {successProp && (
-          <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-            <Icon name="check" size={10} strokeWidth={3} />
-          </div>
-        )}
-        {isError && (
-          <div className="rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center shrink-0">
-            !
-          </div>
-        )}
-        {endIcon && <div className="text-neutral-70">{endIcon}</div>}
+
+        <div
+          className={cx('flex gap-1 items-center', {
+            'text-16px': size === 'default',
+            'text-20px': size === 'large',
+          })}
+        >
+          {clearable && focused && !!value && (
+            <div
+              title="Clear"
+              role="button"
+              onMouseDown={handleClearValue}
+              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark p-0.5 text-neutral-70 dark:text-neutral-70-dark transition-color"
+            >
+              <Icon name="x-mark" strokeWidth={4} />
+            </div>
+          )}
+          {loading && (
+            <div className="text-neutral-70 dark:text-neutral-70-dark">
+              <Icon name="loader" animation="spin" strokeWidth={2} />
+            </div>
+          )}
+          {successProp && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              <Icon name="check" strokeWidth={3} />
+            </div>
+          )}
+          {isError && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              !
+            </div>
+          )}
+          {!!endIcon && (
+            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
+              {endIcon}
+            </div>
+          )}
+        </div>
       </div>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${
-            isError ? 'text-danger-main' : 'text-neutral-60'
-          }`}
+          className={cx('w-full text-left mt-1', {
+            'text-danger-main dark:text-danger-main-dark': isError,
+            'text-neutral-60 dark:text-neutral-60-dark': !isError,
+            'text-12px': size === 'default',
+            'text-16px': size === 'large',
+          })}
         >
           {helperMessage}
         </div>

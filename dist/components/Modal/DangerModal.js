@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import COLORS from '../../libs/color';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
@@ -18,7 +17,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onCancel] - Callback function when the user cancels the action.
  *
  */
-const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size: 48, strokeWidth: 3, color: COLORS.danger.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
+const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -35,4 +34,3 @@ const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size:
         }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger", customAction: customAction }, content));
 };
 export default DangerModal;
-//# sourceMappingURL=DangerModal.js.map

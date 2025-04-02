@@ -1,9 +1,9 @@
-import React, { ReactNode, RefObject } from 'react';
+import React from 'react';
 export interface InputDropdownProps {
     open: boolean;
-    children: ReactNode;
-    elementRef: RefObject<HTMLDivElement | null>;
-    dropdownRef: RefObject<HTMLDivElement | null>;
+    children: React.ReactNode;
+    elementRef: React.RefObject<HTMLDivElement | null>;
+    dropdownRef: React.RefObject<HTMLDivElement | null>;
     fullWidth?: boolean;
     maxHeight?: number;
 }
@@ -22,3 +22,4 @@ export interface InputDropdownProps {
  */
 declare const InputDropdown: ({ open, children, elementRef, dropdownRef, fullWidth, maxHeight, }: InputDropdownProps) => React.ReactPortal | null;
 export default InputDropdown;
+//# sourceMappingURL=InputDropdown.d.ts.map

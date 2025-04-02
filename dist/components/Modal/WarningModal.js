@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
@@ -21,11 +20,10 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-const WarningModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", size: 48, strokeWidth: 3, color: COLORS.warning.main })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, customAction, }) => {
+const WarningModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-warning-main dark:text-warning-main-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
-    const handleOpen = () => { };
     const handleClose = () => {
         root.unmount();
         document.body.removeChild(container);
@@ -36,4 +34,3 @@ const WarningModal = ({ icon = (React.createElement(Icon, { name: "alert-circle"
         }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "warning", customAction: customAction }, content));
 };
 export default WarningModal;
-//# sourceMappingURL=WarningModal.js.map

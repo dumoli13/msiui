@@ -1,13 +1,4 @@
-import React, {
-  ChangeEvent,
-  ReactNode,
-  RefCallback,
-  RefObject,
-  TextareaHTMLAttributes,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 
@@ -20,7 +11,7 @@ export interface TextAreaRef {
 
 export interface TextAreaProps
   extends Omit<
-    TextareaHTMLAttributes<HTMLTextAreaElement>,
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     'onChange' | 'size'
   > {
   value?: string;
@@ -29,15 +20,18 @@ export interface TextAreaProps
   labelPosition?: 'top' | 'left';
   autoHideLabel?: boolean;
   onChange?: (value: string) => void;
-  helperText?: ReactNode;
+  helperText?: React.ReactNode;
   placeholder?: string;
   fullWidth?: boolean;
-  startIcon?: ReactNode;
-  endIcon?: ReactNode;
-  inputRef?: RefObject<TextAreaRef | null> | RefCallback<TextAreaRef | null>;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  inputRef?:
+    | React.RefObject<TextAreaRef | null>
+    | React.RefCallback<TextAreaRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
+  loading?: boolean;
   minLines?: number;
   maxLines?: number;
   width?: number;
@@ -60,10 +54,11 @@ export interface TextAreaProps
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<TextAreaRef> | RefCallback<TextAreaRef>} [inputRef] - A ref to access the textarea element directly.
+ * @property {RefObject<TextAreaRef> | React.RefCallback<TextAreaRef>} [inputRef] - A ref to access the textarea element directly.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [minLines=2] - The minimum number of lines (rows) visible in the textarea.
  * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
  * @property {number} [width] - Optional custom width for the input field.
@@ -75,12 +70,14 @@ const TextArea = ({
   value: valueProp,
   defaultValue,
   label,
+
   labelPosition = 'top',
+  autoHideLabel = false,
   onChange,
   className,
   helperText,
   placeholder = '',
-  disabled = false,
+  disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
@@ -88,14 +85,15 @@ const TextArea = ({
   size = 'default',
   error: errorProp,
   success: successProp,
+  loading = false,
   minLines = 2,
   maxLines,
   width,
   ...props
 }: TextAreaProps) => {
-  const elementRef = useRef<HTMLTextAreaElement>(null);
-  const [focused, setFocused] = useState(false);
-  const [internalValue, setInternalValue] = useState(
+  const elementRef = React.useRef<HTMLTextAreaElement>(null);
+  const [focused, setFocused] = React.useState(false);
+  const [internalValue, setInternalValue] = React.useState(
     defaultValue?.toString() || '',
   );
   const isControlled = valueProp !== undefined;
@@ -103,19 +101,20 @@ const TextArea = ({
 
   const helperMessage = errorProp || helperText;
   const isError = errorProp;
+  const disabled = loading || disabledProp;
 
-  useImperativeHandle(inputRef, () => ({
+  React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
     focus: () => {
       elementRef.current?.focus();
     },
     reset: () => {
-      setInternalValue('');
+      setInternalValue(defaultValue?.toString() || '');
     },
   }));
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     onChange?.(newValue);
     if (!isControlled) {
@@ -134,39 +133,43 @@ const TextArea = ({
         className,
       )}
     >
-      {label && (
+      {((autoHideLabel && focused) || !autoHideLabel) && label && (
         <label
           htmlFor={id}
-          className={cx('block text-left text-12px text-neutral-80 mb-1', {
-            'text-12px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+          className={cx(
+            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
+            {
+              'text-14px': size === 'default',
+              'text-18px': size === 'large',
+            },
+          )}
         >
           {label}
         </label>
       )}
       <div
         className={cx(
-          'bg-neutral-10 relative px-4 border rounded-md py-1 flex gap-2 items-start',
+          ' relative px-4 border rounded-md py-1 flex gap-2 items-start',
           {
             'w-full': fullWidth,
-            'border-danger-main focus:ring-danger-focus': isError,
-            'border-success-main focus:ring-success-focus':
+            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
+              isError,
+            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 hover:border-primary-main focus:ring-neutral-focus':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp,
-            'bg-neutral-20 cursor-not-allowed text-neutral-60 hover:!border-neutral-50':
+            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
-            'shadow-box-3': !disabled,
+            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3': !disabled,
           },
         )}
         style={width ? { width } : undefined}
       >
         {!!startIcon && (
           <div
-            className={cx('text-neutral-70', {
+            className={cx('text-neutral-70 dark:text-neutral-70-dark', {
               'py-1.5': size === 'default',
-              'py-[12.5px]': size === 'large',
+              'py-3': size === 'large',
             })}
           >
             {startIcon}
@@ -182,12 +185,10 @@ const TextArea = ({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className={cx(
-            'w-full outline-none resize-none disabled:bg-neutral-20 disabled:cursor-not-allowed',
+            'w-full outline-none resize-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
             {
-              'text-16px': size === 'default',
-              'text-18px': size === 'large',
-              'py-1.5': size === 'default',
-              'py-[12.5px]': size === 'large',
+              'text-14px py-1.5': size === 'default',
+              'text-18px py-3': size === 'large',
             },
           )}
           disabled={disabled}
@@ -199,42 +200,58 @@ const TextArea = ({
           }}
           aria-label={label}
         />
-        {!!endIcon && (
-          <div
-            className={cx('text-neutral-70', {
-              'my-1.5': size === 'default',
-              'my-[12.5px]': size === 'large',
-            })}
-          >
-            {endIcon}
-          </div>
-        )}
-        {successProp && (
-          <div
-            className={cx(
-              'rounded-full bg-success-main p-0.5 text-neutral-10',
-              { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' },
-            )}
-          >
-            <Icon name="check" size={10} strokeWidth={3} />
-          </div>
-        )}
-        {isError && (
-          <div
-            className={cx(
-              'rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center',
-              { 'my-1.5': size === 'default', 'my-[12.5px]': size === 'large' },
-            )}
-          >
-            !
-          </div>
-        )}
+        <div
+          className={cx('flex gap-1 items-center', {
+            'text-16px': size === 'default',
+            'text-20px': size === 'large',
+          })}
+        >
+          {loading && (
+            <div className="text-neutral-70 dark:text-neutral-70-dark">
+              <Icon name="loader" animation="spin" strokeWidth={2} />
+            </div>
+          )}
+          {successProp && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              <Icon name="check" strokeWidth={3} />
+            </div>
+          )}
+          {isError && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              !
+            </div>
+          )}
+          {!!endIcon && (
+            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
+              {endIcon}
+            </div>
+          )}
+        </div>
       </div>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${
-            isError ? 'text-danger-main' : 'text-neutral-60'
-          }`}
+          className={cx('w-full text-left mt-1', {
+            'text-danger-main dark:text-danger-main-dark': isError,
+            'text-neutral-60 dark:text-neutral-60-dark': !isError,
+            'text-12px': size === 'default',
+            'text-16px': size === 'large',
+          })}
         >
           {helperMessage}
         </div>

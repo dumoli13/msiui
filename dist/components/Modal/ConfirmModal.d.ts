@@ -1,13 +1,13 @@
-import { JSX, ReactNode } from 'react';
+import React from 'react';
 export interface ConfirmModalProps {
-    icon?: ReactNode;
+    icon?: React.ReactNode;
     title: string;
-    content: ReactNode;
+    content: React.ReactNode;
     confirmText?: string;
     cancelText?: string;
     onConfirm?: () => void | Promise<void>;
     onCancel?: () => void;
-    customAction?: Array<JSX.Element>;
+    customAction?: Array<React.JSX.Element>;
 }
 /**
  *
@@ -25,3 +25,4 @@ export interface ConfirmModalProps {
  */
 declare const ConfirmModal: ({ icon, title, content, confirmText, cancelText, onConfirm, onCancel, customAction, }: ConfirmModalProps) => void;
 export default ConfirmModal;
+//# sourceMappingURL=ConfirmModal.d.ts.map

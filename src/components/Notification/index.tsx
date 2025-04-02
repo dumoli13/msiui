@@ -1,6 +1,5 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import NotificationContainer from './NotificationContainer';
 
@@ -55,9 +54,11 @@ export const useNotification = () => {
  */
 
 const NotificationStack = () => {
-  const [notifications, setNotifications] = useState<NotificationProps[]>([]);
+  const [notifications, setNotifications] = React.useState<NotificationProps[]>(
+    [],
+  );
 
-  useEffect(() => {
+  React.useEffect(() => {
     addNotificationToStack = (newNotification) => {
       setNotifications((prev) => [...prev, newNotification]);
     };
@@ -70,25 +71,15 @@ const NotificationStack = () => {
   return ReactDOM.createPortal(
     <div className="fixed bottom-0 right-0 p-4 z-[1500] space-y-4">
       {notifications.map((notification) => {
-        let icon: ReactNode;
+        let icon: React.ReactNode;
         switch (notification.color) {
-          case 'primary':
-            icon = (
-              <Icon
-                name="alert-circle"
-                size={24}
-                strokeWidth={3}
-                color={COLORS.primary.main}
-              />
-            );
-            break;
           case 'success':
             icon = (
               <Icon
                 name="check-circle"
                 size={24}
                 strokeWidth={3}
-                color={COLORS.success.main}
+                className="text-success-main dark:text-success-main-dark"
               />
             );
             break;
@@ -98,7 +89,7 @@ const NotificationStack = () => {
                 name="x-circle"
                 size={24}
                 strokeWidth={3}
-                color={COLORS.danger.main}
+                className="text-danger-main dark:text-danger-main-dark"
               />
             );
             break;
@@ -108,17 +99,17 @@ const NotificationStack = () => {
                 name="alert-circle"
                 size={24}
                 strokeWidth={3}
-                color={COLORS.warning.main}
+                className="text-warning-main dark:text-warning-main-dark"
               />
             );
             break;
           case 'info':
             icon = (
               <Icon
-                name="alert-circle"
+                name="information-circle"
                 size={24}
                 strokeWidth={3}
-                color={COLORS.info.main}
+                className="text-info-main dark:text-info-main-dark"
               />
             );
             break;

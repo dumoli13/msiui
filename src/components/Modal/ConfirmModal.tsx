@@ -1,18 +1,17 @@
-import React, { JSX, ReactNode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import COLORS from '../../libs/color';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 
 export interface ConfirmModalProps {
-  icon?: ReactNode;
+  icon?: React.ReactNode;
   title: string;
-  content: ReactNode;
+  content: React.ReactNode;
   confirmText?: string;
   cancelText?: string;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void;
-  customAction?: Array<JSX.Element>;
+  customAction?: Array<React.JSX.Element>;
 }
 
 /**
@@ -30,7 +29,13 @@ export interface ConfirmModalProps {
  *
  */
 const ConfirmModal = ({
-  icon = <Icon name="alert-triangle" size={48} color={COLORS.neutral[90]} />,
+  icon = (
+    <Icon
+      name="alert-triangle"
+      size={24}
+      className="text-neutral-90 dark:text-neutral-90-dark"
+    />
+  ),
   title,
   content,
   confirmText = 'Confirm',

@@ -1,11 +1,11 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 
 export interface AccordionItem {
   key: string | number;
-  title: ReactNode;
-  content: ReactNode;
+  title: React.ReactNode;
+  content: React.ReactNode;
 }
 
 export interface AccordionProps {
@@ -69,23 +69,23 @@ const Accordion = ({
     }
   }
 
-  const [height, setHeight] = useState<Array<number | string>>(
+  const [height, setHeight] = React.useState<Array<number | string>>(
     Array(items.length).fill(0),
   );
-  const refs = useRef<(HTMLDivElement | null)[]>([]);
+  const refs = React.useRef<(HTMLDivElement | null)[]>([]);
 
   // Use activeKey if provided, otherwise fall back to defaultActiveKey
-  const [openIndex, setOpenIndex] = useState<Array<number | string>>(
+  const [openIndex, setOpenIndex] = React.useState<Array<number | string>>(
     activeKey ?? defaultActiveKey,
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Calculate the heights of all the accordion items
     const newHeights = refs.current.map((ref) => ref?.scrollHeight || 0);
     setHeight(newHeights);
   }, [items]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Sync the openIndex with the activeKey when it changes
     if (activeKey) {
       setOpenIndex(activeKey);
@@ -112,7 +112,7 @@ const Accordion = ({
   return (
     <div
       className={cx(
-        'box-shadow rounded-md border border-neutral-40',
+        'box-shadow rounded-md border border-neutral-40 dark:border-neutral-40-dark',
         className,
       )}
     >
@@ -122,7 +122,7 @@ const Accordion = ({
         return (
           <div
             key={item.key}
-            className="accordion-item border-b border-neutral-40 last:border-b-0 transition-all duration-300"
+            className="accordion-item border-b border-neutral-40 dark:border-neutral-40-dark last:border-b-0 transition-all duration-300"
           >
             {/* Title section */}
             {collapsible === 'icon' ? (
@@ -134,7 +134,7 @@ const Accordion = ({
               >
                 <div
                   className={cx(
-                    'w-full text-24px font-medium text-neutral-100',
+                    'w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark',
                     { 'py-4': size === 'default', 'py-8': size === 'large' },
                   )}
                 >
@@ -145,7 +145,7 @@ const Accordion = ({
                   aria-label="toggle"
                   onClick={() => handleToggle(item.key)}
                   className={cx(
-                    'text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300',
+                    'text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >
@@ -163,16 +163,19 @@ const Accordion = ({
                 })}
               >
                 <div
-                  className={cx('text-24px font-medium text-neutral-100', {
-                    'py-4': size === 'default',
-                    'py-8 ': size === 'large',
-                  })}
+                  className={cx(
+                    'text-24px font-medium text-neutral-100 dark:text-neutral-100-dark',
+                    {
+                      'py-4': size === 'default',
+                      'py-8 ': size === 'large',
+                    },
+                  )}
                 >
                   {item.title}
                 </div>
                 <div
                   className={cx(
-                    'text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300',
+                    'text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >
@@ -187,13 +190,17 @@ const Accordion = ({
                 refs.current[index] = el;
               }}
               style={{ maxHeight: isOpen ? `${height[index]}px` : '0px' }}
-              className="overflow-hidden transition-all duration-300 "
+              className="overflow-hidden transition-all duration-300"
             >
               <div
-                className={cx(' text-neutral-90 text-20px', {
-                  'mx-6 pt-1 pb-6': size === 'default',
-                  'mx-10 py-10 border-t border-neutral-40': size === 'large',
-                })}
+                className={cx(
+                  'text-neutral-90 dark:text-neutral-90-dark text-20px',
+                  {
+                    'mx-6 pt-1 pb-6': size === 'default',
+                    'mx-10 py-10 border-t border-neutral-40 dark:border-neutral-40-dark':
+                      size === 'large',
+                  },
+                )}
               >
                 {item.content}
               </div>

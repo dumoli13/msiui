@@ -1,10 +1,25 @@
 import React from 'react';
-import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Modal';
+import { useNotification } from '../Notification';
 const BreadcrumbLink = ({ item, isLast = false, isFormEdited, }) => {
-    const navigate = useNavigate();
+    const notify = useNotification();
+    let navigate;
+    try {
+        navigate = useNavigate();
+    }
+    catch (_a) {
+        navigate = null;
+    }
     const handleRoute = (href) => {
+        if (!navigate) {
+            notify({
+                color: 'danger',
+                title: 'Error',
+                description: 'Breadcrumb navigation is not supported in this browser.',
+            });
+            return;
+        }
         if (isFormEdited) {
             Modal.danger({
                 title: 'Unsaved Changes',
@@ -19,7 +34,7 @@ const BreadcrumbLink = ({ item, isLast = false, isFormEdited, }) => {
             navigate(href);
         }
     };
-    return isLast ? (React.createElement("div", { className: "font-bold text-neutral-100" }, item.label)) : (React.createElement(React.Fragment, null,
+    return isLast ? (React.createElement("div", { className: "font-bold text-neutral-100 dark:text-neutral-100-dark" }, item.label)) : (React.createElement(React.Fragment, null,
         item.href ? (React.createElement("div", { role: "link", tabIndex: 0, onClick: () => handleRoute(item.href), className: "cursor-pointer" }, item.label)) : (React.createElement("div", null, item.label)),
         React.createElement("div", null, "/")));
 };
@@ -27,7 +42,6 @@ const BreadcrumbLink = ({ item, isLast = false, isFormEdited, }) => {
  *
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
  * If more than `maxDisplay` items are provided, it will show the first few, followed by an ellipsis, and then the last few.
- * https://www.figma.com/design/JJLvT4QpNhnT2InWV5boVj/QCIS-for-SME---Website?node-id=433-34089&node-type=frame&t=xEPdjGtNP9PPWmjd-0
  *
  * @property {BreadcrumbItem[]} items - Array of breadcrumb items.
  * @property {number} [maxDisplay=4] - The maximum number of breadcrumb items to display before truncation.
@@ -50,13 +64,12 @@ const Breadcrumb = ({ items, maxDisplay = 4, isFormEdited = false, }) => {
         const lastItems = parsedItem.slice(parsedItem.length - rightCount);
         return [
             ...firstItems.map((item) => (React.createElement(BreadcrumbLink, { item: item, key: item.key, isLast: false, isFormEdited: isFormEdited }))),
-            React.createElement(Fragment, { key: "ellipsis" },
+            React.createElement(React.Fragment, { key: "ellipsis" },
                 React.createElement("span", { className: "mx-2" }, "..."),
                 React.createElement("span", null, "/")),
             ...lastItems.map((item, index) => (React.createElement(BreadcrumbLink, { item: item, key: item.key, isLast: index === lastItems.length - 1, isFormEdited: isFormEdited }))),
         ];
     };
-    return (React.createElement("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-60 text-24px" }, renderItems()));
+    return (React.createElement("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px" }, renderItems()));
 };
 export default Breadcrumb;
-//# sourceMappingURL=Breadcrumb.js.map

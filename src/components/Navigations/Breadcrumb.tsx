@@ -1,10 +1,10 @@
-import React, { JSX } from 'react';
-import { Fragment, ReactNode } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Modal';
+import { useNotification } from '../Notification';
 
 export type BreadcrumbItem = {
-  label: ReactNode;
+  label: React.ReactNode;
   href?: string; // Optional URL to link the breadcrumb item
 };
 
@@ -23,9 +23,24 @@ const BreadcrumbLink = ({
   isLast?: boolean;
   isFormEdited: boolean;
 }) => {
-  const navigate = useNavigate();
+  const notify = useNotification();
+  let navigate;
+  try {
+    navigate = useNavigate();
+  } catch {
+    navigate = null;
+  }
 
   const handleRoute = (href: string) => {
+    if (!navigate) {
+      notify({
+        color: 'danger',
+        title: 'Error',
+        description: 'Breadcrumb navigation is not supported in this browser.',
+      });
+
+      return;
+    }
     if (isFormEdited) {
       Modal.danger({
         title: 'Unsaved Changes',
@@ -41,7 +56,9 @@ const BreadcrumbLink = ({
   };
 
   return isLast ? (
-    <div className="font-bold text-neutral-100">{item.label}</div>
+    <div className="font-bold text-neutral-100 dark:text-neutral-100-dark">
+      {item.label}
+    </div>
   ) : (
     <>
       {item.href ? (
@@ -65,7 +82,6 @@ const BreadcrumbLink = ({
  *
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
  * If more than `maxDisplay` items are provided, it will show the first few, followed by an ellipsis, and then the last few.
- * https://www.figma.com/design/JJLvT4QpNhnT2InWV5boVj/QCIS-for-SME---Website?node-id=433-34089&node-type=frame&t=xEPdjGtNP9PPWmjd-0
  *
  * @property {BreadcrumbItem[]} items - Array of breadcrumb items.
  * @property {number} [maxDisplay=4] - The maximum number of breadcrumb items to display before truncation.
@@ -112,10 +128,10 @@ const Breadcrumb = ({
           isFormEdited={isFormEdited}
         />
       )),
-      <Fragment key="ellipsis">
+      <React.Fragment key="ellipsis">
         <span className="mx-2">...</span>
         <span>/</span>
-      </Fragment>,
+      </React.Fragment>,
       ...lastItems.map((item, index) => (
         <BreadcrumbLink
           item={item}
@@ -130,7 +146,7 @@ const Breadcrumb = ({
   return (
     <nav
       aria-label="breadcrumb"
-      className="flex items-center gap-2.5 font-medium text-neutral-60 text-24px"
+      className="flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px"
     >
       {renderItems()}
     </nav>

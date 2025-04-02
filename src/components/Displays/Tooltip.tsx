@@ -1,14 +1,9 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
+import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
 export interface TooltipProps {
-  children: ReactNode;
+  children: React.ReactNode;
   onOpen?: (open: boolean) => void;
   verticalAlign?: 'top' | 'bottom';
   horizontalAlign?: 'left' | 'center' | 'right';
@@ -16,25 +11,8 @@ export interface TooltipProps {
   mouseEnterDelay?: number;
   mouseLeaveDelay?: number;
   title: string;
+  disabled?: boolean;
 }
-
-/**
- *
- * A customizable tooltip component that displays a small overlay with a message when the user hovers over a target element.
- * The tooltip can have customizable alignment, delay times, and an optional arrow indicator. The position of the tooltip
- * is dynamically calculated based on the target element's position on the screen and the viewport size.
- *
- * @interface TooltipProps
- * @property {ReactNode} children - The content or elements to which the component's behavior or functionality is applied.
- * @property {function} [onOpen] - A callback function triggered when the tooltip opens or closes.
- * @property {string} [verticalAlign='bottom'] - The vertical alignment of the tooltip relative to the target element. Can be 'top', 'bottom', or 'center'.
- * @property {string} [horizontalAlign='center'] - The horizontal alignment of the tooltip relative to the target element. Can be 'left', 'center', or 'right'.
- * @property {boolean} [arrow=true] - A flag to control whether the tooltip shows an arrow indicating its direction.
- * @property {number} [mouseEnterDelay=500] - The delay (in milliseconds) before the tooltip appears after the mouse enters the target element.
- * @property {number} [mouseLeaveDelay=0] - The delay (in milliseconds) before the tooltip disappears after the mouse leaves the target element.
- * @property {string} title - The content of the tooltip, which will be displayed inside the tooltip box.
- *
- */
 
 const Tooltip = ({
   children,
@@ -44,19 +22,21 @@ const Tooltip = ({
   mouseEnterDelay = 500,
   mouseLeaveDelay = 0,
   title,
+  disabled = false,
 }: TooltipProps) => {
-  const elementRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const [dropdownStyles, setDropdownStyles] = useState<{
+  const elementRef = React.useRef<HTMLDivElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const [open, setOpen] = React.useState(false);
+  const [dropdownStyles, setDropdownStyles] = React.useState<{
     top: number;
     left: number;
     width: number | undefined;
-  } | null>(null); // Set to `null` initially
-  const enterTimeout = useRef<NodeJS.Timeout | null>(null);
-  const leaveTimeout = useRef<NodeJS.Timeout | null>(null);
+    opacity: number;
+  } | null>(null);
+  const enterTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const leaveTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
-  const calculateDropdownPosition = useCallback(() => {
+  const calculateDropdownPosition = React.useCallback(() => {
     if (elementRef.current && dropdownRef.current) {
       const rect = elementRef.current.getBoundingClientRect();
       const dropdownRect = dropdownRef.current.getBoundingClientRect();
@@ -96,11 +76,12 @@ const Tooltip = ({
         top,
         left,
         width: rect.width,
+        opacity: 1, // Make visible only after position calculation
       });
     }
   }, [verticalAlign, horizontalAlign]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       calculateDropdownPosition();
       const handleScrollOrResize = () => calculateDropdownPosition();
@@ -127,16 +108,22 @@ const Tooltip = ({
 
   return (
     <div className="relative">
+      {/* Wrap children to ensure hover works on disabled buttons */}
       <div
         ref={elementRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         role="button"
-        // tabIndex={0}
         tabIndex={-1}
-        aria-pressed="true"
+        className={cx('inline-block', {
+          'cursor-not-allowed': disabled,
+        })}
       >
-        {children}
+        {disabled ? (
+          <span className="pointer-events-none">{children}</span>
+        ) : (
+          children
+        )}
       </div>
       {open &&
         createPortal(
@@ -145,13 +132,15 @@ const Tooltip = ({
             style={{
               top: dropdownStyles?.top || 0,
               left: dropdownStyles?.left || 0,
+              opacity: dropdownStyles?.opacity || 0,
               transformOrigin: 'center center',
+              transition: 'opacity 0.15s ease-out',
             }}
-            className="absolute z-[100] bg-neutral-90 text-neutral-10 rounded-sm px-2 py-1.5 mt-1 text-14px"
+            className="absolute z-[100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px"
           >
             {arrow && (
               <div
-                className="absolute bg-neutral-90 w-2 h-2 transform rotate-45"
+                className="absolute bg-neutral-90 dark:bg-neutral-90-dark w-2 h-2 transform rotate-45"
                 style={{
                   top:
                     verticalAlign === 'top'

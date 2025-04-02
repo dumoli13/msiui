@@ -1,25 +1,29 @@
 import React, { ButtonHTMLAttributes, JSXElementConstructor, ReactElement } from 'react';
-import { ButtonColor, ButtonVariant } from '../../const';
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
-    color?: ButtonColor;
+    variant?: 'contained' | 'secondary' | 'outlined' | 'text';
+    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
     loading?: boolean;
     icon?: ReactElement<any, string | JSXElementConstructor<any>>;
-    size?: 'default' | 'large';
+    size?: 'small' | 'default' | 'large';
     title: string;
     titleVerticalAlign?: 'top' | 'bottom';
     titleHorizontalAlign?: 'left' | 'center' | 'right';
 }
 /**
- *
- * The `IconButton` component is a flexible and highly customizable button component that supports various styles, colors, and states. It can display an icon, show a loading spinner, and include tooltip support.
- *
  * @property {'contained' | 'secondary' | 'outlined' | 'text'} props.variant - The variant of the button.
  * @property {'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'} props.color - The color theme for the button.
  * @property {boolean} [loading=false] - Whether the button should show a loading state.
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
- * @property {IconButtonProps} props The properties for the IconButton component.
- *
+ * @property {IconButtonProps} props - The properties for the IconButton component.
+ * @property {string} [className] - Additional class names to apply to the button.
+ * @property {boolean} [disabled=false] - Whether the button is disabled.
+ * @property {() => void} [onClick] - Callback function to handle click events.
+ * @property {string} [ariaLabel] - Aria-label for accessibility.
+ * @property {'small' | 'default' | 'large'} [size='default'] - The size of the button.
+ * @property {string} title - The title text for the button.
+ * @property {'top' | 'bottom'} [titleVerticalAlign] - Vertical alignment for the title.
+ * @property {'left' | 'center' | 'right'} [titleHoridzontalAlign] - Horizontal alignment for the title.
  */
 declare const IconButton: ({ variant, color, className, disabled, loading, icon, size, onClick, title, titleVerticalAlign, titleHorizontalAlign, ...props }: IconButtonProps) => React.JSX.Element;
 export default IconButton;
+//# sourceMappingURL=IconButton.d.ts.map

@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { ReactNode, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Checkbox from '../Inputs/Checkbox';
 import { SelectValue } from '../Inputs/Select';
@@ -24,7 +24,7 @@ export type TableColumn<
         value: T[keyof T] | null,
         record: T,
         index: number,
-      ) => ReactNode;
+      ) => React.ReactNode;
       filterValue: string;
       onChange: (value: string) => void;
     }
@@ -41,7 +41,7 @@ export type TableColumn<
         value: T[keyof T] | null,
         record: T,
         index: number,
-      ) => ReactNode;
+      ) => React.ReactNode;
       filterValue: FilterType;
       onChange: (value: FilterType) => void;
       option: Array<SelectValue<T[keyof T], D>>;
@@ -59,7 +59,7 @@ export type TableColumn<
         value: T[keyof T] | null,
         record: T,
         index: number,
-      ) => ReactNode;
+      ) => React.ReactNode;
       filterValue?: FilterType;
     };
 
@@ -81,7 +81,7 @@ export interface TableProps<T> {
   onRowSelect?: (row: number, value: boolean, selectedRows: number[]) => void; // selectedRows is indexes of the list
   sorting?: TableSortingProps<T> | null;
   onSort?: (sort: TableSortingProps<T>) => void;
-  render?: (value: any, record: T) => ReactNode;
+  render?: (value: any, record: T) => React.ReactNode;
   showDanger?: (record: T) => boolean;
   fullwidth?: boolean;
   showSelected?: boolean;
@@ -126,13 +126,13 @@ const Table = <T extends { [key: string]: any }>({
   size = 'default',
   verticalAlign,
 }: TableProps<T>) => {
-  const [sortConfig, setSortConfig] = useState<TableSortingProps<T>>(
+  const [sortConfig, setSortConfig] = React.useState<TableSortingProps<T>>(
     sorting || { key: columns[0].key, direction: null },
   );
 
-  const [internalSelectedRows, setInternalSelectedRows] = useState<number[]>(
-    [],
-  );
+  const [internalSelectedRows, setInternalSelectedRows] = React.useState<
+    number[]
+  >([]);
   const isControlled = selectedRowsProp !== undefined;
   const selectedRows = isControlled ? selectedRowsProp : internalSelectedRows;
 
@@ -168,9 +168,14 @@ const Table = <T extends { [key: string]: any }>({
   };
 
   return (
-    <div className={cx('overflow-x-auto', { 'w-full': fullwidth })}>
+    <div
+      className={cx(
+        'text-neutral-100 dark:text-neutral-100-dark overflow-x-auto',
+        { 'w-full': fullwidth },
+      )}
+    >
       <div
-        className="overflow-y-auto border border-neutral-30 rounded-md"
+        className="overflow-y-auto border border-neutral-30 dark:border-neutral-30-dark rounded-md"
         style={stickyHeader ? { maxHeight } : undefined}
       >
         <table
@@ -179,17 +184,17 @@ const Table = <T extends { [key: string]: any }>({
         >
           <thead
             className={cx({
-              'sticky top-0 bg-white shadow-md z-10': stickyHeader,
+              'sticky top-0 bg-neutral-10 shadow-md z-10': stickyHeader,
             })}
           >
             <tr>
               {showSelected && (
                 <th
                   className={cx(
-                    'font-medium text-left bg-neutral-20 px-4 py-3 border-r border-neutral-30 last:border-none',
+                    'font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none',
                     {
                       'text-18px': size === 'large',
-                      'text-16px': size === 'default',
+                      'text-14px': size === 'default',
                     },
                   )}
                 >
@@ -200,10 +205,10 @@ const Table = <T extends { [key: string]: any }>({
                 <th
                   key={col.key.toString()}
                   className={cx(
-                    'font-medium text-left bg-neutral-20 px-4 py-3 border-r border-neutral-30 last:border-none',
+                    'font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none',
                     {
                       'text-18px': size === 'large',
-                      'text-16px': size === 'default',
+                      'text-14px': size === 'default',
                     },
                   )}
                   style={{
@@ -237,19 +242,19 @@ const Table = <T extends { [key: string]: any }>({
                         {col.sortable && (
                           <div className="flex flex-col gap-0.5">
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-8 transition-colors duration-300 ${
+                              className={`w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${
                                 col.key === sortConfig.key &&
                                 sortConfig.direction === 'asc'
-                                  ? 'border-primary-main'
-                                  : 'border-neutral-60'
+                                  ? 'border-primary-main dark:border-primary-main-dark'
+                                  : 'border-neutral-60 dark:border-neutral-60-dark'
                               }`}
                             />
                             <span
-                              className={`w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-8 transition-colors duration-300 ${
+                              className={`w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${
                                 col.key === sortConfig.key &&
                                 sortConfig.direction === 'desc'
-                                  ? 'border-primary-main'
-                                  : 'border-neutral-60'
+                                  ? 'border-primary-main dark:border-primary-main-dark'
+                                  : 'border-neutral-60 dark:border-neutral-60-dark'
                               }`}
                             />
                           </div>
@@ -309,8 +314,9 @@ const Table = <T extends { [key: string]: any }>({
                     {
                       'text-18px': size === 'large',
                       'text-14px': size === 'default',
-                      'bg-danger-surface hover:bg-danger-border/20': isDanger,
-                      'bg-neutral-10 even:bg-neutral-15 hover:bg-neutral-20':
+                      'bg-danger-surface dark:bg-danger-surface-dark hover:bg-danger-border/20 dark:hover:bg-danger-border/20-dark':
+                        isDanger,
+                      'bg-neutral-10 dark:bg-neutral-10-dark even:bg-neutral-15 dark:even:bg-neutral-15-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
                         !isDanger,
                     },
                   )}
@@ -322,7 +328,8 @@ const Table = <T extends { [key: string]: any }>({
                     >
                       <div
                         className={cx('px-4 py-3', {
-                          'bg-primary-surface': isSelected,
+                          'bg-primary-surface dark:bg-primary-surface-dark':
+                            isSelected,
                         })}
                       >
                         <Checkbox
@@ -350,7 +357,8 @@ const Table = <T extends { [key: string]: any }>({
                       >
                         <div
                           className={cx('px-4 py-3', {
-                            'bg-primary-surface': isSelected,
+                            'bg-primary-surface dark:bg-primary-surface-dark':
+                              isSelected,
                           })}
                         >
                           {col.render ? (

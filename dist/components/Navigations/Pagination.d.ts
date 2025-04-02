@@ -20,3 +20,4 @@ export interface PaginationProps {
 }
 declare const Pagination: ({ total, currentPage, itemPerPage, pageSize, onPageChange, }: PaginationProps) => React.JSX.Element;
 export default Pagination;
+//# sourceMappingURL=Pagination.d.ts.map

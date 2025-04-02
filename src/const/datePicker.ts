@@ -12,3 +12,9 @@ export const MONTH_LIST = [
   { value: 10, label: 'Nov' },
   { value: 11, label: 'Dec' },
 ];
+
+export enum TimeUnit {
+  hours = 'hours',
+  minutes = 'minutes',
+  seconds = 'seconds',
+}

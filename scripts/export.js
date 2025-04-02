@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-console */
 const { execSync } = require('child_process');
 const readline = require('readline');
 
-// Helper function to ask the user for input
 const askQuestion = (question) => {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -19,81 +19,142 @@ const askQuestion = (question) => {
   });
 };
 
-// Helper function to update package.json version
-const updatePackageJsonVersion = (version) => {
-  const packageJsonPath = path.join(__dirname, '../package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  packageJson.version = version;
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  console.log(`Updated package.json version to ${version}`);
+const getCurrentVersion = () => {
+  try {
+    execSync('git fetch --tags', { stdio: 'ignore' });
+    const tags = execSync('git tag --sort=-v:refname')
+      .toString()
+      .trim()
+      .split('\n')
+      .filter((tag) => tag);
+
+    if (tags.length === 0) return null;
+    return tags[0].replace(/^v/, '');
+  } catch (error) {
+    console.error('❌ Error fetching last Git tag:', error.message);
+    return null;
+  }
 };
 
-// Helper function to create a Git tag and push it
-const createGitTagAndPush = (version) => {
+const createGitTagAndPush = (version, baseBranch) => {
   try {
-    // Stash any uncommitted changes
-    execSync('git stash push -u');
+    const currentBranch = execSync('git rev-parse --abbrev-ref HEAD')
+      .toString()
+      .trim();
 
-    // Create a new branch for the release
+    console.log('🏗️  Building project...');
+    execSync('yarn build', { stdio: 'inherit' });
+
+    let stashCreated = false;
+    console.log('📦 Checking for local changes...');
+    try {
+      const statusOutput = execSync('git status --porcelain').toString();
+      if (statusOutput.trim()) {
+        console.log('📦 Stashing changes...');
+        const stashOutput = execSync('git stash push --include-untracked', {
+          stdio: 'pipe',
+        }).toString();
+        if (!stashOutput.includes('No local changes')) {
+          stashCreated = true;
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error during stash operation:', error.message);
+      process.exit(1);
+    }
+
+    console.log(`🌿 Switching to ${baseBranch} branch...`);
+    execSync(`git checkout ${baseBranch}`);
+    execSync(`git pull origin ${baseBranch}`);
+
     const releaseBranch = `release/v${version}`;
-    execSync(`git checkout --orphan ${releaseBranch}`);
+    console.log(`🌿 Creating release branch ${releaseBranch}...`);
+    execSync(`git checkout -b ${releaseBranch}`);
 
-    // Add only the dist directory and required files
-    execSync('git add dist package.json'); // Add other required files if needed
+    if (stashCreated) {
+      console.log('📦 Applying stashed changes...');
+      execSync('git stash pop');
+    } else {
+      console.log('📦 No stashed changes to apply');
+    }
 
-    // Commit changes
-    execSync(`git commit -m "Release v${version}"`);
+    console.log('📌 Checking for changes to commit...');
+    const changesToCommit = execSync('git status --porcelain')
+      .toString()
+      .trim();
 
-    // Create a new Git tag
+    if (changesToCommit) {
+      console.log('📌 Staging files...');
+      execSync('git add .');
+
+      console.log('📜 Committing changes...');
+      execSync(`git commit -m "Release v${version}"`);
+    } else {
+      console.log('ℹ️ No changes to commit - skipping commit');
+    }
+
+    console.log(`🏷️ Creating tag v${version}...`);
     execSync(`git tag v${version}`);
 
-    // Push the tag to the remote repository
+    console.log('🚀 Pushing tag and branch...');
     execSync(`git push origin v${version}`);
+    execSync(`git push origin ${releaseBranch}`);
 
-    // Switch back to the original branch (e.g., master or develop)
-    execSync('git checkout -'); // Switch back to the previous branch
+    console.log(`🔄 Switching back to ${currentBranch}...`);
+    execSync(`git checkout ${currentBranch}`);
 
-    // Delete the temporary release branch
-    execSync(`git branch -D ${releaseBranch}`);
-
-    // Reapply stashed changes
-    execSync('git stash pop');
-
-    console.log(`Successfully created and pushed tag v${version}`);
+    console.log(
+      `✅ Successfully created and pushed tag v${version} and branch ${releaseBranch}`,
+    );
   } catch (error) {
-    console.error('Error creating Git tag or pushing changes:', error.message);
+    console.error(
+      '❌ Error creating Git tag or pushing changes:',
+      error.message,
+    );
     process.exit(1);
   }
 };
 
-// Main function
 const main = async () => {
   try {
-    // Ask the user for the new version
-    const newVersion = await askQuestion(
-      'Enter the new version (e.g., 1.0.0): ',
-    );
+    const currentVersion = getCurrentVersion();
+    let question = '🔢 Enter the new version (no previous release found): ';
 
-    // Validate the version format (simple check)
+    if (currentVersion) {
+      question = `🔢 Enter the new version (current version: ${currentVersion}): `;
+    }
+
+    const newVersion = await askQuestion(question);
+
     if (!/^\d+\.\d+\.\d+$/.test(newVersion)) {
       console.error(
-        'Invalid version format. Please use semantic versioning (e.g., 1.0.0).',
+        '❌ Invalid version format. Use semantic versioning (e.g., 1.0.0)',
       );
       process.exit(1);
     }
 
-    // Update package.json version
-    updatePackageJsonVersion(newVersion);
+    const branchQuestion = '🌿 Choose base branch (develop/master) [develop]: ';
+    const baseBranch = await askQuestion(branchQuestion);
 
-    // Create Git tag and push changes
-    createGitTagAndPush(newVersion);
+    const normalizedBranch = baseBranch.trim().toLowerCase();
+    if (normalizedBranch === '') {
+      // Default to develop if empty input
+      createGitTagAndPush(newVersion, 'develop');
+    } else if (
+      normalizedBranch === 'develop' ||
+      normalizedBranch === 'master'
+    ) {
+      createGitTagAndPush(newVersion, normalizedBranch);
+    } else {
+      console.error('❌ Invalid branch. Only develop or master are allowed.');
+      process.exit(1);
+    }
 
-    console.log('Export process completed successfully!');
+    console.log('🎉 Release process completed successfully!');
   } catch (error) {
-    console.error('Error during export process:', error.message);
+    console.error('❌ Error during release process:', error.message);
     process.exit(1);
   }
 };
 
-// Run the script
 main();

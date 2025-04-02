@@ -17,3 +17,4 @@ export { default as Tag } from './Tag';
 export type { TagProps } from './Tag';
 export { default as Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
+//# sourceMappingURL=index.d.ts.map

@@ -1,14 +1,13 @@
-import React, { ButtonHTMLAttributes, ReactNode } from 'react';
-export type ButtonVariant = 'contained' | 'secondary' | 'outlined' | 'text';
-export type ButtonColor = 'primary' | 'success' | 'danger' | 'warning' | 'info';
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: ButtonVariant;
-    color?: ButtonColor;
+import React from 'react';
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'contained' | 'secondary' | 'outlined' | 'text';
+    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
     size?: 'small' | 'default' | 'large';
     fullWidth?: boolean;
     loading?: boolean;
-    startIcon?: ReactNode;
-    endIcon?: ReactNode;
+    startIcon?: React.ReactNode;
+    endIcon?: React.ReactNode;
 }
 declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;
 export default Button;
+//# sourceMappingURL=Button.d.ts.map

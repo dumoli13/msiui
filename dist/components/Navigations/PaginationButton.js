@@ -2,7 +2,6 @@ import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 /**
- * PaginationButton Component
  *
  * This component provides buttons for pagination navigation, specifically for navigating to the next or previous page.
  * It includes button elements styled with icons to indicate the direction of the navigation (left for previous, right for next).
@@ -13,7 +12,7 @@ import Icon from '../Icon';
  * @returns {JSX.Element} Pagination navigation buttons (Previous and Next).
  *
  */
-const navButtonStyle = cx('text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 text-neutral-100 bg-neutral-10', 'disabled:bg-neutral-40 disabled:text-neutral-60', 'hover:bg-primary-hover hover:text-neutral-10');
+const navButtonStyle = cx('text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded-md border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark', 'disabled:bg-neutral-40 dark:disabled:bg-neutral-30-dark disabled:text-neutral-60 dark:disabled:text-neutral-60-dark', 'hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-100 dark:hover:text-neutral-100-dark');
 const PaginationButton = () => {
     return null;
 };
@@ -28,4 +27,3 @@ PaginationButton.next = ({ onClick, disabled }) => {
         React.createElement(Icon, { name: "chevron-right", size: 16, strokeWidth: 2 })));
 };
 export default PaginationButton;
-//# sourceMappingURL=PaginationButton.js.map

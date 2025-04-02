@@ -1,5 +1,4 @@
-import React, { FormEvent, JSX, ReactNode } from 'react';
-import { ButtonColor } from '../Inputs/Button';
+import React from 'react';
 import ConfirmModal, { ConfirmModalProps } from './ConfirmModal';
 import DangerModal from './DangerModal';
 import InfoModal from './InfoModal';
@@ -10,23 +9,25 @@ import WarningModal from './WarningModal';
 
 export interface ModalProps {
   open: boolean;
-  title?: ReactNode;
-  children: ReactNode;
-  icon?: ReactNode;
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
   width?: number;
 
   closeOnOverlayClick?: boolean;
   onClose?: () => void;
   cancelText?: string;
-  cancelButtonColor?: ButtonColor;
+  cancelButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
 
-  onConfirm?: (e: FormEvent<HTMLFormElement>) => Promise<void> | void;
+  onConfirm?: (e: React.FormEvent<HTMLFormElement>) => Promise<void> | void;
   confirmLoading?: boolean;
   confirmDisabled?: boolean;
   confirmText?: string;
-  confirmButtonColor?: ButtonColor;
-  customAction?: Array<JSX.Element>;
+  confirmButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+  customAction?: Array<React.JSX.Element>;
+
+  footer?: React.ReactNode;
 }
 
 interface ExtendedModal extends React.FC<ModalProps> {

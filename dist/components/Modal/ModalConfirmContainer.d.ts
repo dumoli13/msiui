@@ -1,22 +1,21 @@
-import { JSX, ReactNode } from 'react';
-import { ButtonColor } from '../Inputs/Button';
+import React from 'react';
 export interface ModalProps {
     open: boolean;
-    title?: ReactNode;
-    children: ReactNode;
-    icon?: ReactNode;
+    title?: React.ReactNode;
+    children: React.ReactNode;
+    icon?: React.ReactNode;
     className?: string;
     width?: number;
     closeOnOverlayClick?: boolean;
     onClose?: () => void;
     cancelText?: string;
-    cancelButtonColor?: ButtonColor;
+    cancelButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
     onConfirm?: () => Promise<void> | void;
     confirmLoading?: boolean;
     confirmDisabled?: boolean;
     confirmText?: string;
-    confirmButtonColor?: ButtonColor;
-    customAction?: Array<JSX.Element>;
+    confirmButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+    customAction?: Array<React.JSX.Element>;
 }
 /**
  * ModalConfirmContainer Component
@@ -44,5 +43,6 @@ export interface ModalProps {
  * @property {ButtonColor} [confirmButtonColor='primary'] - The color for the confirm button.
  *
  */
-declare const ModalConfirmContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => JSX.Element | null;
+declare const ModalConfirmContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => React.JSX.Element | null;
 export default ModalConfirmContainer;
+//# sourceMappingURL=ModalConfirmContainer.d.ts.map

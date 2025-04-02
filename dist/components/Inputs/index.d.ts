@@ -10,6 +10,8 @@ export { default as DatePicker } from './DatePicker';
 export type { InputDateValue, InputDatePickerRef, DatePickerProps, } from './DatePicker';
 export { default as DateRangePicker } from './DateRangePicker';
 export type { InputDateRangeValue, InputDateRangePickerRef, DateRangePickerProps, } from './DateRangePicker';
+export { default as MultipleDatePicker } from './MultipleDatePicker';
+export type { InputMultipleDateValue, InputMultipleDatePickerRef, MultipleDatePickerProps, } from './MultipleDatePicker';
 export { default as IconButton } from './IconButton';
 export type { IconButtonProps } from './IconButton';
 export { default as InputDropdown } from './InputDropdown';
@@ -28,3 +30,4 @@ export { default as TextField } from './TextField';
 export type { TextfieldRef, TextFieldProps } from './TextField';
 export { default as TimerField } from './TimerField';
 export type { TimerTextfieldRef, TimerFieldProps } from './TimerField';
+//# sourceMappingURL=index.d.ts.map

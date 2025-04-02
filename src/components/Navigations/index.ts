@@ -9,3 +9,6 @@ export type { PaginationButtonProps } from './PaginationButton';
 
 export { default as Steps } from './Steps';
 export type { StepProps } from './Steps';
+
+export { default as Tab } from './Tab';
+export type { TabProps, TabItem } from './Tab';

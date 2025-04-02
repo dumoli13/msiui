@@ -8,9 +8,12 @@ export function isToday(date) {
         date.getDate() === today.getDate());
 }
 export function areDatesEqual(dateA, dateB) {
-    return (dateA.getFullYear() === dateB.getFullYear() &&
-        dateA.getMonth() === dateB.getMonth() &&
-        dateA.getDate() === dateB.getDate());
+    if (!Array.isArray(dateB)) {
+        dateB = [dateB];
+    }
+    return dateB.some((b) => dateA.getFullYear() === b.getFullYear() &&
+        dateA.getMonth() === b.getMonth() &&
+        dateA.getDate() === b.getDate());
 }
 export function isDateABeforeDateB(dateA, dateB) {
     return (dateA.getFullYear() < dateB.getFullYear() ||
@@ -41,4 +44,3 @@ export function getYearRange(year) {
     const upperBound = lowerBound + step;
     return Array.from({ length: upperBound - lowerBound }, (_, i) => lowerBound + i);
 }
-//# sourceMappingURL=inputValidation.js.map

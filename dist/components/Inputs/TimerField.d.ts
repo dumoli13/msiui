@@ -1,10 +1,11 @@
-import React, { InputHTMLAttributes, ReactNode, RefCallback, RefObject } from 'react';
+import React from 'react';
 export interface TimerTextfieldRef {
     element: HTMLInputElement | null;
     value: number | null;
     focus: () => void;
+    reset: () => void;
 }
-export interface TimerFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
+export interface TimerFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
     id?: string;
     value?: number | null;
     defaultValue?: number | null;
@@ -13,16 +14,17 @@ export interface TimerFieldProps extends Omit<InputHTMLAttributes<HTMLInputEleme
     autoHideLabel?: boolean;
     onChange?: (value: number | null) => void;
     className?: string;
-    helperText?: ReactNode;
+    helperText?: React.ReactNode;
     disabled?: boolean;
     fullWidth?: boolean;
-    startIcon?: ReactNode;
-    endIcon?: ReactNode;
+    startIcon?: React.ReactNode;
+    endIcon?: React.ReactNode;
     clearable?: boolean;
-    inputRef?: RefObject<TimerTextfieldRef> | RefCallback<TimerTextfieldRef>;
+    inputRef?: React.RefObject<TimerTextfieldRef> | React.RefCallback<TimerTextfieldRef>;
     size?: 'default' | 'large';
     error?: string;
     success?: boolean;
+    loading?: boolean;
     width?: number;
 }
 /**
@@ -42,12 +44,14 @@ export interface TimerFieldProps extends Omit<InputHTMLAttributes<HTMLInputEleme
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
  * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- * @property {RefObject<TimerTextfieldRef> | RefCallback<TimerTextfieldRef>} [inputRef] - A ref that provides access to the input element.
+ * @property {RefObject<TimerTextfieldRef> | React.RefCallback<TimerTextfieldRef>} [inputRef] - A ref that provides access to the input element.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
  */
-declare const TimerField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, disabled, fullWidth, startIcon, endIcon, clearable, inputRef, size, error: errorProp, success: successProp, width, ...props }: TimerFieldProps) => React.JSX.Element;
+declare const TimerField: ({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, onChange, className, helperText, disabled: disabledProp, fullWidth, startIcon, endIcon, clearable, inputRef, size, error: errorProp, success: successProp, loading, width, ...props }: TimerFieldProps) => React.JSX.Element;
 export default TimerField;
+//# sourceMappingURL=TimerField.d.ts.map

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 /**
@@ -34,16 +34,16 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
             throw new Error('When `singleCollapse` is true, `activeKey` can only have one key.');
         }
     }
-    const [height, setHeight] = useState(Array(items.length).fill(0));
-    const refs = useRef([]);
+    const [height, setHeight] = React.useState(Array(items.length).fill(0));
+    const refs = React.useRef([]);
     // Use activeKey if provided, otherwise fall back to defaultActiveKey
-    const [openIndex, setOpenIndex] = useState(activeKey !== null && activeKey !== void 0 ? activeKey : defaultActiveKey);
-    useEffect(() => {
+    const [openIndex, setOpenIndex] = React.useState(activeKey !== null && activeKey !== void 0 ? activeKey : defaultActiveKey);
+    React.useEffect(() => {
         // Calculate the heights of all the accordion items
         const newHeights = refs.current.map((ref) => (ref === null || ref === void 0 ? void 0 : ref.scrollHeight) || 0);
         setHeight(newHeights);
     }, [items]);
-    useEffect(() => {
+    React.useEffect(() => {
         // Sync the openIndex with the activeKey when it changes
         if (activeKey) {
             setOpenIndex(activeKey);
@@ -67,33 +67,32 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
         }
         onChangeActiveKey === null || onChangeActiveKey === void 0 ? void 0 : onChangeActiveKey(newOpenIndex);
     };
-    return (React.createElement("div", { className: cx('box-shadow rounded-md border border-neutral-40', className) }, items.map((item, index) => {
+    return (React.createElement("div", { className: cx('box-shadow rounded-md border border-neutral-40 dark:border-neutral-40-dark', className) }, items.map((item, index) => {
         const isOpen = openIndex.includes(item.key);
-        return (React.createElement("div", { key: item.key, className: "accordion-item border-b border-neutral-40 last:border-b-0 transition-all duration-300" },
+        return (React.createElement("div", { key: item.key, className: "accordion-item border-b border-neutral-40 dark:border-neutral-40-dark last:border-b-0 transition-all duration-300" },
             collapsible === 'icon' ? (React.createElement("div", { className: cx('flex justify-between items-center text-24px', {
                     'px-6': size === 'default',
                     'px-10': size === 'large',
                 }) },
-                React.createElement("div", { className: cx('w-full text-24px font-medium text-neutral-100', { 'py-4': size === 'default', 'py-8': size === 'large' }) }, item.title),
-                React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300', { 'rotate-180': isOpen }) },
+                React.createElement("div", { className: cx('w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', { 'py-4': size === 'default', 'py-8': size === 'large' }) }, item.title),
+                React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }) },
                     React.createElement(Icon, { name: "chevron-down", size: 24 })))) : (React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('flex justify-between items-center text-24px', {
                     'px-6': size === 'default',
                     'px-10': size === 'large',
                 }) },
-                React.createElement("div", { className: cx('text-24px font-medium text-neutral-100', {
+                React.createElement("div", { className: cx('text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', {
                         'py-4': size === 'default',
                         'py-8 ': size === 'large',
                     }) }, item.title),
-                React.createElement("div", { className: cx('text-neutral-90 rounded-full p-2 -mr-2 hover:bg-neutral-20 transition-all duration-300', { 'rotate-180': isOpen }) },
+                React.createElement("div", { className: cx('text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }) },
                     React.createElement(Icon, { name: "chevron-down", size: 24 })))),
             React.createElement("div", { ref: (el) => {
                     refs.current[index] = el;
-                }, style: { maxHeight: isOpen ? `${height[index]}px` : '0px' }, className: "overflow-hidden transition-all duration-300 " },
-                React.createElement("div", { className: cx(' text-neutral-90 text-20px', {
+                }, style: { maxHeight: isOpen ? `${height[index]}px` : '0px' }, className: "overflow-hidden transition-all duration-300" },
+                React.createElement("div", { className: cx('text-neutral-90 dark:text-neutral-90-dark text-20px', {
                         'mx-6 pt-1 pb-6': size === 'default',
-                        'mx-10 py-10 border-t border-neutral-40': size === 'large',
+                        'mx-10 py-10 border-t border-neutral-40 dark:border-neutral-40-dark': size === 'large',
                     }) }, item.content))));
     })));
 };
 export default Accordion;
-//# sourceMappingURL=Accordion.js.map

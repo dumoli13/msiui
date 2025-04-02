@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import COLORS from '../../libs/color';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
@@ -17,7 +16,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onCancel] - Callback function called when the user cancels the action or closes the modal.
  *
  */
-const ConfirmModal = ({ icon = React.createElement(Icon, { name: "alert-triangle", size: 48, color: COLORS.neutral[90] }), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
+const ConfirmModal = ({ icon = (React.createElement(Icon, { name: "alert-triangle", size: 24, className: "text-neutral-90 dark:text-neutral-90-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
     document.body.appendChild(container);
@@ -34,4 +33,3 @@ const ConfirmModal = ({ icon = React.createElement(Icon, { name: "alert-triangle
         }, confirmText: confirmText, cancelText: cancelText, customAction: customAction }, content));
 };
 export default ConfirmModal;
-//# sourceMappingURL=ConfirmModal.js.map

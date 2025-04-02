@@ -18,3 +18,4 @@ declare const Skeleton: {
     }): React.JSX.Element;
 };
 export default Skeleton;
+//# sourceMappingURL=Skeleton.d.ts.map

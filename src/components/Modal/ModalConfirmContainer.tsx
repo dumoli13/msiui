@@ -1,26 +1,26 @@
-import React, { JSX, KeyboardEvent, ReactNode, useEffect } from 'react';
+import React from 'react';
 import cx from 'classnames';
-import Button, { ButtonColor } from '../Inputs/Button';
+import Button from '../Inputs/Button';
 
 export interface ModalProps {
   open: boolean;
-  title?: ReactNode;
-  children: ReactNode;
-  icon?: ReactNode;
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
   width?: number;
 
   closeOnOverlayClick?: boolean;
   onClose?: () => void;
   cancelText?: string;
-  cancelButtonColor?: ButtonColor;
+  cancelButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
 
   onConfirm?: () => Promise<void> | void;
   confirmLoading?: boolean;
   confirmDisabled?: boolean;
   confirmText?: string;
-  confirmButtonColor?: ButtonColor;
-  customAction?: Array<JSX.Element>;
+  confirmButtonColor?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+  customAction?: Array<React.JSX.Element>;
 }
 
 /**
@@ -70,7 +70,7 @@ const ModalConfirmContainer = ({
   confirmButtonColor = 'primary',
   customAction,
 }: ModalProps) => {
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape' && onClose) {
       onClose();
     } else if (e.key === 'Enter' && onConfirm) {
@@ -80,12 +80,12 @@ const ModalConfirmContainer = ({
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const modalContainer = document.getElementById('modal-container');
     modalContainer?.focus();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -104,7 +104,6 @@ const ModalConfirmContainer = ({
       id="modal-container"
       className="flex items-center justify-center z-[1300] inset-0 fixed"
       onKeyDown={handleKeyDown}
-      tabIndex={0}
     >
       {closeOnOverlayClick ? (
         <div
@@ -118,7 +117,7 @@ const ModalConfirmContainer = ({
       )}
       <div
         className={cx(
-          'border border-neutral-40 rounded-xl drop-shadow-sm bg-neutral-10 m-8 flex flex-col max-h-[90vh]',
+          'border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ',
           className,
         )}
         style={{ width }}
@@ -126,27 +125,28 @@ const ModalConfirmContainer = ({
         onSubmit={onConfirm}
       >
         {title && (
-          <div className="pt-12 pb-4 px-12 flex items-center gap-4">
+          <div className="pt-6 pb-2 px-6 flex items-center gap-4">
             {icon}
-            <div className="text-40px font-semibold text-neutral-100 w-full break-words">
+            <div className="text-20px font-semibold text-neutral-100 dark:text-neutral-100-dark w-full break-words">
               {title}
             </div>
           </div>
         )}
         <div
           className={cx(
-            'pb-12 px-12 h-full text-neutral-80 text-28px flex-1 overflow-auto',
-            { 'ml-16': !!icon },
+            'pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto',
+            { 'ml-10': !!icon },
           )}
         >
           {children}
         </div>
-        <div className="px-12 py-6 bg-neutral-20 flex justify-end items-center gap-6 rounded-b-xl">
+        <div className="px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md">
           {onClose && (
             <Button
               variant="outlined"
               onClick={onClose}
               color={cancelButtonColor}
+              size="large"
             >
               {cancelText}
             </Button>
@@ -159,6 +159,7 @@ const ModalConfirmContainer = ({
               color={confirmButtonColor}
               loading={confirmLoading}
               disabled={confirmDisabled}
+              size="large"
             >
               {confirmText}
             </Button>

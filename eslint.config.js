@@ -1,11 +1,13 @@
-import pluginJs from '@eslint/js';
-import pluginImport from 'eslint-plugin-import';
-import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
-import pluginReact from 'eslint-plugin-react';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
+const pluginJs = require('@eslint/js');
+const pluginImport = require('eslint-plugin-import');
+const pluginJsxA11y = require('eslint-plugin-jsx-a11y');
+const pluginReact = require('eslint-plugin-react');
+const globals = require('globals');
+const tseslint = require('typescript-eslint');
 
-export default [
+module.exports = [
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   {
     languageOptions: {

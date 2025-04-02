@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -28,9 +27,9 @@ const WarningModal = ({
   icon = (
     <Icon
       name="alert-circle"
-      size={48}
+      size={24}
       strokeWidth={3}
-      color={COLORS.warning.main}
+      className="text-warning-main dark:text-warning-main-dark"
     />
   ),
   title,
@@ -43,8 +42,6 @@ const WarningModal = ({
   const container = document.createElement('div');
   const root = createRoot(container);
   document.body.appendChild(container);
-
-  const handleOpen = () => {};
 
   const handleClose = () => {
     root.unmount();

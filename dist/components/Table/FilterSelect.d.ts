@@ -26,3 +26,4 @@ declare const FilterSelect: <T extends {
     [key: string]: any;
 }, D>({ type, value, option, label, onChange, }: FilterSearchProps<T, D>) => React.JSX.Element;
 export default FilterSelect;
+//# sourceMappingURL=FilterSelect.d.ts.map

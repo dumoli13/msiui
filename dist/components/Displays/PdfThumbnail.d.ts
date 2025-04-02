@@ -17,3 +17,4 @@ export interface PdfThumbnailProps {
  */
 declare const PdfThumbnail: ({ file }: PdfThumbnailProps) => React.JSX.Element;
 export default PdfThumbnail;
+//# sourceMappingURL=PdfThumbnail.d.ts.map

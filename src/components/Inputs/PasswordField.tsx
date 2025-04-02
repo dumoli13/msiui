@@ -1,13 +1,4 @@
-import React, {
-  ChangeEvent,
-  InputHTMLAttributes,
-  ReactNode,
-  RefCallback,
-  RefObject,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
 
@@ -19,25 +10,29 @@ export interface PasswordFieldRef {
 }
 
 export interface PasswordFieldProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'onChange' | 'size'
+  > {
   value?: string;
   defaultValue?: string;
   label?: string;
   labelPosition?: 'top' | 'left';
   autoHideLabel?: boolean;
   onChange?: (value: string) => void;
-  helperText?: ReactNode;
+  helperText?: React.ReactNode;
   placeholder?: string;
   disabled?: boolean;
   fullWidth?: boolean;
-  startIcon?: ReactNode;
-  endIcon?: ReactNode;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
   inputRef?:
-    | RefObject<PasswordFieldRef | null>
-    | RefCallback<PasswordFieldRef | null>;
+    | React.RefObject<PasswordFieldRef | null>
+    | React.RefCallback<PasswordFieldRef | null>;
   size?: 'default' | 'large';
   error?: string;
   success?: boolean;
+  loading?: boolean;
   width?: number;
 }
 
@@ -57,10 +52,11 @@ export interface PasswordFieldProps
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<PasswordFieldRef> | RefCallback<PasswordFieldRef>} [inputRef] - A ref that provides access to the input element.
+ * @property {RefObject<PasswordFieldRef> | React.RefCallback<PasswordFieldRef>} [inputRef] - A ref that provides access to the input element.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
  */
@@ -70,46 +66,50 @@ const PasswordField = ({
   value: valueProp,
   defaultValue,
   label,
+
   labelPosition = 'top',
+  autoHideLabel = false,
   onChange,
   className,
   helperText,
   placeholder = '',
-  disabled = false,
+  disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
   inputRef,
-  size,
+  size = 'default',
   type,
   error: errorProp,
   success: successProp,
+  loading = false,
   width,
   ...props
 }: PasswordFieldProps) => {
-  const elementRef = useRef<HTMLInputElement>(null);
-  const [focused, setFocused] = useState(false);
-  const [internalValue, setInternalValue] = useState(defaultValue || '');
+  const elementRef = React.useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = React.useState(false);
+  const [internalValue, setInternalValue] = React.useState(defaultValue || '');
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const helperMessage = errorProp || helperText;
   const isError = errorProp;
+  const disabled = loading || disabledProp;
 
-  useImperativeHandle(inputRef, () => ({
+  React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
     focus: () => {
       elementRef.current?.focus();
     },
     reset: () => {
-      setInternalValue('');
+      setInternalValue(defaultValue || '');
     },
   }));
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange?.(newValue);
     if (!isControlled) {
@@ -128,37 +128,46 @@ const PasswordField = ({
         className,
       )}
     >
-      {label && (
+      {((autoHideLabel && focused) || !autoHideLabel) && label && (
         <label
           htmlFor={id}
-          className={cx('block text-left text-12px text-neutral-80 mb-1', {
-            'text-12px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+          className={cx(
+            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
+            {
+              'text-14px': size === 'default',
+              'text-18px': size === 'large',
+            },
+          )}
         >
           {label}
         </label>
       )}
       <div
         className={cx(
-          'bg-neutral-10 relative px-4 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-4 border rounded-md py-1 flex gap-2 items-center',
           {
             'w-full': fullWidth,
-            'border-danger-main focus:ring-danger-focus': isError,
-            'border-success-main focus:ring-success-focus':
+            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
+              isError,
+            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 hover:border-primary-main focus:ring-neutral-focus':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp && !disabled,
-            'bg-neutral-20 cursor-not-allowed text-neutral-60 hover:!border-neutral-50':
+            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
-            'shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
+            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
               !disabled,
-            'ring-3 ring-primary-focus !border-primary-main': focused,
+            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
+              focused,
           },
         )}
         style={width ? { width } : undefined}
       >
-        {startIcon && <div className="text-neutral-70">{startIcon}</div>}
+        {!!startIcon && (
+          <div className="text-neutral-70 dark:text-neutral-70-dark">
+            {startIcon}
+          </div>
+        )}
         <input
           {...props}
           tabIndex={!disabled ? 0 : -1}
@@ -170,12 +179,10 @@ const PasswordField = ({
           onBlur={() => setFocused(false)}
           ref={elementRef}
           className={cx(
-            'w-full outline-none disabled:bg-neutral-20 disabled:cursor-not-allowed',
+            'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
             {
-              'text-16px': size === 'default',
-              'text-18px': size === 'large',
-              'py-1.5': size === 'default',
-              'py-[13.5px]': size === 'large',
+              'text-14px py-1.5': size === 'default',
+              'text-18px py-3': size === 'large',
             },
           )}
           disabled={disabled}
@@ -183,29 +190,65 @@ const PasswordField = ({
           type={showPassword ? type : 'password'}
         />
         <div
-          className="p-1.5 hover:bg-neutral-20 rounded-full text-neutral-50"
-          role="button"
-          onClick={() => setShowPassword(!showPassword)}
+          className={cx('flex gap-1 items-center', {
+            'text-16px': size === 'default',
+            'text-20px': size === 'large',
+          })}
         >
-          <Icon name={showPassword ? 'eye' : 'eye-slash'} size={16} />
+          <div
+            className="p-1.5 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark rounded-full text-neutral-50"
+            role="button"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label="Toggle Password Visibility"
+          >
+            <Icon name={showPassword ? 'eye' : 'eye-slash'} size={16} />
+          </div>
+          {loading && (
+            <div className="text-neutral-70 dark:text-neutral-70-dark">
+              <Icon name="loader" animation="spin" strokeWidth={2} />
+            </div>
+          )}
+          {successProp && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              <Icon name="check" strokeWidth={3} />
+            </div>
+          )}
+          {isError && (
+            <div
+              className={cx(
+                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
+                {
+                  'h-4 w-4 text-12px': size === 'default',
+                  'h-5 w-5 text-16px': size === 'large',
+                },
+              )}
+            >
+              !
+            </div>
+          )}
+          {!!endIcon && (
+            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
+              {endIcon}
+            </div>
+          )}
         </div>
-        {successProp && (
-          <div className="rounded-full bg-success-main p-0.5 text-neutral-10">
-            <Icon name="check" size={10} strokeWidth={3} />
-          </div>
-        )}
-        {isError && (
-          <div className="rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center">
-            !
-          </div>
-        )}
-        {endIcon && <div className="text-neutral-70">{endIcon}</div>}
       </div>
       {helperMessage && (
         <div
-          className={`w-full text-left mt-1 text-12px ${
-            isError ? 'text-danger-main' : 'text-neutral-60'
-          }`}
+          className={cx('w-full text-left mt-1 ', {
+            'text-danger-main dark:text-danger-main-dark': isError,
+            'text-neutral-60 dark:text-neutral-60-dark': !isError,
+            'text-12px': size === 'default',
+            'text-16px': size === 'large',
+          })}
         >
           {helperMessage}
         </div>

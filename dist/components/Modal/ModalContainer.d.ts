@@ -22,7 +22,9 @@ import { ModalProps } from '.';
  * @property {boolean} [confirmDisabled=false] - Whether the confirm button should be disabled.
  * @property {string} [confirmText='Confirm'] - The text to be displayed on the confirm button (default is "Confirm").
  * @property {string} [confirmButtonColor='primary'] - The color for the confirm button.
+ * @property {ReactNode} [footer] - Optional footer content to be displayed at the bottom of the modal.
  *
  */
-declare const ModalContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, }: ModalProps) => React.JSX.Element | null;
+declare const ModalContainer: ({ open, title, children, icon, className, width, closeOnOverlayClick, onClose, cancelText, cancelButtonColor, onConfirm, confirmLoading, confirmDisabled, confirmText, confirmButtonColor, customAction, footer, }: ModalProps) => React.JSX.Element | null;
 export default ModalContainer;
+//# sourceMappingURL=ModalContainer.d.ts.map

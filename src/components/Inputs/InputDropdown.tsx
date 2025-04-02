@@ -1,18 +1,12 @@
-import React, {
-  ReactNode,
-  RefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 
 export interface InputDropdownProps {
   open: boolean;
-  children: ReactNode;
-  elementRef: RefObject<HTMLDivElement | null>;
-  dropdownRef: RefObject<HTMLDivElement | null>;
+  children: React.ReactNode;
+  elementRef: React.RefObject<HTMLDivElement | null>;
+  dropdownRef: React.RefObject<HTMLDivElement | null>;
   fullWidth?: boolean;
   maxHeight?: number;
 }
@@ -39,52 +33,80 @@ const InputDropdown = ({
   fullWidth,
   maxHeight = 300,
 }: InputDropdownProps) => {
-  const [dropdownStyles, setDropdownStyles] = useState<{
-    top: number;
-    left: number;
-    width: number | undefined;
-    direction: 'down' | 'up';
+  const [dropdownStyles, setDropdownStyles] = React.useState<{
+    top?: number;
+    left?: number;
+    width?: number | undefined;
+    direction?: 'down' | 'up';
+    visibility?: 'hidden' | 'visible';
   } | null>(null);
 
-  const calculateDropdownPosition = useCallback(() => {
-    if (elementRef.current) {
-      const rect = elementRef.current.getBoundingClientRect();
-      const dropdownHeight = dropdownRef.current?.offsetHeight || 0;
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
+  const calculateDropdownPosition = React.useCallback(() => {
+    if (!elementRef.current || !dropdownRef.current) return;
 
-      setDropdownStyles({
-        top:
-          spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
-            ? rect.bottom + window.scrollY
-            : rect.top - dropdownHeight - 10 + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: fullWidth ? rect.width : undefined,
-        direction:
-          spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
-            ? 'down'
-            : 'up',
-      });
+    const rect = elementRef.current.getBoundingClientRect();
+    const dropdown = dropdownRef.current;
+
+    // Calculate dimensions
+    const desiredWidth = fullWidth ? rect.width : dropdown.offsetWidth;
+    const dropdownHeight = dropdown.offsetHeight || 0;
+
+    // Calculate available space
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Calculate initial positions
+    let newLeft = rect.left + window.scrollX;
+    const newTop =
+      spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
+        ? rect.bottom + window.scrollY
+        : rect.top - dropdownHeight - 10 + window.scrollY;
+
+    // Prevent right overflow
+    const viewportRight = window.innerWidth;
+    const dropdownRightEdge = newLeft + desiredWidth;
+    if (dropdownRightEdge > viewportRight) {
+      // Shift left by the overflow amount
+      newLeft = Math.max(
+        viewportRight - desiredWidth, // Keep dropdown in viewport
+        window.scrollX, // Don't go beyond left edge
+      );
     }
+
+    // Prevent left overflow
+    if (newLeft < window.scrollX) {
+      newLeft = window.scrollX;
+    }
+
+    setDropdownStyles({
+      top: newTop,
+      left: newLeft,
+      width: fullWidth ? rect.width : undefined,
+      direction:
+        spaceBelow >= dropdownHeight || spaceBelow > spaceAbove ? 'down' : 'up',
+      visibility: 'visible',
+    });
   }, [elementRef, dropdownRef, fullWidth]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
-      calculateDropdownPosition();
+      setDropdownStyles((prev) => ({ ...prev, visibility: 'hidden' })); // Hide before calculation
+      setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
+
       const handleScrollOrResize = () => calculateDropdownPosition();
       window.addEventListener('scroll', handleScrollOrResize);
       window.addEventListener('resize', handleScrollOrResize);
+
       return () => {
         window.removeEventListener('scroll', handleScrollOrResize);
         window.removeEventListener('resize', handleScrollOrResize);
       };
     } else {
-      setDropdownStyles(null); // Reset styles when closed
+      setDropdownStyles(null);
     }
   }, [open, calculateDropdownPosition]);
 
-  // Don't render until position is calculated
-  if (!open || !dropdownStyles) return null;
+  if (!open) return null;
 
   return createPortal(
     <div
@@ -94,16 +116,16 @@ const InputDropdown = ({
       ref={dropdownRef}
       style={{
         position: 'absolute',
-        top: dropdownStyles.top,
-        left: dropdownStyles.left,
-        width: dropdownStyles.width,
+        top: dropdownStyles?.top,
+        left: dropdownStyles?.left,
+        width: dropdownStyles?.width,
         maxHeight,
       }}
       className={cx(
-        'bg-neutral-10 shadow-box-2 rounded-lg py-1.5 text-neutral-80 overflow-y-auto z-[1999] cursor-default',
+        'bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg py-1.5 text-neutral-80 dark:text-neutral-80-dark overflow-y-auto z-[1999] cursor-default',
         {
-          'mt-1': dropdownStyles.direction === 'down',
-          'mb-1': dropdownStyles.direction === 'up',
+          'mt-1': dropdownStyles?.direction === 'down',
+          'mb-1': dropdownStyles?.direction === 'up',
         },
       )}
       onKeyDown={(e) => {

@@ -1,9 +1,9 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 export interface PopperProps {
     className?: string;
     disabled?: boolean;
-    content: ReactNode;
-    children: ReactNode;
+    content: React.ReactNode;
+    children: React.ReactNode;
     open?: boolean;
     onOpen?: (open: boolean) => void;
     verticalAlign?: 'top' | 'center' | 'bottom';
@@ -33,3 +33,4 @@ export interface PopperProps {
  */
 declare const Popper: ({ className, disabled, content, children, open: openProp, onOpen, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopperProps) => React.JSX.Element;
 export default Popper;
+//# sourceMappingURL=Popper.d.ts.map

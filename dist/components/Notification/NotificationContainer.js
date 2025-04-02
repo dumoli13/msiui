@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import COLORS from '../../libs/color';
+import React from 'react';
+import cx from 'classnames';
 import Icon from '../Icon';
 /**
  *
@@ -23,14 +23,14 @@ import Icon from '../Icon';
  * @returns {JSX.Element | null} The notification component that is displayed if `open` is `true`, otherwise `null`.
  */
 const NotificationContainer = ({ open, title, description, icon, color = 'primary', onClose, }) => {
-    const [visible, setVisible] = useState(open);
-    const [progressWidth, setProgressWidth] = useState(100);
-    const timerRef = useRef(null);
-    const intervalRef = useRef(null);
+    const [visible, setVisible] = React.useState(open);
+    const [progressWidth, setProgressWidth] = React.useState(100);
+    const timerRef = React.useRef(null);
+    const intervalRef = React.useRef(null);
     const animationDuration = 5000;
     const decrementInterval = 10;
     const decrementRate = 100 / (animationDuration / decrementInterval);
-    useEffect(() => {
+    React.useEffect(() => {
         setVisible(open);
         if (open) {
             setProgressWidth(100);
@@ -74,18 +74,22 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     if (!visible)
         return null;
     return (React.createElement("div", { role: "presentation", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave },
-        React.createElement("div", { className: "relative px-6 py-5 bg-neutral-10 text-neutral-90 flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden" },
+        React.createElement("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden" },
             React.createElement("div", { className: "shrink-0" }, icon),
             React.createElement("div", null,
                 React.createElement("div", { className: "text-24px mb-2 break-words" }, title),
                 React.createElement("p", { className: "text-20px break-words" }, description)),
-            React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2, color: COLORS.neutral[60], className: "shrink-0", onClick: handleClose }),
-            React.createElement("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30" },
-                React.createElement("div", { className: "h-full transition-all ease-linear bg-primary-main", style: {
+            React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "shrink-0 text-neutral-60 dark:text-neutral-60-dark", onClick: handleClose }),
+            React.createElement("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark" },
+                React.createElement("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
+                        'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
+                        'bg-success-main dark:bg-success-main-dark': color === 'success',
+                        'bg-danger-main dark:bg-danger-main-dark': color === 'danger',
+                        'bg-warning-main dark:bg-warning-main-dark': color === 'warning',
+                        'bg-info-main dark:bg-info-main-dark': color === 'info',
+                    }), style: {
                         width: `${progressWidth}%`,
                         transitionDuration: '0s',
-                        backgroundColor: COLORS[color].main,
                     } })))));
 };
 export default NotificationContainer;
-//# sourceMappingURL=NotificationContainer.js.map

@@ -9,3 +9,4 @@ declare const PaginationButton: {
     next({ onClick, disabled }: PaginationButtonProps): React.JSX.Element;
 };
 export default PaginationButton;
+//# sourceMappingURL=PaginationButton.d.ts.map

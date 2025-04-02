@@ -16,3 +16,4 @@ import { ConfirmModalProps } from './ConfirmModal';
  */
 declare const PrimaryModal: ({ title, content, confirmText, cancelText, onConfirm, customAction, }: ConfirmModalProps) => void;
 export default PrimaryModal;
+//# sourceMappingURL=PrimaryModal.d.ts.map

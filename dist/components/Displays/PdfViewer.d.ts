@@ -17,8 +17,8 @@ export interface PdfViewerProps {
  * @property {boolean} open - A flag that determines if the viewer modal is open or closed.
  * @property {function} onClose - A function to close the viewer modal.
  * @property {string | null} url - The URL or path to the PDF document to be viewed.
- * @returns {JSX.Element | null} A modal viewer for the PDF document, or `null` if `open` is `false`.
  *
  */
 declare const PDFViewer: ({ open, onClose, url }: PdfViewerProps) => React.ReactPortal | null;
 export default PDFViewer;
+//# sourceMappingURL=PdfViewer.d.ts.map

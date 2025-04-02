@@ -3,7 +3,7 @@ export interface StepProps {
     active: number;
     items: Array<{
         title: string;
-        description: string;
+        description?: string;
         error?: boolean;
         success?: boolean;
         available?: boolean;
@@ -12,7 +12,6 @@ export interface StepProps {
     disabled?: boolean;
 }
 /**
- * Steps Component
  *
  * A component that renders a multi-step progress tracker. Each step can represent a process or a task.
  * The component displays the title and description for each step, along with visual indicators for success, error,
@@ -24,8 +23,8 @@ export interface StepProps {
  * @property {Array} items - An array of step items, each containing the following properties:
  * @property {function} [onChange] - A callback function triggered when the active step is changed.
  * @property {boolean} [disabled=false] - A flag that disables the ability to change steps.*
- * @returns {JSX.Element} The Steps component that displays the steps and allows navigation between them.
  *
  */
 declare function Steps({ active, items, onChange, disabled }: StepProps): React.JSX.Element;
 export default Steps;
+//# sourceMappingURL=Steps.d.ts.map

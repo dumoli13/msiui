@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { SelectValue } from '../Inputs/Select';
 export type TableColumn<T, D = unknown, FilterType = string | SelectValue<T[keyof T], D> | null> = {
     filter: 'textfield';
@@ -9,7 +9,7 @@ export type TableColumn<T, D = unknown, FilterType = string | SelectValue<T[keyo
     sortable?: boolean;
     width?: number | string;
     minWidth?: number;
-    render?: (value: T[keyof T] | null, record: T, index: number) => ReactNode;
+    render?: (value: T[keyof T] | null, record: T, index: number) => React.ReactNode;
     filterValue: string;
     onChange: (value: string) => void;
 } | {
@@ -21,7 +21,7 @@ export type TableColumn<T, D = unknown, FilterType = string | SelectValue<T[keyo
     sortable?: boolean;
     width?: number | string;
     minWidth?: number;
-    render?: (value: T[keyof T] | null, record: T, index: number) => ReactNode;
+    render?: (value: T[keyof T] | null, record: T, index: number) => React.ReactNode;
     filterValue: FilterType;
     onChange: (value: FilterType) => void;
     option: Array<SelectValue<T[keyof T], D>>;
@@ -34,7 +34,7 @@ export type TableColumn<T, D = unknown, FilterType = string | SelectValue<T[keyo
     sortable?: boolean;
     width?: number | string;
     minWidth?: number;
-    render?: (value: T[keyof T] | null, record: T, index: number) => ReactNode;
+    render?: (value: T[keyof T] | null, record: T, index: number) => React.ReactNode;
     filterValue?: FilterType;
 };
 export type TableSortingProps<T> = {
@@ -53,7 +53,7 @@ export interface TableProps<T> {
     onRowSelect?: (row: number, value: boolean, selectedRows: number[]) => void;
     sorting?: TableSortingProps<T> | null;
     onSort?: (sort: TableSortingProps<T>) => void;
-    render?: (value: any, record: T) => ReactNode;
+    render?: (value: any, record: T) => React.ReactNode;
     showDanger?: (record: T) => boolean;
     fullwidth?: boolean;
     showSelected?: boolean;
@@ -85,3 +85,4 @@ declare const Table: <T extends {
     [key: string]: any;
 }>({ columns, data, stickyHeader, maxHeight, selectedRows: selectedRowsProp, onRowSelect, sorting, showDanger, onSort, fullwidth, showSelected, size, verticalAlign, }: TableProps<T>) => React.JSX.Element;
 export default Table;
+//# sourceMappingURL=index.d.ts.map

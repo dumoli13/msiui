@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 export interface NotificationContainerProps {
     title: string;
     description: string | number;
-    icon?: ReactNode;
+    icon?: React.ReactNode;
     open: boolean;
     color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
     onClose?: () => void;
@@ -30,3 +30,4 @@ export interface NotificationContainerProps {
  */
 declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => React.JSX.Element | null;
 export default NotificationContainer;
+//# sourceMappingURL=NotificationContainer.d.ts.map

@@ -12,4 +12,9 @@ export const MONTH_LIST = [
     { value: 10, label: 'Nov' },
     { value: 11, label: 'Dec' },
 ];
-//# sourceMappingURL=datePicker.js.map
+export var TimeUnit;
+(function (TimeUnit) {
+    TimeUnit["hours"] = "hours";
+    TimeUnit["minutes"] = "minutes";
+    TimeUnit["seconds"] = "seconds";
+})(TimeUnit || (TimeUnit = {}));

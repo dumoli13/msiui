@@ -18,3 +18,4 @@ interface FilterSearchProps {
  */
 declare const FilterSearch: ({ value, label, onChange }: FilterSearchProps) => React.JSX.Element;
 export default FilterSearch;
+//# sourceMappingURL=FilterSearch.d.ts.map

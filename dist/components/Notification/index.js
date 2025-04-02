@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import NotificationContainer from './NotificationContainer';
 let addNotificationToStack = null;
@@ -33,8 +32,8 @@ export const useNotification = () => {
  *
  */
 const NotificationStack = () => {
-    const [notifications, setNotifications] = useState([]);
-    useEffect(() => {
+    const [notifications, setNotifications] = React.useState([]);
+    React.useEffect(() => {
         addNotificationToStack = (newNotification) => {
             setNotifications((prev) => [...prev, newNotification]);
         };
@@ -45,20 +44,17 @@ const NotificationStack = () => {
     return ReactDOM.createPortal(React.createElement("div", { className: "fixed bottom-0 right-0 p-4 z-[1500] space-y-4" }, notifications.map((notification) => {
         let icon;
         switch (notification.color) {
-            case 'primary':
-                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.primary.main }));
-                break;
             case 'success':
-                icon = (React.createElement(Icon, { name: "check-circle", size: 24, strokeWidth: 3, color: COLORS.success.main }));
+                icon = (React.createElement(Icon, { name: "check-circle", size: 24, strokeWidth: 3, className: "text-success-main dark:text-success-main-dark" }));
                 break;
             case 'danger':
-                icon = (React.createElement(Icon, { name: "x-circle", size: 24, strokeWidth: 3, color: COLORS.danger.main }));
+                icon = (React.createElement(Icon, { name: "x-circle", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" }));
                 break;
             case 'warning':
-                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.warning.main }));
+                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-warning-main dark:text-warning-main-dark" }));
                 break;
             case 'info':
-                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, color: COLORS.info.main }));
+                icon = (React.createElement(Icon, { name: "information-circle", size: 24, strokeWidth: 3, className: "text-info-main dark:text-info-main-dark" }));
                 break;
             default:
                 icon = notification.icon;
@@ -71,4 +67,3 @@ export const NotificationProvider = ({ children, }) => {
         children,
         React.createElement(NotificationStack, null)));
 };
-//# sourceMappingURL=index.js.map

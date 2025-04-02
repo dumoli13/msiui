@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
 export const content = ['./src/**/*.{html,js,jsx,ts,tsx}'];
 export const theme = {
   container: {
@@ -13,9 +15,6 @@ export const theme = {
     },
     gridTemplateColumns: {
       '4-fit': 'repeat(4, fit-content(100%))',
-    },
-    fontFamily: {
-      sans: ['DM Sans', 'sans-serif'],
     },
     borderRadius: {
       32: '32px',
@@ -62,59 +61,183 @@ export const theme = {
   colors: {
     transparent: 'rgba(0, 0, 0, 0)',
     neutral: {
-      10: 'rgba(255, 255, 255, <alpha-value>)', // #FFFFFF
-      15: 'rgba(250, 250, 250, <alpha-value>)', // #FAFAFA
-      20: 'rgba(245, 245, 245, <alpha-value>)', // #F5F5F5
-      30: 'rgba(237, 237, 237, <alpha-value>)', // #EDEDED
-      40: 'rgba(224, 224, 224, <alpha-value>)', // #E0E0E0
-      50: 'rgba(194, 194, 194, <alpha-value>)', // #C2C2C2
-      60: 'rgba(158, 158, 158, <alpha-value>)', // #9E9E9E
-      70: 'rgba(117, 117, 117, <alpha-value>)', // #757575
-      80: 'rgba(97, 97, 97, <alpha-value>)', // #616161
-      90: 'rgba(64, 64, 64, <alpha-value>)', // #404040
-      100: 'rgba(10, 10, 10, <alpha-value>)', // #0A0A0A
+      10: {
+        DEFAULT: 'rgba(255, 255, 255, <alpha-value>)', // #FFFFFF
+        dark: 'rgba(10, 15, 30, <alpha-value>)', // #0A0F1E
+      },
+      15: {
+        DEFAULT: 'rgba(250, 250, 250, <alpha-value>)', // #FAFAFA
+        dark: 'rgba(13, 21, 56, <alpha-value>)', // #0D1538
+      },
+      20: {
+        DEFAULT: 'rgba(245, 245, 245, <alpha-value>)', // #F5F5F5
+        dark: 'rgba(42, 48, 73, <alpha-value>)', // #2A3049
+      },
+      30: {
+        DEFAULT: 'rgba(237, 237, 237, <alpha-value>)', // #EDEDED
+        dark: 'rgba(20, 20, 20, <alpha-value>)', // #141414 (Adjusted to a neutral dark gray)
+      },
+      40: {
+        DEFAULT: 'rgba(224, 224, 224, <alpha-value>)', // #E0E0E0
+        dark: 'rgba(60, 60, 60, <alpha-value>)', // #3C3C3C
+      },
+      50: {
+        DEFAULT: 'rgba(194, 194, 194, <alpha-value>)', // #C2C2C2
+        dark: 'rgba(82, 82, 82, <alpha-value>)', // #525252
+      },
+      60: {
+        DEFAULT: 'rgba(158, 158, 158, <alpha-value>)', // #9E9E9E
+        dark: 'rgba(106, 106, 106, <alpha-value>)', // #6A6A6A
+      },
+      70: {
+        DEFAULT: 'rgba(117, 117, 117, <alpha-value>)', // #757575
+        dark: 'rgba(136, 136, 136, <alpha-value>)', // #888888
+      },
+      80: {
+        DEFAULT: 'rgba(97, 97, 97, <alpha-value>)', // #616161
+        dark: 'rgba(160, 160, 160, <alpha-value>)', // #A0A0A0
+      },
+      90: {
+        DEFAULT: 'rgba(66, 66, 66, <alpha-value>)', // #424242
+        dark: 'rgba(188, 188, 188, <alpha-value>)', // #BCBCBC
+      },
+      100: {
+        DEFAULT: 'rgba(10, 10, 10, <alpha-value>)', // #0A0A0A
+        dark: 'rgba(255, 255, 255, <alpha-value>)', // #FFFFFF
+      },
     },
     primary: {
-      main: 'rgba(49, 130, 206, <alpha-value>)', // #3182CE
-      surface: 'rgba(214, 230, 245, <alpha-value>)', // #D6E6F5
-      border: 'rgba(186, 213, 239, <alpha-value>)', // #BAD5EE
-      hover: 'rgba(41, 108, 172, <alpha-value>)', // #286CAB
-      pressed: 'rgba(24, 65, 103, <alpha-value>)', // #184167
-      focus: 'rgba(49, 130, 206, 0.2)', // #3182CE
+      main: {
+        DEFAULT: 'rgba(49, 130, 206, <alpha-value>)', // #3182CE
+        dark: 'rgba(90, 155, 226, <alpha-value>)', // #5A9BE2
+      },
+      surface: {
+        DEFAULT: 'rgba(214, 230, 245, <alpha-value>)', // #D6E6F5
+        dark: 'rgba(26, 43, 69, <alpha-value>)', // #1A2B45
+      },
+      border: {
+        DEFAULT: 'rgba(186, 213, 238, <alpha-value>)', // #BAD5EE
+        dark: 'rgba(42, 59, 94, <alpha-value>)', // #2A3B5E
+      },
+      hover: {
+        DEFAULT: 'rgba(40, 108, 171, <alpha-value>)', // #286CAB
+        dark: 'rgba(74, 143, 192, <alpha-value>)', // #4A8FC0
+      },
+      pressed: {
+        DEFAULT: 'rgba(24, 65, 103, <alpha-value>)', // #184167
+        dark: 'rgba(44, 90, 138, <alpha-value>)', // #2C5A8A
+      },
+      focus: {
+        DEFAULT: 'rgba(49, 130, 206, 0.2)', // #3182CE
+        dark: 'rgba(90, 155, 226, 0.2)', // #5A9BE2
+      },
     },
     danger: {
-      main: 'rgba(203, 58, 49, <alpha-value>)', // #CB3A31
-      surface: 'rgba(255, 244, 242, <alpha-value>)', // #FFF4F2
-      border: 'rgba(238, 180, 176, <alpha-value>)', // #EEB4B0
-      hover: 'rgba(189, 37, 28, <alpha-value>)', // #BC251C
-      pressed: 'rgba(115, 25, 18, <alpha-value>)', // #731912
-      focus: 'rgba(203, 58, 49, 0.2)', // #CB3A31
+      main: {
+        DEFAULT: 'rgba(203, 58, 49, <alpha-value>)', // #CB3A31
+        dark: 'rgba(224, 106, 101, <alpha-value>)', // #E06A65
+      },
+      surface: {
+        DEFAULT: 'rgba(255, 244, 242, <alpha-value>)', // #FFF4F2
+        dark: 'rgba(59, 26, 24, <alpha-value>)', // #3B1A18
+      },
+      border: {
+        DEFAULT: 'rgba(238, 180, 176, <alpha-value>)', // #EEB4B0
+        dark: 'rgba(162, 59, 56, <alpha-value>)', // #A23B38
+      },
+      hover: {
+        DEFAULT: 'rgba(189, 37, 28, <alpha-value>)', // #BD251C
+        dark: 'rgba(216, 74, 68, <alpha-value>)', // #D84A44
+      },
+      pressed: {
+        DEFAULT: 'rgba(115, 25, 18, <alpha-value>)', // #731912
+        dark: 'rgba(156, 60, 42, <alpha-value>)', // #9C3C2A
+      },
+      focus: {
+        DEFAULT: 'rgba(203, 58, 49, 0.2)', // #CB3A31
+        dark: 'rgba(224, 106, 101, 0.2)', // #E06A65
+      },
     },
     warning: {
-      main: 'rgba(205, 123, 46, <alpha-value>)', // #CD7B2E
-      surface: 'rgba(255, 249, 242, <alpha-value>)', // #FFF9F2
-      border: 'rgba(238, 206, 176, <alpha-value>)', // #EECEB0
-      hover: 'rgba(191, 105, 25, <alpha-value>)', // #BF6818
-      pressed: 'rgba(114, 64, 17, <alpha-value>)', // #724011
-      focus: 'rgba(205, 123, 46, 0.2)', // #CD7B2E
+      main: {
+        DEFAULT: 'rgba(205, 123, 46, <alpha-value>)', // #CD7B2E
+        dark: 'rgba(224, 163, 92, <alpha-value>)', // #E0A35C
+      },
+      surface: {
+        DEFAULT: 'rgba(255, 249, 242, <alpha-value>)', // #FFF9F2
+        dark: 'rgba(59, 42, 24, <alpha-value>)', // #3B2A18
+      },
+      border: {
+        DEFAULT: 'rgba(238, 206, 176, <alpha-value>)', // #EECEB0
+        dark: 'rgba(184, 134, 94, <alpha-value>)', // #B8865E
+      },
+      hover: {
+        DEFAULT: 'rgba(191, 105, 25, <alpha-value>)', // #BF6919
+        dark: 'rgba(214, 138, 64, <alpha-value>)', // #D68A40
+      },
+      pressed: {
+        DEFAULT: 'rgba(115, 64, 17, <alpha-value>)', // #734011
+        dark: 'rgba(158, 91, 48, <alpha-value>)', // #9E5B30
+      },
+      focus: {
+        DEFAULT: 'rgba(205, 123, 46, 0.2)', // #CD7B2E
+        dark: 'rgba(224, 163, 92, 0.2)', // #E0A35C
+      },
     },
     success: {
-      main: 'rgba(67, 147, 108, <alpha-value>)', // #43936C
-      surface: 'rgba(247, 247, 247, <alpha-value>)', // #F7F7F7
-      border: 'rgba(183, 219, 201, <alpha-value>)', // #B7DBC9
-      hover: 'rgba(54, 122, 89, <alpha-value>)', // #357A59
-      pressed: 'rgba(32, 87, 60, <alpha-value>)', // #20563C
-      focus: 'rgba(67, 147, 108, 0.2)', // #43936C
+      main: {
+        DEFAULT: 'rgba(67, 147, 108, <alpha-value>)', // #43936C
+        dark: 'rgba(111, 191, 139, <alpha-value>)', // #6FBF8B
+      },
+      surface: {
+        DEFAULT: 'rgba(247, 247, 247, <alpha-value>)', // #F7F7F7
+        dark: 'rgba(30, 42, 39, <alpha-value>)', // #1E2A27
+      },
+      border: {
+        DEFAULT: 'rgba(183, 219, 201, <alpha-value>)', // #B7DBC9
+        dark: 'rgba(134, 185, 168, <alpha-value>)', // #86B9A8
+      },
+      hover: {
+        DEFAULT: 'rgba(53, 122, 89, <alpha-value>)', // #357A59
+        dark: 'rgba(86, 155, 127, <alpha-value>)', // #569B7F
+      },
+      pressed: {
+        DEFAULT: 'rgba(32, 86, 60, <alpha-value>)', // #20563C
+        dark: 'rgba(58, 123, 98, <alpha-value>)', // #3A7B62
+      },
+      focus: {
+        DEFAULT: 'rgba(67, 147, 108, 0.2)', // #43936C
+        dark: 'rgba(111, 191, 139, 0.2)', // #6FBF8B
+      },
     },
     info: {
-      main: 'rgba(203, 58, 65, <alpha-value>)', // #CB3A41
-      surface: 'rgba(245, 245, 255, <alpha-value>)', // #FFF4F2
-      border: 'rgba(223, 224, 243, <alpha-value>)', // #DFE0F3
-      hover: 'rgba(51, 52, 204, <alpha-value>)', // #3334CC
-      pressed: 'rgba(33, 33, 122, <alpha-value>)', // #21217A
-      focus: 'rgba(67, 147, 108, 0.2)', // #43936C
+      main: {
+        DEFAULT: 'rgba(76, 77, 220, <alpha-value>)', // #4C4DDC
+        dark: 'rgba(123, 124, 224, <alpha-value>)', // #7B7CE0
+      },
+      surface: {
+        DEFAULT: 'rgba(245, 245, 255, <alpha-value>)', // #F5F5FF
+        dark: 'rgba(31, 31, 58, <alpha-value>)', // #1F1F3A
+      },
+      border: {
+        DEFAULT: 'rgba(223, 224, 243, <alpha-value>)', // #DFE0F3
+        dark: 'rgba(159, 160, 176, <alpha-value>)', // #9FA0B0
+      },
+      hover: {
+        DEFAULT: 'rgba(51, 52, 204, <alpha-value>)', // #3334CC
+        dark: 'rgba(92, 93, 208, <alpha-value>)', // #5C5DD0
+      },
+      pressed: {
+        DEFAULT: 'rgba(33, 33, 122, 0.2)', // #21217A
+        dark: 'rgba(66, 68, 160, 0.2)', // #4244A0
+      },
+      focus: {
+        DEFAULT: 'rgba(76, 77, 220, 0.2)', // #4C4DDC at 20% opacity
+        dark: 'rgba(123, 124, 224, 0.2)', // #7B7CE0 at 20% opacity
+      },
     },
   },
+
   boxShadow: {
     'box-1': '0px 1px 2px rgba(0, 0, 0, 0.12)',
     'box-2': '0px 4px 8px rgba(0, 0, 0, 0.1)',
@@ -166,3 +289,4 @@ export const theme = {
   },
 };
 export const plugins = [require('tailwindcss-animate')];
+export const darkMode = 'class';

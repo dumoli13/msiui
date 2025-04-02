@@ -1,27 +1,28 @@
-import React, { InputHTMLAttributes, ReactNode, RefCallback, RefObject } from 'react';
+import React from 'react';
 export interface TextfieldRef {
     element: HTMLInputElement | null;
     value: string;
     focus: () => void;
     reset: () => void;
 }
-export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+export interface TextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
     value?: string | number;
     defaultValue?: string | number;
     label?: string;
     labelPosition?: 'top' | 'left';
     autoHideLabel?: boolean;
     onChange?: (value: string) => void;
-    helperText?: ReactNode;
+    helperText?: React.ReactNode;
     placeholder?: string;
     fullWidth?: boolean;
-    startIcon?: ReactNode;
-    endIcon?: ReactNode;
-    inputRef?: RefObject<TextfieldRef | null> | RefCallback<TextfieldRef | null>;
+    startIcon?: React.ReactNode;
+    endIcon?: React.ReactNode;
+    inputRef?: React.RefObject<TextfieldRef | null> | React.RefCallback<TextfieldRef | null>;
     size?: 'default' | 'large';
     clearable?: boolean;
-    error?: string;
+    error?: boolean | string;
     success?: boolean;
+    loading?: boolean;
     width?: number;
 }
 /**
@@ -40,13 +41,15 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
  * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<TextfieldRef> | RefCallback<TextfieldRef>} [inputRef] - A ref to access the input element directly.
+ * @property {RefObject<TextfieldRef> | React.RefCallback<TextfieldRef>} [inputRef] - A ref to access the input element directly.
  * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
  * @property {boolean} [clearable=false] - Whether the input field should have a clear button to reset its value.
- * @property {string} [error] - Error message to display when the input has an error.
+ * @property {boolean | string} [error] - Error message to display when the input has an error.
  * @property {boolean} [success] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
  * @property {number} [width] - Optional custom width for the input field.
  *
  */
-declare const TextField: ({ id, value: valueProp, defaultValue, label, labelPosition, onChange, className, helperText, placeholder, disabled, fullWidth, startIcon, endIcon, inputRef, size, clearable, error: errorProp, success: successProp, width, ...props }: TextFieldProps) => React.JSX.Element;
+declare const TextField: ({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, clearable, error: errorProp, success: successProp, loading, width, ...props }: TextFieldProps) => React.JSX.Element;
 export default TextField;
+//# sourceMappingURL=TextField.d.ts.map

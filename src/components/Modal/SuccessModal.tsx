@@ -1,6 +1,5 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -24,7 +23,12 @@ import ModalConfirmContainer from './ModalConfirmContainer';
 
 const SuccessModal = ({
   icon = (
-    <Icon name="check" size={48} strokeWidth={3} color={COLORS.success.main} />
+    <Icon
+      name="check"
+      size={24}
+      strokeWidth={3}
+      className="text-success-main dark:text-success-main-dark"
+    />
   ),
   title,
   content,

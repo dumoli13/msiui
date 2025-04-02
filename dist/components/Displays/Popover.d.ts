@@ -1,9 +1,9 @@
-import React, { ReactNode, RefObject } from 'react';
+import React from 'react';
 export interface PopoverProps {
-    children: ReactNode;
+    children: React.ReactNode;
     className?: string;
     open: boolean;
-    elementRef: RefObject<HTMLDivElement>;
+    elementRef: React.RefObject<HTMLDivElement | null>;
     onClose?: () => void;
     verticalAlign?: 'top' | 'center' | 'bottom';
     horizontalAlign?: 'left' | 'center' | 'right';
@@ -31,3 +31,4 @@ export interface PopoverProps {
  */
 declare const Popover: ({ children, className, open, elementRef, onClose, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopoverProps) => React.JSX.Element | null;
 export default Popover;
+//# sourceMappingURL=Popover.d.ts.map

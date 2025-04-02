@@ -1,26 +1,54 @@
 import { __rest } from "tslib";
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useImperativeHandle, useRef, useState, } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import { MONTH_LIST } from '../../const/datePicker';
+import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isDateABeforeDateB, isDateBetween, isToday, } from '../../libs';
 import Icon from '../Icon';
-import Button from './Button';
+import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
-const formatDate = (date) => date ? dayjs(date).format('D/M/YYYY') : '';
+/**
+ * A date range picker component that allows users to select a start and end date.
+ * It supports customization options such as labels, helper text, validation, and disabled dates.
+ *
+ * @property {InputDateRangeValue} [value] - The selected date range. If provided, the component will be controlled.
+ * @property {InputDateRangeValue} [defaultValue] - The initial date range for uncontrolled usage.
+ * @property {string} [label] - The label text displayed above or beside the input field.
+ * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the input ('top' or 'left').
+ * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the input is focused.
+ * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function triggered when the selected date range changes.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
+ * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
+ * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A ref to access the date range picker element directly.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
+ * @property {string} [error] - Error message displayed when the input has an error.
+ * @property {boolean} [success=false] - Whether the input field is in a success state.
+ * @property {boolean} [loading=false] - Whether the input is in a loading state.
+ * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
+ * @property {number} [width] - Optional custom width for the input field.
+ * @property {boolean} [showTime=false] - Whether time selection should be enabled in the date range picker.
+ */
 const DateRangePicker = (_a) => {
-    var { id, value: valueProp, defaultValue, label, labelPosition = 'top', onChange, className, helperText, placeholder = 'input date', disabled = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, disabledDate = () => false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "error", "success", "disabledDate", "width"]);
-    const elementRef = useRef(null);
-    const dropdownRef = useRef(null);
-    const [focused, setFocused] = useState(false);
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [internalValue, setInternalValue] = useState(defaultValue || null);
+    var _b, _c, _d;
+    var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "error", "success", "loading", "disabledDate", "width", "showTime"]);
+    const elementRef = React.useRef(null);
+    const dropdownRef = React.useRef(null);
+    const [focused, setFocused] = React.useState(false);
+    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [pointer, setPointer] = React.useState(0);
+    const [internalValue, setInternalValue] = React.useState(defaultValue || null);
     const isControlled = typeof valueProp !== 'undefined';
     const value = isControlled ? valueProp : internalValue;
-    const [tempValue, setTempValue] = useState(value || [null, null]);
-    const [calendarView, setCalendarView] = useState('date');
-    const [displayedDate, setDisplayedDate] = useState(value === null ? new Date() : value[0]);
+    const [tempValue, setTempValue] = React.useState(value || [null, null]);
+    const [timeValue, setTimeValue] = React.useState({
+        hours: ((_b = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _b === void 0 ? void 0 : _b.getHours()) || null, // if
+        minutes: ((_c = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _c === void 0 ? void 0 : _c.getMinutes()) || null,
+        seconds: ((_d = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _d === void 0 ? void 0 : _d.getSeconds()) || null,
+    });
+    const [calendarView, setCalendarView] = React.useState('date');
+    const [displayedDate, setDisplayedDate] = React.useState(value === null ? new Date() : value[0]);
     const yearRange = getYearRange(displayedDate.getFullYear());
     const firstDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth(), 1);
     const lastDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() + 1, 0);
@@ -28,7 +56,40 @@ const DateRangePicker = (_a) => {
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
     const helperMessage = errorProp || helperText;
     const isError = errorProp;
-    useImperativeHandle(inputRef, () => ({
+    const disabled = loading || disabledProp;
+    const scrollRefs = {
+        hours: React.useRef(null),
+        minutes: React.useRef(null),
+        seconds: React.useRef(null),
+    };
+    const itemRefs = {
+        hours: React.useRef([]),
+        minutes: React.useRef([]),
+        seconds: React.useRef([]),
+    };
+    React.useEffect(() => {
+        if (!isDropdownOpen)
+            return;
+        // Delay to ensure dropdown is fully rendered before scrolling
+        setTimeout(() => {
+            Object.keys(timeValue).forEach((unit) => {
+                var _a;
+                const value = timeValue[unit];
+                const container = (_a = scrollRefs[unit]) === null || _a === void 0 ? void 0 : _a.current;
+                const item = value !== null ? itemRefs[unit].current[value] : null;
+                if (container && item) {
+                    const containerTop = container.getBoundingClientRect().top;
+                    const itemTop = item.getBoundingClientRect().top;
+                    const offset = itemTop - containerTop - 8; // Adjust for 8px padding
+                    container.scrollTo({
+                        top: container.scrollTop + offset,
+                        behavior: 'smooth',
+                    });
+                }
+            });
+        }, 50); // Small delay for rendering
+    }, [isDropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
+    React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
         focus: () => {
@@ -37,10 +98,10 @@ const DateRangePicker = (_a) => {
         },
         reset: () => {
             setTempValue([null, null]);
-            setInternalValue(null);
+            setInternalValue(defaultValue || null);
         },
     }));
-    useEffect(() => {
+    React.useEffect(() => {
         const handleClickOutside = (event) => {
             var _a, _b, _c;
             const target = event.target;
@@ -50,20 +111,20 @@ const DateRangePicker = (_a) => {
                 (_c = elementRef.current) === null || _c === void 0 ? void 0 : _c.focus();
                 return;
             }
-            setDropdownOpen(false);
-            handleCancel();
+            handleBlur();
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-    const handleFocus = () => {
+    const handleFocus = (target) => {
         if (disabled)
             return;
-        setCalendarView('date');
+        handleChangeView('date');
         setFocused(true);
         setDropdownOpen(true);
+        setPointer(target);
     };
     const handleBlur = (event) => {
         var _a, _b;
@@ -75,14 +136,6 @@ const DateRangePicker = (_a) => {
         }
         setFocused(false);
         setDropdownOpen(false);
-    };
-    const handleDropdown = () => {
-        if (disabled)
-            return;
-        setFocused(true);
-        setDropdownOpen((prev) => {
-            return !prev;
-        });
     };
     const days = Array.from({ length: 7 }).map((_, idx) => dayFormatter.format(new Date(SUNDAY_DATE.getFullYear(), SUNDAY_DATE.getMonth(), SUNDAY_DATE.getDate() + idx)));
     const dates = Array.from({ length: lastDate.getDate() }).map((_, idx) => new Date(firstDate.getFullYear(), firstDate.getMonth(), firstDate.getDate() + idx));
@@ -97,100 +150,146 @@ const DateRangePicker = (_a) => {
         });
         dateMatrix.push(dateRow);
     }
-    const handleViewDate = () => {
-        setCalendarView('date');
+    const handleChangeView = (view) => {
+        setCalendarView(view);
     };
-    const handleViewMonth = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCalendarView('month');
-    };
-    const handleViewYear = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCalendarView('year');
-    };
-    const handleJumpMonth = (month) => (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleJumpMonth = (month) => {
         if (tempValue[0] !== null && tempValue[1] !== null) {
             setTempValue([null, null]);
         }
         setDisplayedDate(new Date(displayedDate.getFullYear(), month));
-        setCalendarView('date');
+        handleChangeView('date');
     };
-    const handleJumpYear = (year) => (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleJumpYear = (year) => {
         if (tempValue[0] !== null && tempValue[1] !== null) {
             setTempValue([null, null]);
         }
         setDisplayedDate(new Date(year, displayedDate.getMonth()));
         setCalendarView('month');
     };
-    const handlePrevMonth = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handlePrevMonth = () => {
         const prevMonth = displayedDate.getMonth() === 0 ? 11 : displayedDate.getMonth() - 1;
         const prevYear = displayedDate.getMonth() === 0
             ? displayedDate.getFullYear() - 1
             : displayedDate.getFullYear();
         setDisplayedDate(new Date(prevYear, prevMonth));
     };
-    const handleNextMonth = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleNextMonth = () => {
         const nextMonth = displayedDate.getMonth() === 11 ? 0 : displayedDate.getMonth() + 1;
         const nextYear = displayedDate.getMonth() === 11
             ? displayedDate.getFullYear() + 1
             : displayedDate.getFullYear();
         setDisplayedDate(new Date(nextYear, nextMonth));
     };
-    const handlePrevYear = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDisplayedDate(new Date(displayedDate.getFullYear() - 1, displayedDate.getMonth()));
+    const handleChangeYear = (jump) => {
+        setDisplayedDate(new Date(displayedDate.getFullYear() + jump, displayedDate.getMonth()));
     };
-    const handleNextYear = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDisplayedDate(new Date(displayedDate.getFullYear() + 1, displayedDate.getMonth()));
-    };
-    const handlePrev12Year = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDisplayedDate(new Date(displayedDate.getFullYear() - 12, displayedDate.getMonth()));
-    };
-    const handleNext12Year = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDisplayedDate(new Date(displayedDate.getFullYear() + 12, displayedDate.getMonth()));
-    };
-    const handleSelectDate = (date) => {
-        if (tempValue[0] !== null && tempValue[1] !== null) {
-            setTempValue([date, null]);
+    /**
+     * when pointer changed, change selected time based on tempValue[pointer]
+     */
+    React.useEffect(() => {
+        if (showTime) {
+            const selectedTime = {
+                hours: tempValue[pointer] ? tempValue[pointer].getHours() : null,
+                minutes: tempValue[pointer] ? tempValue[pointer].getMinutes() : null,
+                seconds: tempValue[pointer] ? tempValue[pointer].getSeconds() : null,
+            };
+            setTimeValue(selectedTime);
         }
-        else if (tempValue[0] !== null) {
-            let newDate;
-            if (isDateABeforeDateB(date, tempValue[0])) {
-                newDate = [
-                    dayjs(date).endOf('day').toDate(),
-                    dayjs(tempValue[0]).startOf('day').toDate(),
-                ];
+    }, [pointer]);
+    const convertDateOnly = (start, end) => {
+        const newDate = [start, end];
+        if (start !== null && end !== null) {
+            if (isDateABeforeDateB(start, end)) {
+                /**
+                 * use start of the day and end of the day to cover full day
+                 *
+                 * if position start and end is correct, and not null,
+                 * close dropdown when pointer is 1
+                 */
+                newDate[0] = dayjs(start).startOf('day').toDate();
+                newDate[1] = dayjs(end).endOf('day').toDate();
+                if (pointer === 1)
+                    handleBlur();
             }
             else {
-                newDate = [
-                    dayjs(tempValue[0]).endOf('day').toDate(),
-                    dayjs(date).startOf('day').toDate(),
-                ];
+                /**
+                 * if end < start, swap start and end.
+                 * if this happen, do not close dropdown,
+                 * even when pointer is 1 so use can check or select new end date
+                 */
+                newDate[0] = dayjs(end).startOf('day').toDate();
+                newDate[1] = dayjs(start).endOf('day').toDate();
             }
-            setTempValue(newDate);
             handleChange(newDate);
-            setDisplayedDate(tempValue === null ? new Date() : newDate[0]);
-            handleBlur();
+        }
+        setTempValue(newDate);
+    };
+    const convertDateTime = () => {
+        const start = tempValue[0];
+        const end = tempValue[1];
+        const newDate = [start, end];
+        if (start !== null && end !== null) {
+            /**
+             * use selected time instead of start of the day or end of the day
+             */
+            if (isDateABeforeDateB(start, end)) {
+                newDate[0] = start;
+                newDate[1] = end;
+            }
+            else {
+                newDate[0] = end;
+                newDate[1] = start;
+            }
+            handleChange(newDate);
+        }
+        setTempValue(newDate);
+    };
+    const handleSelectDate = (date) => {
+        if (showTime) {
+            const selectedTime = {
+                hours: timeValue.hours || 0,
+                minutes: timeValue.minutes || 0,
+                seconds: timeValue.seconds || 0,
+            };
+            setTimeValue(selectedTime);
+            const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
+            setTempValue((prev) => prev[pointer] === newDate
+                ? prev
+                : prev.map((v, i) => (i === pointer ? newDate : v)));
         }
         else {
-            setTempValue([date, null]);
+            if (pointer === 0) {
+                convertDateOnly(date, tempValue[1]);
+                setPointer(1);
+            }
+            else if (pointer === 1) {
+                // Do not close dropdown in here in case end value < start value
+                convertDateOnly(tempValue[0], date);
+            }
+        }
+    };
+    const handleSelectTime = (category, selected) => {
+        const selectedDate = (tempValue === null || tempValue === void 0 ? void 0 : tempValue[pointer]) || new Date();
+        const selectedTime = {
+            hours: timeValue.hours || 0,
+            minutes: timeValue.minutes || 0,
+            seconds: timeValue.seconds || 0,
+            [category]: selected,
+        };
+        setTimeValue(selectedTime);
+        const newDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
+        setTempValue((prev) => prev[pointer] === newDate
+            ? prev
+            : prev.map((v, i) => (i === pointer ? newDate : v)));
+    };
+    const handleConfirmDateTime = () => {
+        convertDateTime();
+        if (pointer === 0) {
+            setPointer(1);
+        }
+        else if (pointer === 1) {
+            handleBlur();
         }
     };
     const handleChange = (newValue) => {
@@ -198,100 +297,120 @@ const DateRangePicker = (_a) => {
         if (!isControlled) {
             setInternalValue(newValue);
         }
-        handleBlur();
-    };
-    const handleCancel = () => {
-        setTempValue(value || [null, null]);
-        setDisplayedDate(value === null ? new Date() : value[0]);
-        handleBlur();
     };
     const handleClearValue = (e) => {
         e.preventDefault();
         e.stopPropagation();
         handleChange(null);
+        handleBlur();
     };
-    useEffect(() => {
+    const formatDate = (date) => dayjs(date).format(showTime ? 'D/M/YYYY HH:mm:ss' : 'D/M/YYYY');
+    React.useEffect(() => {
         if (value === null) {
             setTempValue([null, null]);
             setDisplayedDate(new Date());
         }
+        else {
+            setTempValue(value);
+            setDisplayedDate(value[0] || new Date());
+        }
     }, [value, isDropdownOpen]);
     const dropdownContent = (React.createElement("div", { className: "min-w-60" },
-        React.createElement("div", { className: "px-4 flex flex-col gap-4" },
-            React.createElement("div", { className: "flex items-center gap-4 text-neutral-100 font-medium" },
-                React.createElement("div", { className: "flex-1" },
-                    React.createElement("div", { className: "text-12px font-semibold text-neutral-70" }, "Start Date"),
-                    React.createElement("div", null, tempValue[0] ? dayjs(tempValue[0]).format('D/M/YYYY') : '-')),
-                React.createElement("div", { className: "flex-1" },
-                    React.createElement("div", { className: "text-12px font-semibold text-neutral-70" }, "End Date"),
-                    React.createElement("div", null, tempValue[1] ? dayjs(tempValue[1]).format('D/M/YYYY') : '-')))),
         calendarView === 'date' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2" },
-                React.createElement("div", { className: "flex items-center" },
-                    React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                    React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevMonth, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(Icon, { name: "chevron-left", size: 20, strokeWidth: 2 }))),
-                React.createElement("div", { className: "flex items-center gap-4 text-16px font-medium" },
-                    React.createElement("div", { role: "button", className: "hover:text-primary-hover w-[84px]", onMouseDown: handleViewMonth }, monthFormatter.format(displayedDate)),
-                    React.createElement("div", { role: "button", className: "hover:text-primary-hover w-10", onMouseDown: handleViewYear }, displayedDate.getFullYear())),
-                React.createElement("div", { className: "flex items-center" },
-                    React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextMonth, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(Icon, { name: "chevron-right", size: 20, strokeWidth: 2 })),
-                    React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
-                        React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 })))),
-            React.createElement("div", { className: "text-12px p-2 border-t border-neutral-40" },
-                React.createElement("table", { className: "w-full" },
-                    React.createElement("thead", null,
-                        React.createElement("tr", null, days.map((day) => (React.createElement("th", { key: day },
-                            React.createElement("div", { className: "text-center p-1 font-normal w-8" }, day)))))),
-                    React.createElement("tbody", null, dateMatrix.map((row, rowIdx) => (React.createElement("tr", { key: rowIdx }, row.map((date, dateIdx) => {
-                        const isDateDisabled = date === null || disabledDate(date, tempValue[0]);
-                        const isStartSelected = date
-                            ? tempValue[0] !== null &&
-                                areDatesEqual(date, tempValue[0])
-                            : false;
-                        const isEndSelected = date
-                            ? tempValue[1] !== null &&
-                                areDatesEqual(date, tempValue[1])
-                            : false;
-                        const isBetween = date !== null &&
-                            tempValue[0] !== null &&
-                            tempValue[1] !== null &&
-                            isDateBetween({
-                                date,
-                                startDate: tempValue[0],
-                                endDate: tempValue[1],
-                            });
-                        const handleChooseDate = (date) => (e) => {
-                            if (!date || isDateDisabled)
-                                return;
-                            e === null || e === void 0 ? void 0 : e.preventDefault();
-                            e === null || e === void 0 ? void 0 : e.stopPropagation();
-                            handleSelectDate(date);
-                        };
-                        return (React.createElement("td", { key: dateIdx, "aria-label": date ? date.toDateString() : 'Disabled date' },
-                            React.createElement("div", { role: "button", onMouseDown: handleChooseDate(date), className: cx('text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center', {
-                                    'cursor-default text-neutral-30': isDateDisabled,
-                                    'cursor-pointer text-neutral-100': !isDateDisabled,
-                                    'hover:bg-neutral-20': !isDateDisabled &&
-                                        !(isStartSelected || isEndSelected),
-                                    'border border-primary-main': isToday(date) &&
-                                        !(isStartSelected || isEndSelected),
-                                    'bg-primary-main !text-neutral-10': isStartSelected || isEndSelected,
-                                    'rounded-tl-md rounded-bl-md': isStartSelected,
-                                    'rounded-tr-md rounded-br-md': isEndSelected,
-                                    'bg-primary-surface': isBetween,
-                                }) }, date === null || date === void 0 ? void 0 : date.getDate())));
-                    }))))))))),
+            React.createElement("div", { className: "px-4 flex flex-col gap-4 border-b border-neutral-40 dark:border-neutral-40-dark" },
+                React.createElement("div", { className: "flex items-center gap-10 text-neutral-100 dark:text-neutral-100-dark font-medium mb-1" },
+                    React.createElement("button", { type: "button", className: cx('flex-1 border-b-2', {
+                            ' border-primary-main dark:border-primary-main-dark': pointer === 0,
+                            'border-transparent': pointer !== 0,
+                        }), onClick: () => handleFocus(0), disabled: pointer === 0 },
+                        React.createElement("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark" }, "Start Date"),
+                        React.createElement("div", null, tempValue[0] ? formatDate(tempValue[0]) : '-')),
+                    React.createElement("button", { type: "button", className: cx('flex-1 border-b-2', {
+                            'border-primary-main dark:border-primary-main-dark': pointer === 1,
+                            'border-transparent': pointer !== 1,
+                        }), onClick: () => handleFocus(1), disabled: pointer === 1 || tempValue[0] === null },
+                        React.createElement("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark" }, "End Date"),
+                        React.createElement("div", null, tempValue[1] ? formatDate(tempValue[1]) : '-')))),
+            React.createElement("div", { className: "flex" },
+                React.createElement("div", null,
+                    React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
+                        React.createElement("div", { className: "flex items-center" },
+                            React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
+                                React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
+                            React.createElement("div", { role: "button", title: "Previous Month", onClick: handlePrevMonth, className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
+                                React.createElement(Icon, { name: "chevron-left", size: 20, strokeWidth: 2 }))),
+                        React.createElement("div", { className: "flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark" },
+                            React.createElement("div", { role: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]", onClick: () => handleChangeView('month') }, monthFormatter.format(displayedDate)),
+                            React.createElement("div", { role: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10", onClick: () => handleChangeView('year') }, displayedDate.getFullYear())),
+                        React.createElement("div", { className: "flex items-center" },
+                            React.createElement("div", { role: "button", title: "Next Month", onClick: handleNextMonth, className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
+                                React.createElement(Icon, { name: "chevron-right", size: 20, strokeWidth: 2 })),
+                            React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
+                                React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 })))),
+                    React.createElement("div", { className: "text-12px p-2" },
+                        React.createElement("table", { className: "w-full" },
+                            React.createElement("thead", null,
+                                React.createElement("tr", null, days.map((day) => (React.createElement("th", { key: day },
+                                    React.createElement("div", { className: "text-center p-1 font-normal w-8" }, day)))))),
+                            React.createElement("tbody", null, dateMatrix.map((row, rowIdx) => (React.createElement("tr", { key: rowIdx }, row.map((date, dateIdx) => {
+                                const isDateDisabled = date === null || disabledDate(date, tempValue[0]);
+                                const isStartSelected = date
+                                    ? tempValue[0] !== null &&
+                                        areDatesEqual(date, tempValue[0])
+                                    : false;
+                                const isEndSelected = date
+                                    ? tempValue[1] !== null &&
+                                        areDatesEqual(date, tempValue[1])
+                                    : false;
+                                const isBetween = date !== null &&
+                                    tempValue[0] !== null &&
+                                    tempValue[1] !== null &&
+                                    isDateBetween({
+                                        date,
+                                        startDate: tempValue[0],
+                                        endDate: tempValue[1],
+                                    });
+                                const handleChooseDate = (date) => {
+                                    if (!date || isDateDisabled)
+                                        return;
+                                    handleSelectDate(date);
+                                };
+                                return (React.createElement("td", { key: dateIdx, "aria-label": date ? date.toDateString() : 'Disabled date', className: "px-0" },
+                                    React.createElement("div", { role: "button", onClick: () => handleChooseDate(date), className: cx('text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center', {
+                                            'cursor-default text-neutral-30 dark:text-neutral-30-dark': isDateDisabled,
+                                            'cursor-pointer text-neutral-100 dark:text-neutral-100-dark': !isDateDisabled,
+                                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateDisabled &&
+                                                !(isStartSelected || isEndSelected),
+                                            'border border-primary-main dark:border-primary-main-dark': isToday(date) &&
+                                                !(isStartSelected || isEndSelected),
+                                            'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark': isStartSelected || isEndSelected,
+                                            'rounded-tl-md rounded-bl-md': isStartSelected,
+                                            'rounded-tr-md rounded-br-md': isEndSelected,
+                                            'bg-primary-surface dark:bg-primary-surface-dark': isBetween,
+                                        }) }, date === null || date === void 0 ? void 0 : date.getDate())));
+                            })))))))),
+                showTime && (React.createElement("div", { className: "border-l border-neutral-40 dark:border-neutral-40-dark text-14px" },
+                    React.createElement("div", { className: "h-[49px] border-b border-neutral-40 dark:border-neutral-40-dark" }),
+                    React.createElement("div", { className: "flex" }, Object.keys(TimeUnit).map((key) => {
+                        const unit = key;
+                        const length = unit === TimeUnit.hours ? 24 : 60;
+                        return (React.createElement("div", { key: unit, ref: scrollRefs[unit], className: "text-neutral-100 dark:text-neutral-100-dark max-h-[234px] overflow-y-auto p-2 apple-scrollbar flex flex-col gap-1 border-l border-neutral-40 dark:border-neutral-40-dark first:border-none" }, Array.from({ length }).map((_, idx) => (React.createElement("button", { type: "button", key: idx, ref: (el) => {
+                                itemRefs[unit].current[idx] = el;
+                            }, className: cx('w-10 text-center rounded py-0.5', {
+                                'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark cursor-default': idx === timeValue[unit],
+                                'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': idx !== timeValue[unit],
+                            }), onClick: () => handleSelectTime(unit, idx) }, idx.toString().padStart(2, '0'))))));
+                    }))))),
+            showTime && (React.createElement("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-end py-2 px-3" },
+                React.createElement("button", { type: "button", onClick: handleConfirmDateTime, className: cx('text-14px py-0.5 px-2 rounded disabled:border', 'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed', 'dark:text-neutral-10-dark dark:disabled:border-neutral-40-dark dark:disabled:text-neutral-60-dark dark:disabled:bg-neutral-30-dark dark:bg-primary-main-dark dark:hover:bg-primary-hover-dark dark:active:bg-primary-pressed-dark'), disabled: disabled }, "OK"))))),
         calendarView === 'month' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2" },
-                React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrevYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
+            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
+                React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
                     React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                React.createElement("div", { role: "button", className: "text-16px font-medium hover:text-primary-hover", onMouseDown: handleViewYear }, displayedDate.getFullYear()),
-                React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNextYear, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
+                React.createElement("div", { role: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year') }, displayedDate.getFullYear()),
+                React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
                     React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
-            React.createElement("div", { className: "grid grid-cols-3 p-2 border-t border-neutral-40 gap-y-1 text-14px" }, MONTH_LIST.map((item) => {
+            React.createElement("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px" }, MONTH_LIST.map((item) => {
                 const currentMonth = displayedDate.getFullYear() * 100 + item.value;
                 const [start, end] = (tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => v ? v.getFullYear() * 100 + v.getMonth() : null)) || [null, null];
                 const isStartSelected = start !== null && currentMonth === start;
@@ -300,76 +419,93 @@ const DateRangePicker = (_a) => {
                     end !== null &&
                     currentMonth > start &&
                     currentMonth < end;
-                return (React.createElement("div", { className: "flex items-center", key: item.value },
-                    React.createElement("div", { role: "button", onMouseDown: handleJumpMonth(item.value), className: cx('w-full h-8 cursor-pointer transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center', {
-                            'hover:bg-neutral-20': !isStartSelected,
-                            'bg-primary-main !text-neutral-10': isStartSelected || isEndSelected,
+                return (React.createElement("div", { className: "flex justify-center items-center h-12 text-neutral-100 dark:text-neutral-100-dark", key: item.value },
+                    React.createElement("div", { role: "button", onClick: () => handleJumpMonth(item.value), className: cx('w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center', {
+                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isStartSelected,
+                            'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark': isStartSelected || isEndSelected,
                             'rounded-tl-md rounded-bl-md': isStartSelected,
                             'rounded-tr-md rounded-br-md': isEndSelected,
-                            'bg-primary-surface': isBetween,
+                            'bg-primary-surface dark:bg-primary-surface-dark': isBetween,
                         }) }, item.label)));
             })),
             React.createElement("div", { className: "flex justify-end gap-3 px-2" },
-                React.createElement(Button, { variant: "outlined", size: "small", onClick: handleViewDate }, "Cancel")))),
+                React.createElement(CancelButton, { onClick: () => handleChangeView('date') })))),
         calendarView === 'year' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2" },
-                React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handlePrev12Year, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
+            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
+                React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-12), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
                     React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                React.createElement("div", { className: "text-16px font-medium" }, `${yearRange[0]} - ${yearRange[yearRange.length - 1]}`),
-                React.createElement("div", { role: "button", title: "Previous Year", onMouseDown: handleNext12Year, className: "rounded-full p-1 hover:bg-neutral-20 text-neutral-100/25" },
+                React.createElement("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark" }, `${yearRange[0]} - ${yearRange[yearRange.length - 1]}`),
+                React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(12), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
                     React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
-            React.createElement("div", { className: "grid grid-cols-3 p-2 border-t border-neutral-40 gap-y-1 text-14px" }, yearRange.map((item) => {
+            React.createElement("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px" }, yearRange.map((item) => {
                 var _a;
                 const isDateSelected = displayedDate.getMonth() === item;
                 const [start, end] = (_a = tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => (v === null || v === void 0 ? void 0 : v.getFullYear()) || null)) !== null && _a !== void 0 ? _a : [null, null];
                 const isStartSelected = start !== null && item === start;
                 const isEndSelected = end !== null && item === end;
                 const isBetween = start !== null && end !== null && item > start && item < end;
-                return (React.createElement("div", { className: "flex items-center", key: item },
-                    React.createElement("div", { role: "button", onMouseDown: handleJumpYear(item), className: cx('cursor-pointer w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center', {
-                            'hover:bg-neutral-20': !isDateSelected,
-                            'bg-primary-main !text-neutral-10': isStartSelected || isEndSelected,
+                return (React.createElement("div", { className: "flex justify-center items-center h-12 w-20 text-neutral-100 dark:text-neutral-100-dark", key: item },
+                    React.createElement("div", { role: "button", onClick: () => handleJumpYear(item), className: cx('cursor-pointer w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center', {
+                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateSelected,
+                            'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark': isStartSelected || isEndSelected,
                             'rounded-tl-md rounded-bl-md': isStartSelected,
                             'rounded-tr-md rounded-br-md': isEndSelected,
-                            'bg-primary-surface': isBetween,
+                            'bg-primary-surface dark:bg-primary-surface-dark': isBetween,
                         }) }, item)));
             })),
             React.createElement("div", { className: "flex justify-end gap-3 px-2" },
-                React.createElement(Button, { variant: "outlined", size: "small", onClick: handleViewDate }, "Cancel"))))));
+                React.createElement(CancelButton, { onClick: () => handleChangeView('date') }))))));
     return (React.createElement("div", { className: cx('relative text-14px', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
         }, className) },
-        label && (React.createElement("label", { htmlFor: id, className: cx('block text-left text-12px text-neutral-80 mb-1', {
-                'text-12px': size === 'default',
-                'text-20px': size === 'large',
+        ((autoHideLabel && focused) || !autoHideLabel) && label && (React.createElement("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1', {
+                'text-14px': size === 'default',
+                'text-18px': size === 'large',
             }) }, label)),
-        React.createElement("div", { className: cx('bg-neutral-10 relative px-4 border rounded-md py-1 flex gap-2 items-center', {
+        React.createElement("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
                 'w-full': fullWidth,
-                'border-danger-main focus:ring-danger-focus': isError,
-                'border-success-main focus:ring-success-focus': !isError && successProp,
-                'border-neutral-50 hover:border-primary-main focus:ring-neutral-focus': !isError && !successProp && !disabled,
-                'bg-neutral-20 cursor-not-allowed text-neutral-60 hover:!border-neutral-50': disabled,
-                'shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main': !disabled,
-                'ring-3 ring-primary-focus !border-primary-main': focused,
+                'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
+                'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
+                'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
+                'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
+                'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main': !disabled,
+                'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
             }), ref: elementRef, style: width ? { width } : undefined },
-            React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: value && dayjs(value[0]).isValid() && dayjs(value[1]).isValid()
-                    ? `${formatDate(value[0])} - ${formatDate(value[1])}`
-                    : '', placeholder: focused ? '' : placeholder, className: cx('w-full outline-none disabled:bg-neutral-20 disabled:cursor-not-allowed', {
+            React.createElement("div", { className: cx('flex gap-2 items-center truncate flex-1 text-neutral-90 dark:text-neutral-90-dark', {
+                    'text-14px py-1.5': size === 'default',
+                    'text-18px py-3': size === 'large',
+                }) }, value ? (React.createElement(React.Fragment, null,
+                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: dayjs(value[0]).isValid() ? formatDate(value[0]) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })),
+                React.createElement("div", null, "-"),
+                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: dayjs(value[1]).isValid() ? formatDate(value[1]) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(1), onClick: () => handleFocus(1), onChange: () => { } })))) : (React.createElement("input", Object.assign({}, props, { value: '', tabIndex: !disabled ? 0 : -1, id: id, placeholder: focused ? '' : placeholder, className: "flex-1 truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })))),
+            React.createElement("div", { className: cx('flex gap-1 items-center', {
                     'text-16px': size === 'default',
-                    'text-18px': size === 'large',
-                    'py-1.5': size === 'default',
-                    'py-[12.5px]': size === 'large',
-                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: () => { } })),
-            React.createElement("div", { className: "flex gap-0.5 items-center" },
-                focused && !!value ? (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color" },
-                    React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2 }))) : (React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: "rounded-full hover:bg-neutral-30 p-1.5 text-neutral-70 transition-color" },
-                    React.createElement(Icon, { name: "calendar", size: 16 }))),
-                successProp && (React.createElement("div", { className: "rounded-full bg-success-main p-0.5 text-neutral-10" },
-                    React.createElement(Icon, { name: "check", size: 10, strokeWidth: 3 }))),
-                isError && (React.createElement("div", { className: "rounded-full bg-danger-main p-0.5 text-neutral-10 font-medium text-12px h-4 w-4 flex items-center justify-center" }, "!")))),
-        helperMessage && (React.createElement("div", { className: `w-full text-left mt-1 text-12px ${isError ? 'text-danger-main' : 'text-neutral-60'}` }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 320 }, dropdownContent)));
+                    'text-20px': size === 'large',
+                }) },
+                focused && !!value ? (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" },
+                    React.createElement(Icon, { name: "x-mark", strokeWidth: 3 }))) : (React.createElement("div", { title: "Open", role: "button", onClick: () => handleFocus(0), className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" },
+                    React.createElement(Icon, { name: "calendar", strokeWidth: 2 }))),
+                loading && (React.createElement("div", { className: cx('text-neutral-70 dark:text-neutral-70-dark', {
+                        'text-16px': size === 'default',
+                        'text-20px': size === 'large',
+                    }) },
+                    React.createElement(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }))),
+                successProp && (React.createElement("div", { className: cx('shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center', {
+                        'h-4 w-4 text-12px': size === 'default',
+                        'h-5 w-5 text-16px': size === 'large',
+                    }) },
+                    React.createElement(Icon, { name: "check", strokeWidth: 3 }))),
+                isError && (React.createElement("div", { className: cx('shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center', {
+                        'h-4 w-4 text-12px': size === 'default',
+                        'h-5 w-5 text-16px': size === 'large',
+                    }) }, "!")))),
+        helperMessage && (React.createElement("div", { className: cx('w-full text-left mt-1', {
+                'text-danger-main dark:text-danger-main-dark': isError,
+                'text-neutral-60 dark:text-neutral-60-dark': !isError,
+                'text-12px': size === 'default',
+                'text-16px': size === 'large',
+            }) }, helperMessage)),
+        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 400 }, dropdownContent)));
 };
 export default DateRangePicker;
-//# sourceMappingURL=DateRangePicker.js.map

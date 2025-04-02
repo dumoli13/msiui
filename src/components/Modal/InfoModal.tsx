@@ -1,6 +1,5 @@
-import React, { JSX, ReactNode } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 import { ConfirmModalProps } from './ConfirmModal';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -23,9 +22,9 @@ const InfoModal = ({
   icon = (
     <Icon
       name="alert-circle"
-      size={48}
+      size={24}
       strokeWidth={3}
-      color={COLORS.info.main}
+      className="text-info-main dark:text-info-main-dark"
     />
   ),
   title,

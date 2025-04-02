@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
 import {
   DocumentCallback,
   PageCallback,
-} from 'react-pdf/dist/cjs/shared/types';
+} from 'react-pdf/dist/cjs/shared/types.js';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useDebouncedCallback } from 'use-debounce';
-import { COLORS } from '../../libs';
 import Icon from '../Icon';
 
 // Configure PDF.js worker
@@ -31,19 +30,18 @@ export interface PdfViewerProps {
  * @property {boolean} open - A flag that determines if the viewer modal is open or closed.
  * @property {function} onClose - A function to close the viewer modal.
  * @property {string | null} url - The URL or path to the PDF document to be viewed.
- * @returns {JSX.Element | null} A modal viewer for the PDF document, or `null` if `open` is `false`.
  *
  */
 
 const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
-  const [numPages, setNumPages] = useState(1);
-  const [tempScale, setTempScale] = useState(100); // Zoom level in percentage
-  const [scale, setScale] = useState(100); // Zoom level in percentage
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const viewerRef = useRef<HTMLDivElement | null>(null); // Correctly typed ref
-  const pageRef = useRef<HTMLDivElement | null>(null);
+  const [numPages, setNumPages] = React.useState(1);
+  const [tempScale, setTempScale] = React.useState(100); // Zoom level in percentage
+  const [scale, setScale] = React.useState(100); // Zoom level in percentage
+  const [currentPage, setCurrentPage] = React.useState(1); // Track current page
+  const viewerRef = React.useRef<HTMLDivElement | null>(null); // Correctly typed ref
+  const pageRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [documentWidth, setDocumentWidth] = useState(0);
+  const [documentWidth, setDocumentWidth] = React.useState(0);
   const showFullSize = scale > 100;
 
   const onDocumentLoadSuccess = ({ numPages }: DocumentCallback) => {
@@ -54,7 +52,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
     setDocumentWidth(width);
   };
 
-  const handleZoom = useCallback((zoomIn: boolean) => {
+  const handleZoom = React.useCallback((zoomIn: boolean) => {
     setScale((prev) => {
       if (!zoomIn && prev === 50) return prev;
       const newScale = zoomIn ? prev + 10 : prev - 10;
@@ -123,7 +121,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
     setCurrentPage(mostVisiblePage);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const observer = new MutationObserver(() => {
       if (viewerRef.current) {
         viewerRef.current.addEventListener('scroll', updateCurrentPage);
@@ -139,7 +137,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       setTempScale(100);
       setCurrentPage(1);
@@ -147,7 +145,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
     }
   }, [open]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -170,16 +168,20 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
       id="modal-container"
       className="flex items-center justify-center z-[1300] inset-0 fixed"
     >
-      <div className="fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" />
+      <div className="fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50 dark:bg-neutral-100-dark/50" />
 
       <div className="fixed top-0 left-0 w-full h-full">
         <div
           role="button"
           aria-label="Close"
           onClick={onClose}
-          className="absolute top-8 right-8 text-white bg-neutral-100/70 hover:bg-opacity-20 z-50 rounded-full cursor-pointer h-[56px] w-[56px] flex justify-center items-center"
+          className="absolute top-8 right-8 text-white bg-neutral-100/70 dark:bg-neutral-100-dark/70 hover:bg-opacity-20 z-50 rounded-full cursor-pointer h-[56px] w-[56px] flex justify-center items-center"
         >
-          <Icon name="x-mark" size={16} color={COLORS.neutral[10]} />
+          <Icon
+            name="x-mark"
+            size={16}
+            className="text-neutral-10 dark:text-neutral-10-dark"
+          />
         </div>
         <div
           className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2 overflow-auto max-w-full"
@@ -209,14 +211,14 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
             </Document>
           )}
         </div>
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-neutral-10 bg-neutral-100/70 p-4 rounded-full flex items-center gap-2 text-lg">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-neutral-10 dark:text-neutral-10-dark bg-neutral-100/70 dark:bg-neutral-100-dark/70 p-4 rounded-full flex items-center gap-2 text-lg">
           <div className="flex items-center gap-2 text-sm px-6 text-white">
             <span>Page</span>
             <span>{currentPage}</span>
             <span>{`/ ${numPages}`}</span>
           </div>
 
-          <div className="h-6 w-0 border-r border-neutral-10" />
+          <div className="h-6 w-0 border-r border-neutral-10 dark:border-neutral-10-dark" />
 
           <div className="flex items-center gap-2 px-6">
             <div
@@ -229,9 +231,9 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
               role="button"
               aria-label="zoom out"
             >
-              <Icon name="minus-circle" />
+              <Icon name="minus-circle" size={24} />
             </div>
-            <div className="bg-neutral-90 rounded-full py-1 px-3">
+            <div className="bg-neutral-90 dark:bg-neutral-90-dark rounded-full py-1 px-3">
               <label htmlFor="scale">
                 <input
                   id="scale"
@@ -253,7 +255,7 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
             </div>
           </div>
 
-          <div className="h-6 w-0 border-r border-neutral-10" />
+          <div className="h-6 w-0 border-r border-neutral-10 dark:border-neutral-10-dark" />
           <div className="px-6">
             <div
               className="cursor-pointer text-opacity-60 hover:text-opacity-100 rounded-full text-white"
@@ -261,7 +263,12 @@ const PDFViewer = ({ open, onClose, url }: PdfViewerProps) => {
               role="button"
               aria-label="zoom in"
             >
-              {<Icon name={showFullSize ? 'minimize2' : 'maximize2'} />}
+              {
+                <Icon
+                  name={showFullSize ? 'minimize2' : 'maximize2'}
+                  size={24}
+                />
+              }
             </div>
           </div>
         </div>

@@ -10,17 +10,16 @@ import Icon from '../Icon';
  */
 function Tag({ className, children, color, size = 'default', onRemove, }) {
     return (React.createElement("div", { className: cx('ring-[1.5px] border-box truncate flex items-center justify-center w-fit py-1.5 px-3 rounded-lg font-medium', {
-            'ring-primary-border text-primary-main bg-primary-surface': color === 'primary',
-            'ring-danger-border text-danger-pressed bg-danger-surface': color === 'danger',
-            'ring-warning-border text-warning-pressed bg-warning-surface': color === 'warning',
-            'ring-success-border text-success-pressed bg-success-surface': color === 'success',
-            'ring-info-border text-info-main bg-info-surface': color === 'info',
-            'ring-neutral-40 text-neutral-80 bg-neutral-15': color === 'neutral',
+            'ring-primary-border dark:ring-primary-border-dark text-primary-main dark:text-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': color === 'primary',
+            'ring-danger-border dark:ring-danger-border-dark text-danger-main dark:text-danger-pressed-dark bg-danger-surface dark:bg-danger-surface-dark': color === 'danger',
+            'ring-warning-border dark:ring-warning-border-dark text-warning-main dark:text-warning-pressed-dark bg-warning-surface dark:bg-warning-surface-dark': color === 'warning',
+            'ring-success-border dark:ring-success-border-dark text-success-main dark:text-success-pressed-dark bg-success-surface dark:bg-success-surface-dark': color === 'success',
+            'ring-info-border dark:ring-info-border-dark text-info-main dark:text-info-main-dark bg-info-surface dark:bg-info-surface-dark': color === 'info',
+            'ring-neutral-60 dark:ring-neutral-60-dark text-neutral-80 dark:text-neutral-80-dark bg-neutral-15 dark:bg-neutral-15-dark': color === 'neutral',
             'text-12px': size === 'default',
-            'text-18px': size === 'large',
+            'text-16px': size === 'large',
         }, className) },
         children,
         onRemove && (React.createElement(Icon, { name: "x-mark", size: 12, onClick: onRemove, className: "cursor-pointer ml-1" }))));
 }
 export default Tag;
-//# sourceMappingURL=Tag.js.map

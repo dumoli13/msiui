@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
@@ -25,8 +25,8 @@ interface FilterSearchProps {
  */
 
 const FilterSearch = ({ value, label, onChange }: FilterSearchProps) => {
-  const inputRef = useRef<TextfieldRef>(null);
-  const [open, setOpen] = useState(false);
+  const inputRef = React.useRef<TextfieldRef>(null);
+  const [open, setOpen] = React.useState(false);
 
   const handleChange = (value: string) => {
     onChange?.(value);
@@ -35,7 +35,7 @@ const FilterSearch = ({ value, label, onChange }: FilterSearchProps) => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       inputRef.current?.focus();
     }
@@ -59,10 +59,19 @@ const FilterSearch = ({ value, label, onChange }: FilterSearchProps) => {
       }
     >
       <IconButton
-        icon={<Icon name="magnifying-glass" size={16} />}
+        icon={
+          <Icon
+            name="magnifying-glass"
+            size={16}
+            className={cx({
+              'text-primary-main dark:text-parimary-main-dark': value,
+            })}
+          />
+        }
         variant="outlined"
         className={cx({
-          'border-primary-main text-primary-main bg-primary-surface': value,
+          'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark':
+            value,
         })}
         title="Search by Keyword"
       />

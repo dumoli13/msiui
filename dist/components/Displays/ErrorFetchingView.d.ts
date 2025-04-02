@@ -8,3 +8,4 @@ import React from 'react';
  */
 declare function ErrorFetchingView(): React.JSX.Element;
 export default ErrorFetchingView;
+//# sourceMappingURL=ErrorFetchingView.d.ts.map

@@ -15,3 +15,4 @@ export interface TagProps {
  */
 declare function Tag({ className, children, color, size, onRemove, }: TagProps): React.JSX.Element;
 export default Tag;
+//# sourceMappingURL=Tag.d.ts.map

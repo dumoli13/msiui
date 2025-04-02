@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
@@ -21,8 +21,8 @@ import Select from '../Inputs/Select';
  *
  */
 const FilterSelect = ({ type, value, option, label, onChange, }) => {
-    const inputRef = useRef(null);
-    const [open, setOpen] = useState(false);
+    const inputRef = React.useRef(null);
+    const [open, setOpen] = React.useState(false);
     const handleChange = (value) => {
         onChange === null || onChange === void 0 ? void 0 : onChange(value);
         if (value === null) {
@@ -32,9 +32,10 @@ const FilterSelect = ({ type, value, option, label, onChange, }) => {
     return (React.createElement(Popper, { open: open, onOpen: setOpen, content: React.createElement(React.Fragment, null,
             type === 'select' && (React.createElement(Select, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 })),
             type === 'autocomplete' && (React.createElement(AutoComplete, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 }))) },
-        React.createElement(IconButton, { icon: React.createElement(Icon, { name: "chevron-down", size: 16 }), variant: "outlined", className: cx({
-                'border-primary-main text-primary-main bg-primary-surface': value,
+        React.createElement(IconButton, { icon: React.createElement(Icon, { name: "chevron-down", size: 16, className: cx({
+                    'text-primary-main dark:text-primary-main-dark': value,
+                }) }), variant: "outlined", className: cx({
+                'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': value,
             }), title: "Select Option" })));
 };
 export default FilterSelect;
-//# sourceMappingURL=FilterSelect.js.map

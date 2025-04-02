@@ -15,3 +15,4 @@ export declare const useNotification: () => (notification: {
 export declare const NotificationProvider: ({ children, }: {
     children: React.ReactNode;
 }) => React.JSX.Element;
+//# sourceMappingURL=index.d.ts.map

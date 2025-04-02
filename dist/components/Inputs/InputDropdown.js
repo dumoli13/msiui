@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 /**
@@ -15,29 +15,47 @@ import { createPortal } from 'react-dom';
  *
  */
 const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, maxHeight = 300, }) => {
-    const [dropdownStyles, setDropdownStyles] = useState(null);
-    const calculateDropdownPosition = useCallback(() => {
-        var _a;
-        if (elementRef.current) {
-            const rect = elementRef.current.getBoundingClientRect();
-            const dropdownHeight = ((_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.offsetHeight) || 0;
-            const spaceBelow = window.innerHeight - rect.bottom;
-            const spaceAbove = rect.top;
-            setDropdownStyles({
-                top: spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
-                    ? rect.bottom + window.scrollY
-                    : rect.top - dropdownHeight - 10 + window.scrollY,
-                left: rect.left + window.scrollX,
-                width: fullWidth ? rect.width : undefined,
-                direction: spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
-                    ? 'down'
-                    : 'up',
-            });
+    const [dropdownStyles, setDropdownStyles] = React.useState(null);
+    const calculateDropdownPosition = React.useCallback(() => {
+        if (!elementRef.current || !dropdownRef.current)
+            return;
+        const rect = elementRef.current.getBoundingClientRect();
+        const dropdown = dropdownRef.current;
+        // Calculate dimensions
+        const desiredWidth = fullWidth ? rect.width : dropdown.offsetWidth;
+        const dropdownHeight = dropdown.offsetHeight || 0;
+        // Calculate available space
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        // Calculate initial positions
+        let newLeft = rect.left + window.scrollX;
+        const newTop = spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
+            ? rect.bottom + window.scrollY
+            : rect.top - dropdownHeight - 10 + window.scrollY;
+        // Prevent right overflow
+        const viewportRight = window.innerWidth;
+        const dropdownRightEdge = newLeft + desiredWidth;
+        if (dropdownRightEdge > viewportRight) {
+            // Shift left by the overflow amount
+            newLeft = Math.max(viewportRight - desiredWidth, // Keep dropdown in viewport
+            window.scrollX);
         }
+        // Prevent left overflow
+        if (newLeft < window.scrollX) {
+            newLeft = window.scrollX;
+        }
+        setDropdownStyles({
+            top: newTop,
+            left: newLeft,
+            width: fullWidth ? rect.width : undefined,
+            direction: spaceBelow >= dropdownHeight || spaceBelow > spaceAbove ? 'down' : 'up',
+            visibility: 'visible',
+        });
     }, [elementRef, dropdownRef, fullWidth]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (open) {
-            calculateDropdownPosition();
+            setDropdownStyles((prev) => (Object.assign(Object.assign({}, prev), { visibility: 'hidden' }))); // Hide before calculation
+            setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
             const handleScrollOrResize = () => calculateDropdownPosition();
             window.addEventListener('scroll', handleScrollOrResize);
             window.addEventListener('resize', handleScrollOrResize);
@@ -47,21 +65,20 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
             };
         }
         else {
-            setDropdownStyles(null); // Reset styles when closed
+            setDropdownStyles(null);
         }
     }, [open, calculateDropdownPosition]);
-    // Don't render until position is calculated
-    if (!open || !dropdownStyles)
+    if (!open)
         return null;
     return createPortal(React.createElement("div", { role: "button", tabIndex: 0, onMouseDown: (e) => e.stopPropagation(), ref: dropdownRef, style: {
             position: 'absolute',
-            top: dropdownStyles.top,
-            left: dropdownStyles.left,
-            width: dropdownStyles.width,
+            top: dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top,
+            left: dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left,
+            width: dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.width,
             maxHeight,
-        }, className: cx('bg-neutral-10 shadow-box-2 rounded-lg py-1.5 text-neutral-80 overflow-y-auto z-[1999] cursor-default', {
-            'mt-1': dropdownStyles.direction === 'down',
-            'mb-1': dropdownStyles.direction === 'up',
+        }, className: cx('bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg py-1.5 text-neutral-80 dark:text-neutral-80-dark overflow-y-auto z-[1999] cursor-default', {
+            'mt-1': (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.direction) === 'down',
+            'mb-1': (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.direction) === 'up',
         }), onKeyDown: (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.stopPropagation();
@@ -69,4 +86,3 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
         } }, children), document.body);
 };
 export default InputDropdown;
-//# sourceMappingURL=InputDropdown.js.map
