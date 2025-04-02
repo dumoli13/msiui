@@ -44,7 +44,7 @@ const normalizeRule = (rule: FormRule) => {
   return rule;
 };
 
-interface FormProps {
+export interface FormProps {
   onSubmit: (values: Record<string, any>) => void;
   onReset?: () => void;
   className?: string;

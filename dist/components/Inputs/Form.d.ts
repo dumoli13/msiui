@@ -19,7 +19,7 @@ export type FormRule = {
     message?: string;
 } | 'required' | 'email' | 'url';
 export type FormRules = Record<string, FormRule[]>;
-interface FormProps {
+export interface FormProps {
     onSubmit: (values: Record<string, any>) => void;
     onReset?: () => void;
     className?: string;
