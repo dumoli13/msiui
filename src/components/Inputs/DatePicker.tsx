@@ -1,9 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
+import { formatDate } from '../../libs/inputDate';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 
@@ -108,17 +108,17 @@ const DatePicker = ({
   const elementRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [focused, setFocused] = React.useState(false);
-  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState(
     defaultValue || null,
   );
 
   const isControlled = typeof valueProp !== 'undefined';
-  const value = isControlled && !isDropdownOpen ? valueProp : internalValue;
+  const value = isControlled && !dropdownOpen ? valueProp : internalValue;
   const [timeValue, setTimeValue] = React.useState({
-    hours: value?.getHours() || null,
-    minutes: value?.getMinutes() || null,
-    seconds: value?.getSeconds() || null,
+    hours: value?.getHours() ?? null,
+    minutes: value?.getMinutes() ?? null,
+    seconds: value?.getSeconds() ?? null,
   });
   const [tempValue, setTempValue] = React.useState<InputDateValue>(
     value || null,
@@ -127,9 +127,7 @@ const DatePicker = ({
   const [calendarView, setCalendarView] = React.useState<
     'date' | 'month' | 'year'
   >('date');
-  const [displayedDate, setDisplayedDate] = React.useState(
-    value === null ? new Date() : value,
-  );
+  const [displayedDate, setDisplayedDate] = React.useState(value ?? new Date());
   const yearRange = getYearRange(displayedDate.getFullYear());
 
   const firstDate = new Date(
@@ -146,7 +144,7 @@ const DatePicker = ({
   const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -163,7 +161,7 @@ const DatePicker = ({
   };
 
   React.useEffect(() => {
-    if (!isDropdownOpen) return;
+    if (!dropdownOpen) return;
 
     // Delay to ensure dropdown is fully rendered before scrolling
     setTimeout(() => {
@@ -185,7 +183,7 @@ const DatePicker = ({
         },
       );
     }, 50); // Small delay for rendering
-  }, [isDropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
+  }, [dropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -335,9 +333,9 @@ const DatePicker = ({
 
   const handleSelectDate = (selectedDate: Date) => {
     const selectedTime = {
-      hours: timeValue.hours || 0,
-      minutes: timeValue.minutes || 0,
-      seconds: timeValue.seconds || 0,
+      hours: timeValue.hours ?? 0,
+      minutes: timeValue.minutes ?? 0,
+      seconds: timeValue.seconds ?? 0,
     };
     setTimeValue(selectedTime);
     const newDate = new Date(
@@ -355,9 +353,9 @@ const DatePicker = ({
   const handleSelectTime = (category: TimeUnit, selected: number) => {
     const selectedDate = value || new Date();
     const selectedTime = {
-      hours: timeValue.hours || 0,
-      minutes: timeValue.minutes || 0,
-      seconds: timeValue.seconds || 0,
+      hours: timeValue.hours ?? 0,
+      minutes: timeValue.minutes ?? 0,
+      seconds: timeValue.seconds ?? 0,
       [category]: selected,
     };
     setTimeValue(selectedTime);
@@ -408,7 +406,7 @@ const DatePicker = ({
     setTempValue(value);
     setDisplayedDate(value || new Date());
     if (isControlled) setInternalValue(value);
-  }, [value, isDropdownOpen]);
+  }, [value, dropdownOpen]);
 
   const dropdownContent = (
     <div className="min-w-60">
@@ -794,11 +792,7 @@ const DatePicker = ({
           {...props}
           tabIndex={!disabled ? 0 : -1}
           id={id}
-          value={
-            value
-              ? dayjs(value).format(showTime ? 'D/M/YYYY HH:mm:ss' : 'D/M/YYYY')
-              : ''
-          }
+          value={value ? formatDate(value, showTime) : ''}
           placeholder={focused ? '' : placeholder}
           className={cx(
             'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
@@ -886,7 +880,7 @@ const DatePicker = ({
         </div>
       )}
       <InputDropdown
-        open={isDropdownOpen}
+        open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         maxHeight={336}

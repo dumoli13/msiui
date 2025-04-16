@@ -137,7 +137,7 @@ const TimerField = ({
           seconds: formatValue(internalValue ? internalValue % 60 : 0),
         };
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 

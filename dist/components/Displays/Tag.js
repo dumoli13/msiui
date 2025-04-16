@@ -23,3 +23,4 @@ function Tag({ className, children, color, size = 'default', onRemove, }) {
         onRemove && (React.createElement(Icon, { name: "x-mark", size: 12, onClick: onRemove, className: "cursor-pointer ml-1" }))));
 }
 export default Tag;
+//# sourceMappingURL=Tag.js.map

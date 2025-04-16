@@ -97,7 +97,7 @@ const AutoComplete = <T, D = undefined>({
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const [focused, setFocused] = React.useState(false);
-  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const [internalValue, setInternalValue] = React.useState<SelectValue<
     T,
@@ -112,11 +112,11 @@ const AutoComplete = <T, D = undefined>({
 
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
-  const [inputValue, setInputValue] = React.useState(value?.label || '');
+  const [inputValue, setInputValue] = React.useState(value?.label ?? '');
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
-  const disabled = loading || disabledProp;
+  const disabled = loading ?? disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -136,7 +136,7 @@ const AutoComplete = <T, D = undefined>({
   >([]);
 
   React.useEffect(() => {
-    setInputValue(value?.label || '');
+    setInputValue(value?.label ?? '');
   }, [value]);
 
   React.useEffect(() => {
@@ -353,7 +353,7 @@ const AutoComplete = <T, D = undefined>({
                 'cursor-not-allowed': disabled,
                 'hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color':
                   !disabled,
-                'rotate-180': isDropdownOpen,
+                'rotate-180': dropdownOpen,
               },
             )}
           >
@@ -410,7 +410,7 @@ const AutoComplete = <T, D = undefined>({
         </div>
       )}
       <InputDropdown
-        open={isDropdownOpen}
+        open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         fullWidth

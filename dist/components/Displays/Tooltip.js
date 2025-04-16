@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
 const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center', arrow = true, mouseEnterDelay = 500, mouseLeaveDelay = 0, title, disabled = false, }) => {
+    var _a, _b, _c;
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [open, setOpen] = React.useState(false);
@@ -85,9 +86,9 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
             }) }, disabled ? (React.createElement("span", { className: "pointer-events-none" }, children)) : (children)),
         open &&
             createPortal(React.createElement("div", { ref: dropdownRef, style: {
-                    top: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top) || 0,
-                    left: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left) || 0,
-                    opacity: (dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.opacity) || 0,
+                    top: (_a = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top) !== null && _a !== void 0 ? _a : 0,
+                    left: (_b = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left) !== null && _b !== void 0 ? _b : 0,
+                    opacity: (_c = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.opacity) !== null && _c !== void 0 ? _c : 0,
                     transformOrigin: 'center center',
                     transition: 'opacity 0.15s ease-out',
                 }, className: "absolute z-[100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px" },
@@ -111,3 +112,4 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
                 title), document.body)));
 };
 export default Tooltip;
+//# sourceMappingURL=Tooltip.js.map

@@ -36,7 +36,7 @@ const InputDropdown = ({
   const [dropdownStyles, setDropdownStyles] = React.useState<{
     top?: number;
     left?: number;
-    width?: number | undefined;
+    width?: number;
     direction?: 'down' | 'up';
     visibility?: 'hidden' | 'visible';
   } | null>(null);
@@ -89,7 +89,7 @@ const InputDropdown = ({
   }, [elementRef, dropdownRef, fullWidth]);
 
   React.useEffect(() => {
-    if (open) {
+    const handleOpenDropdown = () => {
       setDropdownStyles((prev) => ({ ...prev, visibility: 'hidden' })); // Hide before calculation
       setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
 
@@ -101,8 +101,16 @@ const InputDropdown = ({
         window.removeEventListener('scroll', handleScrollOrResize);
         window.removeEventListener('resize', handleScrollOrResize);
       };
-    } else {
+    };
+
+    const handleCloseDropdown = () => {
       setDropdownStyles(null);
+    };
+
+    if (open) {
+      handleCloseDropdown();
+    } else {
+      handleOpenDropdown();
     }
   }, [open, calculateDropdownPosition]);
 

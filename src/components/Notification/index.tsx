@@ -24,7 +24,7 @@ export const useNotification = () => {
     if (addNotificationToStack) {
       addNotificationToStack({
         id: Math.random().toString(),
-        color: notification.color || 'primary',
+        color: notification.color ?? 'primary',
         ...notification,
       });
     }
@@ -49,8 +49,6 @@ export const useNotification = () => {
  *    - 'warning': Yellow icon (AlertCircle)
  *    - 'info': Light Blue icon (AlertCircle)
  *
- * @returns {void} This hook does not return a value, but it adds a notification to the stack.
- *
  */
 
 const NotificationStack = () => {
@@ -71,6 +69,12 @@ const NotificationStack = () => {
   return ReactDOM.createPortal(
     <div className="fixed bottom-0 right-0 p-4 z-[1500] space-y-4">
       {notifications.map((notification) => {
+        const handleChangeNotifications = () => {
+          const newNotif = notifications.filter(
+            (n) => n.id !== notification.id,
+          );
+          setNotifications(newNotif);
+        };
         let icon: React.ReactNode;
         switch (notification.color) {
           case 'success':
@@ -125,11 +129,7 @@ const NotificationStack = () => {
             icon={icon}
             open
             color={notification.color}
-            onClose={() =>
-              setNotifications((prev) =>
-                prev.filter((n) => n.id !== notification.id),
-              )
-            }
+            onClose={handleChangeNotifications}
           />
         );
       })}

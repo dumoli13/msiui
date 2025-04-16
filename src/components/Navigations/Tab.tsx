@@ -27,7 +27,7 @@ const Tab = ({
   onTabClose,
 }: TabProps) => {
   const [activeKey, setActiveKey] = React.useState(
-    propActiveKey || defaultActiveKey || items[0]?.key,
+    propActiveKey ?? defaultActiveKey ?? items[0]?.key,
   );
 
   // Sync internal state with prop changes
@@ -67,7 +67,7 @@ const Tab = ({
           return isActive ? (
             <div
               key={tab.key}
-              role="presentation"
+              role="none"
               className={cx(
                 'text-14px font-bold flex items-center gap-2 border rounded-md px-4 py-2 cursor-default',
                 'text-primary-main bg-primary-surface border-primary-surface',
@@ -89,7 +89,7 @@ const Tab = ({
           ) : (
             <div
               key={tab.key}
-              role="presentation"
+              role="none"
               className={cx(
                 'text-14px font-bold flex items-center gap-2 border rounded-md px-4 py-2 cursor-pointer',
                 'bg-primary-15 dark:bg-primary-15-dark border-neutral-40 dark:border-neutral-40-dark',

@@ -48,8 +48,9 @@ const NumberTextField = (_a) => {
     const isControlled = valueProp !== undefined;
     // Sync `internalStringValue` with `valueProp` when `valueProp` changes
     React.useEffect(() => {
+        var _a;
         if (isControlled) {
-            setInternalStringValue((valueProp === null || valueProp === void 0 ? void 0 : valueProp.toString()) || '');
+            setInternalStringValue((_a = valueProp === null || valueProp === void 0 ? void 0 : valueProp.toString()) !== null && _a !== void 0 ? _a : '');
         }
     }, [valueProp, isControlled]);
     const value = isControlled ? valueProp : internalValue;
@@ -60,7 +61,7 @@ const NumberTextField = (_a) => {
                 ? ''
                 : value
             : formatValue(internalStringValue);
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -71,14 +72,16 @@ const NumberTextField = (_a) => {
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
         reset: () => {
+            var _a;
             setInternalValue(defaultValue !== undefined ? defaultValue : null);
-            setInternalStringValue((defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) || '');
+            setInternalStringValue((_a = defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) !== null && _a !== void 0 ? _a : '');
             onChange === null || onChange === void 0 ? void 0 : onChange(defaultValue !== undefined ? defaultValue : null);
         },
     }));
     const handleFocus = () => {
+        var _a;
         if (isControlled) {
-            setInternalStringValue((valueProp === null || valueProp === void 0 ? void 0 : valueProp.toString()) || '');
+            setInternalStringValue((_a = valueProp === null || valueProp === void 0 ? void 0 : valueProp.toString()) !== null && _a !== void 0 ? _a : '');
         }
         setFocused(true);
     };
@@ -155,3 +158,4 @@ const NumberTextField = (_a) => {
             }) }, helperMessage))));
 };
 export default NumberTextField;
+//# sourceMappingURL=NumberTextField.js.map

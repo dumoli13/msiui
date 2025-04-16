@@ -94,12 +94,12 @@ const TextArea = ({
   const elementRef = React.useRef<HTMLTextAreaElement>(null);
   const [focused, setFocused] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState(
-    defaultValue?.toString() || '',
+    defaultValue?.toString() ?? '',
   );
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp.toString() : internalValue;
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -110,7 +110,7 @@ const TextArea = ({
       elementRef.current?.focus();
     },
     reset: () => {
-      setInternalValue(defaultValue?.toString() || '');
+      setInternalValue(defaultValue?.toString() ?? '');
     },
   }));
 

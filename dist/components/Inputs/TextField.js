@@ -28,10 +28,11 @@ import Icon from '../Icon';
  *
  */
 const TextField = (_a) => {
+    var _b;
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "loading", "width"]);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState((defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) || '');
+    const [internalValue, setInternalValue] = React.useState((_b = defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) !== null && _b !== void 0 ? _b : '');
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp.toString() : internalValue;
     const helperMessage = errorProp && typeof errorProp === 'string' ? errorProp : helperText;
@@ -45,7 +46,8 @@ const TextField = (_a) => {
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
         reset: () => {
-            setInternalValue((defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) || '');
+            var _a;
+            setInternalValue((_a = defaultValue === null || defaultValue === void 0 ? void 0 : defaultValue.toString()) !== null && _a !== void 0 ? _a : '');
         },
     }));
     const handleChange = (e) => {
@@ -111,3 +113,4 @@ const TextField = (_a) => {
             }) }, helperMessage))));
 };
 export default TextField;
+//# sourceMappingURL=TextField.js.map

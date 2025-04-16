@@ -33,13 +33,21 @@ const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedR
     const handleSort = (columnKey) => {
         let newConfig;
         if (sortConfig.key === columnKey) {
+            let direction;
+            switch (sortConfig.direction) {
+                case 'asc':
+                    direction = 'desc';
+                    break;
+                case 'desc':
+                    direction = null;
+                    break;
+                default:
+                    direction = 'asc';
+                    break;
+            }
             newConfig = {
                 key: columnKey,
-                direction: sortConfig.direction === 'asc'
-                    ? 'desc'
-                    : sortConfig.direction === 'desc'
-                        ? null
-                        : 'asc',
+                direction,
             };
         }
         else {
@@ -69,37 +77,39 @@ const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedR
                                 'text-14px': size === 'default',
                             }) },
                             React.createElement("div", { className: "flex items-center justify-center" }, "Select"))),
-                        columns.map((col) => (React.createElement("th", { key: col.key.toString(), className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
-                                'text-18px': size === 'large',
-                                'text-14px': size === 'default',
-                            }), style: {
-                                width: col.width,
-                                minWidth: col.width ||
-                                    `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
+                        columns.map((col) => {
+                            var _a;
+                            return (React.createElement("th", { key: col.key.toString(), className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
+                                    'text-18px': size === 'large',
+                                    'text-14px': size === 'default',
+                                }), style: {
+                                    width: col.width,
+                                    minWidth: (_a = col.width) !== null && _a !== void 0 ? _a : `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
                                         ? parseInt(col.minWidth.toString(), 10)
                                         : 0, 150)}px`,
-                            } },
-                            React.createElement("div", { className: "flex gap-4 items-center justify-between" },
-                                col.sortable ? (React.createElement("div", { role: "button", className: "w-full flex items-center gap-2.5", onClick: () => col.sortable && handleSort(col.key) },
-                                    col.subLabel ? (React.createElement("div", { className: "flex flex-col items-center" },
+                                } },
+                                React.createElement("div", { className: "flex gap-4 items-center justify-between" },
+                                    col.sortable ? (React.createElement("div", { role: "button", className: "w-full flex items-center gap-2.5", onClick: () => col.sortable && handleSort(col.key) },
+                                        col.subLabel ? (React.createElement("div", { className: "flex flex-col items-center" },
+                                            col.label,
+                                            React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label),
+                                        col.sortable && (React.createElement("div", { className: "flex flex-col gap-0.5" },
+                                            React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                                    sortConfig.direction === 'asc'
+                                                    ? 'border-primary-main dark:border-primary-main-dark'
+                                                    : 'border-neutral-60 dark:border-neutral-60-dark'}` }),
+                                            React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                                    sortConfig.direction === 'desc'
+                                                    ? 'border-primary-main dark:border-primary-main-dark'
+                                                    : 'border-neutral-60 dark:border-neutral-60-dark'}` }))))) : (React.createElement("div", { className: "w-full flex items-center" }, col.subLabel ? (React.createElement("div", { className: "flex flex-col items-start" },
                                         col.label,
-                                        React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label),
-                                    col.sortable && (React.createElement("div", { className: "flex flex-col gap-0.5" },
-                                        React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                                sortConfig.direction === 'asc'
-                                                ? 'border-primary-main dark:border-primary-main-dark'
-                                                : 'border-neutral-60 dark:border-neutral-60-dark'}` }),
-                                        React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                                sortConfig.direction === 'desc'
-                                                ? 'border-primary-main dark:border-primary-main-dark'
-                                                : 'border-neutral-60 dark:border-neutral-60-dark'}` }))))) : (React.createElement("div", { className: "w-full flex items-center" }, col.subLabel ? (React.createElement("div", { className: "flex flex-col items-start" },
-                                    col.label,
-                                    React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label))),
-                                col.filter !== undefined && col.filter === 'textfield' && (React.createElement(FilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })),
-                                (col.filter === 'select' ||
-                                    col.filter === 'autocomplete') && (React.createElement(FilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })))))))),
+                                        React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label))),
+                                    col.filter !== undefined && col.filter === 'textfield' && (React.createElement(FilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })),
+                                    (col.filter === 'select' ||
+                                        col.filter === 'autocomplete') && (React.createElement(FilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })))));
+                        }))),
                 React.createElement("tbody", null, data.map((row, rowIndex) => {
-                    const isDanger = showDanger && showDanger(row);
+                    const isDanger = showDanger === null || showDanger === void 0 ? void 0 : showDanger(row);
                     const isSelected = showSelected &&
                         selectedRows.some((index) => index === rowIndex);
                     return (React.createElement("tr", { key: rowIndex, className: cx('group border-b border-neutral-30 last:border-none', {
@@ -124,3 +134,4 @@ const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedR
                 }))))));
 };
 export default Table;
+//# sourceMappingURL=index.js.map

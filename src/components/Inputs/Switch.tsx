@@ -93,7 +93,7 @@ const Switch = ({
     },
   }));
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
 
   const handleChange = () => {

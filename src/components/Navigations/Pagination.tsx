@@ -47,7 +47,7 @@ const Pagination = ({
   onPageChange,
 }: PaginationProps) => {
   const [itemsPerPage, setItemsPerPage] = React.useState(
-    pageSize || itemPerPage[0],
+    pageSize ?? itemPerPage[0],
   );
   const totalPages = Math.ceil(total / itemsPerPage);
 
@@ -199,12 +199,12 @@ const Pagination = ({
     >
       {totalPages > 1 && (
         <div className="flex item-center flex-wrap gap-2">
-          <PaginationButton.prev
+          <PaginationButton.Prev
             onClick={handlePrevPage}
             disabled={currentPage === 1}
           />
           {renderPageNumbers()}
-          <PaginationButton.next
+          <PaginationButton.Next
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
           />

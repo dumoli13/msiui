@@ -57,14 +57,14 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
     const [values, setValues] = React.useState(() => {
         const defaults = Object.assign({}, initialValues);
         const getDefaultValue = (child) => {
-            var _a;
+            var _a, _b;
             if (!React.isValidElement(child))
                 return defaults;
             const childProps = child.props;
             if (isFormInput(child)) {
-                const name = childProps.name || childProps.id;
+                const name = (_a = childProps.name) !== null && _a !== void 0 ? _a : childProps.id;
                 if (name) {
-                    defaults[name] = (_a = childProps.defaultValue) !== null && _a !== void 0 ? _a : '';
+                    defaults[name] = (_b = childProps.defaultValue) !== null && _b !== void 0 ? _b : '';
                 }
             }
             if (childProps.children) {
@@ -81,9 +81,10 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
     const getErrorMessage = (rule, ruleType) => {
+        var _a;
         if (typeof rule === 'string')
             return DEFAULT_ERROR_MESSAGES[ruleType];
-        const message = rule.message || DEFAULT_ERROR_MESSAGES[ruleType];
+        const message = (_a = rule.message) !== null && _a !== void 0 ? _a : DEFAULT_ERROR_MESSAGES[ruleType];
         return message
             .replace('{minLength}', String(rule.minLength))
             .replace('{maxLength}', String(rule.maxLength))
@@ -159,12 +160,13 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
         return Object.keys(newErrors).length === 0;
     }, [rules, values]);
     const enhanceChild = (child) => {
+        var _a;
         if (!React.isValidElement(child))
             return child;
         const childProps = child.props;
         if (isFormInput(child)) {
             const { name, id, onChange: childOnChange, defaultValue, inputRef: originalInputRef, } = childProps;
-            const fieldName = name || id;
+            const fieldName = name !== null && name !== void 0 ? name : id;
             if (!fieldName)
                 return child;
             const handleChange = (value) => {
@@ -175,7 +177,7 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
                 childOnChange === null || childOnChange === void 0 ? void 0 : childOnChange(value);
             };
             // Preserve existing ref and props
-            return React.cloneElement(child, Object.assign(Object.assign({}, child.props), { defaultValue, onChange: handleChange, error: errors[fieldName] || undefined, disabled: formDisabled || childProps.disabled, inputRef: (ref) => {
+            return React.cloneElement(child, Object.assign(Object.assign({}, child.props), { defaultValue, onChange: handleChange, error: (_a = errors[fieldName]) !== null && _a !== void 0 ? _a : undefined, disabled: formDisabled || childProps.disabled, inputRef: (ref) => {
                     if (fieldName) {
                         inputRefsRef.current[fieldName] = ref;
                     }
@@ -227,3 +229,4 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
         } }, React.Children.map(children, enhanceChild)));
 };
 export default Form;
+//# sourceMappingURL=Form.js.map

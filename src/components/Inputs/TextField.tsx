@@ -90,7 +90,7 @@ const TextField = ({
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState(
-    defaultValue?.toString() || '',
+    defaultValue?.toString() ?? '',
   );
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp.toString() : internalValue;
@@ -107,7 +107,7 @@ const TextField = ({
       elementRef.current?.focus();
     },
     reset: () => {
-      setInternalValue(defaultValue?.toString() || '');
+      setInternalValue(defaultValue?.toString() ?? '');
     },
   }));
 

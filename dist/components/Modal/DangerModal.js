@@ -34,3 +34,4 @@ const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size:
         }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger", customAction: customAction }, content));
 };
 export default DangerModal;
+//# sourceMappingURL=DangerModal.js.map

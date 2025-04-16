@@ -109,7 +109,7 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
             window.removeEventListener('resize', handleScrollOrResize);
         };
     }, [open, calculateDropdownPosition]);
-    return open ? (React.createElement("div", { role: "presentation", className: "fixed z-[1300] inset-0" },
+    return open ? (React.createElement("div", { role: "none", className: "fixed z-[1300] inset-0" },
         React.createElement("div", { "aria-hidden": "true", className: "z-[2000] fixed inset-0 bg-neutral-10/0", onClick: () => onClose === null || onClose === void 0 ? void 0 : onClose() }),
         createPortal(React.createElement("div", { ref: popoverRef, style: {
                 top: dropdownPosition.top,
@@ -118,3 +118,4 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
             }, className: cx('text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[2100]', className) }, children), document.body))) : null;
 };
 export default Popover;
+//# sourceMappingURL=Popover.js.map

@@ -15,7 +15,6 @@ export interface PaginationButtonProps {
  * @interface PaginationButtonProps
  * @property {() => void} onClick - A callback function to be triggered when the button is clicked.
  * @property {boolean} [disabled] - An optional boolean that disables the button if set to true
- * @returns {JSX.Element} Pagination navigation buttons (Previous and Next).
  *
  */
 
@@ -29,7 +28,7 @@ const PaginationButton = () => {
   return null;
 };
 
-PaginationButton.prev = ({ onClick, disabled }: PaginationButtonProps) => {
+const PrevButton = ({ onClick, disabled }: PaginationButtonProps) => {
   return (
     <button
       key="prev"
@@ -44,7 +43,7 @@ PaginationButton.prev = ({ onClick, disabled }: PaginationButtonProps) => {
   );
 };
 
-PaginationButton.next = ({ onClick, disabled }: PaginationButtonProps) => {
+const NextButton = ({ onClick, disabled }: PaginationButtonProps) => {
   return (
     <button
       type="button"
@@ -57,5 +56,8 @@ PaginationButton.next = ({ onClick, disabled }: PaginationButtonProps) => {
     </button>
   );
 };
+
+PaginationButton.Prev = PrevButton;
+PaginationButton.Next = NextButton;
 
 export default PaginationButton;

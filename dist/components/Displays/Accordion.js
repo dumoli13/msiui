@@ -40,7 +40,7 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
     const [openIndex, setOpenIndex] = React.useState(activeKey !== null && activeKey !== void 0 ? activeKey : defaultActiveKey);
     React.useEffect(() => {
         // Calculate the heights of all the accordion items
-        const newHeights = refs.current.map((ref) => (ref === null || ref === void 0 ? void 0 : ref.scrollHeight) || 0);
+        const newHeights = refs.current.map((ref) => { var _a; return (_a = ref === null || ref === void 0 ? void 0 : ref.scrollHeight) !== null && _a !== void 0 ? _a : 0; });
         setHeight(newHeights);
     }, [items]);
     React.useEffect(() => {
@@ -96,3 +96,4 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
     })));
 };
 export default Accordion;
+//# sourceMappingURL=Accordion.js.map

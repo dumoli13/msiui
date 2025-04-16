@@ -30,22 +30,23 @@ import InputDropdown from './InputDropdown';
  *
  */
 const AutoComplete = (_a) => {
+    var _b;
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "placeholder", "options", "onChange", "className", "helperText", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "clearable", "width"]);
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(options.find((item) => item.value === defaultValue) || null);
     React.useEffect(() => {
         setInternalValue(options.find((item) => item.value === defaultValue) || null);
     }, [options]);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
-    const [inputValue, setInputValue] = React.useState((value === null || value === void 0 ? void 0 : value.label) || '');
-    const helperMessage = errorProp || helperText;
+    const [inputValue, setInputValue] = React.useState((_b = value === null || value === void 0 ? void 0 : value.label) !== null && _b !== void 0 ? _b : '');
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
-    const disabled = loading || disabledProp;
+    const disabled = loading !== null && loading !== void 0 ? loading : disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value: value,
@@ -59,7 +60,8 @@ const AutoComplete = (_a) => {
     }));
     const [filteredOptions, setFilteredOptions] = React.useState([]);
     React.useEffect(() => {
-        setInputValue((value === null || value === void 0 ? void 0 : value.label) || '');
+        var _a;
+        setInputValue((_a = value === null || value === void 0 ? void 0 : value.label) !== null && _a !== void 0 ? _a : '');
     }, [value]);
     React.useEffect(() => {
         const filtered = options.filter((option) => option.label.toLowerCase().includes(inputValue.toLowerCase()));
@@ -175,7 +177,7 @@ const AutoComplete = (_a) => {
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color': !disabled,
-                        'rotate-180': isDropdownOpen,
+                        'rotate-180': dropdownOpen,
                     }) },
                     React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70 dark:text-neutral-70-dark" },
@@ -196,6 +198,7 @@ const AutoComplete = (_a) => {
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
 };
 export default AutoComplete;
+//# sourceMappingURL=AutoComplete.js.map

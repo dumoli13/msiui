@@ -31,7 +31,12 @@ export interface StepProps {
  *
  */
 
-function Steps({ active, items, onChange, disabled = false }: StepProps) {
+function Steps({
+  active,
+  items,
+  onChange,
+  disabled = false,
+}: Readonly<StepProps>) {
   const handleChangePage = (index: number) => {
     if (!disabled) {
       onChange?.(index);
@@ -41,78 +46,79 @@ function Steps({ active, items, onChange, disabled = false }: StepProps) {
   return (
     <div className="flex items-start justify-between gap-4 w-full">
       {items.map((item, index) => {
-        return active === index ? (
-          // Active Step
-          <div
-            key={index}
-            className={cx('flex gap-2 relative flex-1', {
-              'items-start': !!item.description,
-              'items-center': !item.description,
-            })}
-          >
-            <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark">
-              {index + 1}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-4">
-                <h4 className="text-neutral-90 dark:text-neutral-90-dark">
-                  {item.title}
-                </h4>
-                {index < items.length - 1 && (
-                  <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
-                )}
-              </div>
-              <p className="text-neutral-90 dark:text-neutral-90-dark text-14px">
-                {item.description}
-              </p>
-            </div>
-          </div>
-        ) : item.error || item.success ? (
-          // Inactive Step but has error or success indicator
-          <div
-            key={index}
-            className={cx(
-              `flex gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer' : 'cursor-default'}`,
-              {
+        if (active === index) {
+          return (
+            <div
+              key={index}
+              className={cx('flex gap-2 relative flex-1', {
                 'items-start': !!item.description,
                 'items-center': !item.description,
-              },
-            )}
-            role="button"
-            onClick={() => {
-              if (item.available) handleChangePage?.(index);
-            }}
-          >
-            {item.success ? (
-              <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-primary-main dark:text-primary-main-dark border-primary-main dark:border-primary-main-dark">
-                <Icon name="check" size={16} />
+              })}
+            >
+              <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark">
+                {index + 1}
               </div>
-            ) : (
-              <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-danger-main dark:text-danger-main-dark border-danger-main dark:border-danger-main-dark">
-                <Icon name="x-mark" size={16} />
+              <div className="flex-1">
+                <div className="flex items-center gap-4">
+                  <h4 className="text-neutral-90 dark:text-neutral-90-dark">
+                    {item.title}
+                  </h4>
+                  {index < items.length - 1 && (
+                    <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
+                  )}
+                </div>
+                <p className="text-neutral-90 dark:text-neutral-90-dark text-14px">
+                  {item.description}
+                </p>
               </div>
-            )}
-            <div className="flex-1">
-              <div className="flex items-center gap-4">
-                <h4 className="text-primary-main dark:text-primary-main-dark">
-                  {item.title}
-                </h4>
-                {index < items.length - 1 && (
-                  <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
-                )}
-              </div>
-              <p
-                className={cx('text-14px', {
-                  'text-primary-main dark:text-primary-main-dark': item.error,
-                  'text-neutral-50 dark:text-neutral-50-dark': item.success,
-                })}
-              >
-                {item.description}
-              </p>
             </div>
-          </div>
-        ) : (
-          // Inactive Step
+          );
+        } else if (item.error || item.success) {
+          return (
+            <div
+              key={index}
+              className={cx(
+                `flex gap-2 relative flex-1 rounded-2xl ${!disabled && item.available ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer' : 'cursor-default'}`,
+                {
+                  'items-start': !!item.description,
+                  'items-center': !item.description,
+                },
+              )}
+              role="button"
+              onClick={() => {
+                if (item.available) handleChangePage?.(index);
+              }}
+            >
+              {item.success ? (
+                <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-primary-main dark:text-primary-main-dark border-primary-main dark:border-primary-main-dark">
+                  <Icon name="check" size={16} />
+                </div>
+              ) : (
+                <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-danger-main dark:text-danger-main-dark border-danger-main dark:border-danger-main-dark">
+                  <Icon name="x-mark" size={16} />
+                </div>
+              )}
+              <div className="flex-1">
+                <div className="flex items-center gap-4">
+                  <h4 className="text-primary-main dark:text-primary-main-dark">
+                    {item.title}
+                  </h4>
+                  {index < items.length - 1 && (
+                    <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
+                  )}
+                </div>
+                <p
+                  className={cx('text-14px', {
+                    'text-primary-main dark:text-primary-main-dark': item.error,
+                    'text-neutral-50 dark:text-neutral-50-dark': item.success,
+                  })}
+                >
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          );
+        } else {
           <div
             key={index}
             className={cx(
@@ -144,8 +150,8 @@ function Steps({ active, items, onChange, disabled = false }: StepProps) {
                 {item.description}
               </p>
             </div>
-          </div>
-        );
+          </div>;
+        }
       })}
     </div>
   );

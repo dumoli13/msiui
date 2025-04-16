@@ -4,13 +4,7 @@ import Modal from '../Modal';
 import { useNotification } from '../Notification';
 const BreadcrumbLink = ({ item, isLast = false, isFormEdited, }) => {
     const notify = useNotification();
-    let navigate;
-    try {
-        navigate = useNavigate();
-    }
-    catch (_a) {
-        navigate = null;
-    }
+    const navigate = useNavigate();
     const handleRoute = (href) => {
         if (!navigate) {
             notify({
@@ -73,3 +67,4 @@ const Breadcrumb = ({ items, maxDisplay = 4, isFormEdited = false, }) => {
     return (React.createElement("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px" }, renderItems()));
 };
 export default Breadcrumb;
+//# sourceMappingURL=Breadcrumb.js.map

@@ -138,7 +138,7 @@ const Popover = ({
   }, [open, calculateDropdownPosition]);
 
   return open ? (
-    <div role="presentation" className="fixed z-[1300] inset-0">
+    <div role="none" className="fixed z-[1300] inset-0">
       <div
         aria-hidden="true"
         className="z-[2000] fixed inset-0 bg-neutral-10/0"

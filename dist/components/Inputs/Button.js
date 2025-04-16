@@ -4,10 +4,11 @@ import cx from 'classnames';
 import Icon from '../Icon';
 const Button = React.forwardRef((_a, ref) => {
     var { children, variant = 'contained', color = 'primary', size = 'default', className, disabled = false, fullWidth = false, loading = false, startIcon, endIcon, onClick, type = 'button' } = _a, rest = __rest(_a, ["children", "variant", "color", "size", "className", "disabled", "fullWidth", "loading", "startIcon", "endIcon", "onClick", "type"]);
-    return (React.createElement("button", Object.assign({ ref: ref, disabled: disabled || loading, type: type, onClick: onClick, className: cx('relative rounded-md font-medium h-fit disabled:cursor-not-allowed', fullWidth && 'w-full shrink-0', {
+    return (React.createElement("button", Object.assign({ ref: ref, disabled: disabled || loading, type: type, onClick: onClick, className: cx('relative rounded-md font-medium h-fit disabled:cursor-not-allowed', {
             'py-2 px-4 text-20px': size === 'large',
             'py-1.5 px-4 text-14px': size === 'default',
             'py-1.5 px-2 text-12px': size === 'small',
+            'w-full shrink-0': fullWidth,
         }, 
         // Variants
         {
@@ -50,3 +51,4 @@ const Button = React.forwardRef((_a, ref) => {
 });
 Button.displayName = 'Button';
 export default Button;
+//# sourceMappingURL=Button.js.map

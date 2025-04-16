@@ -1,9 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
+import { formatDate } from '../../libs/inputDate';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
@@ -39,7 +39,7 @@ const MultipleDatePicker = ({ id, value: valueProp, defaultValue, label, labelPo
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(defaultValue || []);
     const isControlled = typeof valueProp !== 'undefined';
     const value = isControlled ? valueProp : internalValue;
@@ -51,7 +51,7 @@ const MultipleDatePicker = ({ id, value: valueProp, defaultValue, label, labelPo
     const lastDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() + 1, 0);
     const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -164,7 +164,7 @@ const MultipleDatePicker = ({ id, value: valueProp, defaultValue, label, labelPo
     React.useEffect(() => {
         setTempValue(value);
         setDisplayedDate(value[0] || new Date());
-    }, [value, isDropdownOpen]);
+    }, [value, dropdownOpen]);
     const dropdownContent = (React.createElement("div", { className: "min-w-60" },
         calendarView === 'date' && (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
@@ -271,7 +271,7 @@ const MultipleDatePicker = ({ id, value: valueProp, defaultValue, label, labelPo
                     'cursor-not-allowed': disabled,
                 }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus }, value === null || value === void 0 ? void 0 :
                 value.map((selected, index) => {
-                    const tagValue = dayjs(selected).format('D/M/YYYY');
+                    const tagValue = formatDate(selected);
                     return (React.createElement("div", { className: cx({
                             'h-[32px]': size === 'default',
                             'h-[44px]': size === 'large',
@@ -309,6 +309,7 @@ const MultipleDatePicker = ({ id, value: valueProp, defaultValue, label, labelPo
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 320 }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 320 }, dropdownContent)));
 };
 export default MultipleDatePicker;
+//# sourceMappingURL=MultipleDatePicker.js.map

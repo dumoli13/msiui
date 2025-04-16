@@ -33,3 +33,4 @@ const ConfirmModal = ({ icon = (React.createElement(Icon, { name: "alert-triangl
         }, confirmText: confirmText, cancelText: cancelText, customAction: customAction }, content));
 };
 export default ConfirmModal;
+//# sourceMappingURL=ConfirmModal.js.map

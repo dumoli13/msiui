@@ -20,7 +20,6 @@ import Icon from '../Icon';
  *    - 'info': Light blue progress bar and icon.
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
- * @returns {JSX.Element | null} The notification component that is displayed if `open` is `true`, otherwise `null`.
  */
 const NotificationContainer = ({ open, title, description, icon, color = 'primary', onClose, }) => {
     const [visible, setVisible] = React.useState(open);
@@ -73,7 +72,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     };
     if (!visible)
         return null;
-    return (React.createElement("div", { role: "presentation", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave },
+    return (React.createElement("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave },
         React.createElement("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden" },
             React.createElement("div", { className: "shrink-0" }, icon),
             React.createElement("div", null,
@@ -93,3 +92,4 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
                     } })))));
 };
 export default NotificationContainer;
+//# sourceMappingURL=NotificationContainer.js.map

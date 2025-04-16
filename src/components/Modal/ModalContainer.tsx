@@ -94,7 +94,7 @@ const ModalContainer = ({
 
   return (
     <div
-      role="presentation"
+      role="none"
       id="modal-container"
       className="flex items-center justify-center z-[1300] inset-0 fixed"
       onKeyDown={handleKeyDown}
@@ -133,9 +133,7 @@ const ModalContainer = ({
         >
           {children}
         </div>
-        {footer ? (
-          footer
-        ) : (
+        {footer || (
           <div className="px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md">
             {customAction ? (
               customAction.map((action) => action)

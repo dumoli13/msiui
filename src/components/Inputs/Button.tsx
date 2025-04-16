@@ -40,11 +40,11 @@ const Button = React.forwardRef(
         onClick={onClick}
         className={cx(
           'relative rounded-md font-medium h-fit disabled:cursor-not-allowed',
-          fullWidth && 'w-full shrink-0',
           {
             'py-2 px-4 text-20px': size === 'large',
             'py-1.5 px-4 text-14px': size === 'default',
             'py-1.5 px-2 text-12px': size === 'small',
+            'w-full shrink-0': fullWidth,
           },
           // Variants
           {

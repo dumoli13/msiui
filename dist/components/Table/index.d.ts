@@ -53,7 +53,6 @@ export interface TableProps<T> {
     onRowSelect?: (row: number, value: boolean, selectedRows: number[]) => void;
     sorting?: TableSortingProps<T> | null;
     onSort?: (sort: TableSortingProps<T>) => void;
-    render?: (value: any, record: T) => React.ReactNode;
     showDanger?: (record: T) => boolean;
     fullwidth?: boolean;
     showSelected?: boolean;

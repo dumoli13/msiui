@@ -9,21 +9,23 @@ import Icon from '../Icon';
  * @interface PaginationButtonProps
  * @property {() => void} onClick - A callback function to be triggered when the button is clicked.
  * @property {boolean} [disabled] - An optional boolean that disables the button if set to true
- * @returns {JSX.Element} Pagination navigation buttons (Previous and Next).
  *
  */
 const navButtonStyle = cx('text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded-md border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark', 'disabled:bg-neutral-40 dark:disabled:bg-neutral-30-dark disabled:text-neutral-60 dark:disabled:text-neutral-60-dark', 'hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-100 dark:hover:text-neutral-100-dark');
 const PaginationButton = () => {
     return null;
 };
-PaginationButton.prev = ({ onClick, disabled }) => {
+const PrevButton = ({ onClick, disabled }) => {
     return (React.createElement("button", { key: "prev", type: "button", className: navButtonStyle, onClick: onClick, disabled: disabled },
         React.createElement(Icon, { name: "chevron-left", size: 16, strokeWidth: 2 }),
         React.createElement("span", null, "Prev")));
 };
-PaginationButton.next = ({ onClick, disabled }) => {
+const NextButton = ({ onClick, disabled }) => {
     return (React.createElement("button", { type: "button", className: navButtonStyle, onClick: onClick, disabled: disabled },
         React.createElement("span", null, "Next"),
         React.createElement(Icon, { name: "chevron-right", size: 16, strokeWidth: 2 })));
 };
+PaginationButton.Prev = PrevButton;
+PaginationButton.Next = NextButton;
 export default PaginationButton;
+//# sourceMappingURL=PaginationButton.js.map

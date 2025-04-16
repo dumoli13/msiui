@@ -88,15 +88,15 @@ const PasswordField = ({
 }: PasswordFieldProps) => {
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState(false);
-  const [internalValue, setInternalValue] = React.useState(defaultValue || '');
+  const [internalValue, setInternalValue] = React.useState(defaultValue ?? '');
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
-  const disabled = loading || disabledProp;
+  const disabled = loading ?? disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -105,7 +105,7 @@ const PasswordField = ({
       elementRef.current?.focus();
     },
     reset: () => {
-      setInternalValue(defaultValue || '');
+      setInternalValue(defaultValue ?? '');
     },
   }));
 

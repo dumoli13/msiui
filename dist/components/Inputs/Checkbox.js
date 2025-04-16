@@ -29,7 +29,7 @@ const Checkbox = (_a) => {
     const [isFocused, setIsFocused] = React.useState(false);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -107,3 +107,4 @@ const Checkbox = (_a) => {
             }) }, helperMessage))));
 };
 export default Checkbox;
+//# sourceMappingURL=Checkbox.js.map

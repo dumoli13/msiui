@@ -118,7 +118,7 @@ const NumberTextField = ({
   // Sync `internalStringValue` with `valueProp` when `valueProp` changes
   React.useEffect(() => {
     if (isControlled) {
-      setInternalStringValue(valueProp?.toString() || '');
+      setInternalStringValue(valueProp?.toString() ?? '');
     }
   }, [valueProp, isControlled]);
 
@@ -131,7 +131,7 @@ const NumberTextField = ({
         : value
       : formatValue(internalStringValue);
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -143,14 +143,14 @@ const NumberTextField = ({
     },
     reset: () => {
       setInternalValue(defaultValue !== undefined ? defaultValue : null);
-      setInternalStringValue(defaultValue?.toString() || '');
+      setInternalStringValue(defaultValue?.toString() ?? '');
       onChange?.(defaultValue !== undefined ? defaultValue : null);
     },
   }));
 
   const handleFocus = () => {
     if (isControlled) {
-      setInternalStringValue(valueProp?.toString() || '');
+      setInternalStringValue(valueProp?.toString() ?? '');
     }
     setFocused(true);
   };

@@ -32,3 +32,4 @@ const SuccessModal = ({ icon = (React.createElement(Icon, { name: "check", size:
         }, confirmText: confirmText, confirmButtonColor: "success", customAction: customAction }, content));
 };
 export default SuccessModal;
+//# sourceMappingURL=SuccessModal.js.map

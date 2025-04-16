@@ -140,3 +140,4 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
                 }, className: "text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]" }, content), document.body)));
 };
 export default Popper;
+//# sourceMappingURL=Popper.js.map

@@ -38,3 +38,4 @@ Skeleton.table = ({ column }) => {
                     React.createElement("div", { className: "bg-neutral-40 dark:bg-neutral-40-dark rounded-full animate-pulse w-4/5 h-4" }))))))))))));
 };
 export default Skeleton;
+//# sourceMappingURL=Skeleton.js.map

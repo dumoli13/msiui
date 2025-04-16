@@ -1,9 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
+import { formatDate } from '../../libs/inputDate';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
@@ -97,7 +97,7 @@ const MultipleDatePicker = ({
   const elementRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [focused, setFocused] = React.useState(false);
-  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const [internalValue, setInternalValue] = React.useState(defaultValue || []);
   const isControlled = typeof valueProp !== 'undefined';
@@ -126,7 +126,7 @@ const MultipleDatePicker = ({
   const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -280,7 +280,7 @@ const MultipleDatePicker = ({
   React.useEffect(() => {
     setTempValue(value);
     setDisplayedDate(value[0] || new Date());
-  }, [value, isDropdownOpen]);
+  }, [value, dropdownOpen]);
 
   const dropdownContent = (
     <div className="min-w-60">
@@ -608,7 +608,7 @@ const MultipleDatePicker = ({
           onClick={handleFocus}
         >
           {value?.map((selected, index) => {
-            const tagValue = dayjs(selected).format('D/M/YYYY');
+            const tagValue = formatDate(selected);
             return (
               <div
                 className={cx({
@@ -722,7 +722,7 @@ const MultipleDatePicker = ({
         </div>
       )}
       <InputDropdown
-        open={isDropdownOpen}
+        open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         maxHeight={320}

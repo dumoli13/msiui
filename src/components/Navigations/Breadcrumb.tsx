@@ -24,12 +24,7 @@ const BreadcrumbLink = ({
   isFormEdited: boolean;
 }) => {
   const notify = useNotification();
-  let navigate;
-  try {
-    navigate = useNavigate();
-  } catch {
-    navigate = null;
-  }
+  const navigate = useNavigate();
 
   const handleRoute = (href: string) => {
     if (!navigate) {

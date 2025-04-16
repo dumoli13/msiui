@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import {
   SUNDAY_DATE,
@@ -11,6 +10,7 @@ import {
   isDateBetween,
   isToday,
 } from '../../libs';
+import { formatDate, isValidDate } from '../../libs/inputDate';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
@@ -98,7 +98,7 @@ const DateRangePicker = ({
   const elementRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [focused, setFocused] = React.useState(false);
-  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [pointer, setPointer] = React.useState<0 | 1>(0);
 
   const [internalValue, setInternalValue] = React.useState(
@@ -110,9 +110,9 @@ const DateRangePicker = ({
     value || [null, null],
   );
   const [timeValue, setTimeValue] = React.useState({
-    hours: (tempValue[0] ? value?.[1] : value?.[0])?.getHours() || null, // if
-    minutes: (tempValue[0] ? value?.[1] : value?.[0])?.getMinutes() || null,
-    seconds: (tempValue[0] ? value?.[1] : value?.[0])?.getSeconds() || null,
+    hours: (tempValue[0] ? value?.[1] : value?.[0])?.getHours() ?? null, // if
+    minutes: (tempValue[0] ? value?.[1] : value?.[0])?.getMinutes() ?? null,
+    seconds: (tempValue[0] ? value?.[1] : value?.[0])?.getSeconds() ?? null,
   });
 
   const [calendarView, setCalendarView] = React.useState<
@@ -137,7 +137,7 @@ const DateRangePicker = ({
   const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -154,7 +154,7 @@ const DateRangePicker = ({
   };
 
   React.useEffect(() => {
-    if (!isDropdownOpen) return;
+    if (!dropdownOpen) return;
 
     // Delay to ensure dropdown is fully rendered before scrolling
     setTimeout(() => {
@@ -177,7 +177,7 @@ const DateRangePicker = ({
         },
       );
     }, 50); // Small delay for rendering
-  }, [isDropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
+  }, [dropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -326,7 +326,7 @@ const DateRangePicker = ({
   }, [pointer]);
 
   const convertDateOnly = (start: Date | null, end: Date | null) => {
-    const newDate: [Date | null, Date | null] = [start, end];
+    let newDate: [Date | null, Date | null] = [start, end];
 
     if (start !== null && end !== null) {
       if (isDateABeforeDateB(start, end)) {
@@ -336,8 +336,12 @@ const DateRangePicker = ({
          * if position start and end is correct, and not null,
          * close dropdown when pointer is 1
          */
-        newDate[0] = dayjs(start).startOf('day').toDate();
-        newDate[1] = dayjs(end).endOf('day').toDate();
+        const startDate = new Date(start);
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date(end);
+        endDate.setHours(23, 59, 59, 999);
+        newDate = [startDate, endDate];
         if (pointer === 1) handleBlur();
       } else {
         /**
@@ -345,8 +349,12 @@ const DateRangePicker = ({
          * if this happen, do not close dropdown,
          * even when pointer is 1 so use can check or select new end date
          */
-        newDate[0] = dayjs(end).startOf('day').toDate();
-        newDate[1] = dayjs(start).endOf('day').toDate();
+        const startDate = new Date(end);
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date(start);
+        endDate.setHours(23, 59, 59, 999);
+        newDate = [startDate, endDate];
       }
       handleChange(newDate as [Date, Date]);
     }
@@ -377,9 +385,9 @@ const DateRangePicker = ({
   const handleSelectDate = (date: Date) => {
     if (showTime) {
       const selectedTime = {
-        hours: timeValue.hours || 0,
-        minutes: timeValue.minutes || 0,
-        seconds: timeValue.seconds || 0,
+        hours: timeValue.hours ?? 0,
+        minutes: timeValue.minutes ?? 0,
+        seconds: timeValue.seconds ?? 0,
       };
       setTimeValue(selectedTime);
 
@@ -414,9 +422,9 @@ const DateRangePicker = ({
   const handleSelectTime = (category: TimeUnit, selected: number) => {
     const selectedDate = tempValue?.[pointer] || new Date();
     const selectedTime = {
-      hours: timeValue.hours || 0,
-      minutes: timeValue.minutes || 0,
-      seconds: timeValue.seconds || 0,
+      hours: timeValue.hours ?? 0,
+      minutes: timeValue.minutes ?? 0,
+      seconds: timeValue.seconds ?? 0,
       [category]: selected,
     };
     setTimeValue(selectedTime);
@@ -462,9 +470,6 @@ const DateRangePicker = ({
     handleBlur();
   };
 
-  const formatDate = (date: Date) =>
-    dayjs(date).format(showTime ? 'D/M/YYYY HH:mm:ss' : 'D/M/YYYY');
-
   React.useEffect(() => {
     if (value === null) {
       setTempValue([null, null]);
@@ -473,7 +478,7 @@ const DateRangePicker = ({
       setTempValue(value);
       setDisplayedDate(value[0] || new Date());
     }
-  }, [value, isDropdownOpen]);
+  }, [value, dropdownOpen]);
 
   const dropdownContent = (
     <div className="min-w-60">
@@ -494,7 +499,9 @@ const DateRangePicker = ({
                 <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
                   Start Date
                 </div>
-                <div>{tempValue[0] ? formatDate(tempValue[0]) : '-'}</div>
+                <div>
+                  {tempValue[0] ? formatDate(tempValue[0], showTime) : '-'}
+                </div>
               </button>
               <button
                 type="button"
@@ -509,7 +516,9 @@ const DateRangePicker = ({
                 <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
                   End Date
                 </div>
-                <div>{tempValue[1] ? formatDate(tempValue[1]) : '-'}</div>
+                <div>
+                  {tempValue[1] ? formatDate(tempValue[1], showTime) : '-'}
+                </div>
               </button>
             </div>
           </div>
@@ -825,7 +834,7 @@ const DateRangePicker = ({
             {yearRange.map((item) => {
               const isDateSelected = displayedDate.getMonth() === item;
               const [start, end] = tempValue?.map(
-                (v) => v?.getFullYear() || null,
+                (v) => v?.getFullYear() ?? null,
               ) ?? [null, null];
 
               const isStartSelected = start !== null && item === start;
@@ -931,7 +940,9 @@ const DateRangePicker = ({
                 {...props}
                 tabIndex={!disabled ? 0 : -1}
                 id={id}
-                value={dayjs(value[0]).isValid() ? formatDate(value[0]) : ''}
+                value={
+                  isValidDate(value[0]) ? formatDate(value[0], showTime) : ''
+                }
                 placeholder={focused ? '' : placeholder}
                 className="truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
                 disabled={disabled}
@@ -947,7 +958,9 @@ const DateRangePicker = ({
                 {...props}
                 tabIndex={!disabled ? 0 : -1}
                 id={id}
-                value={dayjs(value[1]).isValid() ? formatDate(value[1]) : ''}
+                value={
+                  isValidDate(value[1]) ? formatDate(value[1], showTime) : ''
+                }
                 placeholder={focused ? '' : placeholder}
                 className="truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
                 disabled={disabled}
@@ -1053,7 +1066,7 @@ const DateRangePicker = ({
         </div>
       )}
       <InputDropdown
-        open={isDropdownOpen}
+        open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         maxHeight={400}

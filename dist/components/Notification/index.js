@@ -5,8 +5,9 @@ import NotificationContainer from './NotificationContainer';
 let addNotificationToStack = null;
 export const useNotification = () => {
     return (notification) => {
+        var _a;
         if (addNotificationToStack) {
-            addNotificationToStack(Object.assign({ id: Math.random().toString(), color: notification.color || 'primary' }, notification));
+            addNotificationToStack(Object.assign({ id: Math.random().toString(), color: (_a = notification.color) !== null && _a !== void 0 ? _a : 'primary' }, notification));
         }
     };
 };
@@ -28,8 +29,6 @@ export const useNotification = () => {
  *    - 'warning': Yellow icon (AlertCircle)
  *    - 'info': Light Blue icon (AlertCircle)
  *
- * @returns {void} This hook does not return a value, but it adds a notification to the stack.
- *
  */
 const NotificationStack = () => {
     const [notifications, setNotifications] = React.useState([]);
@@ -42,6 +41,10 @@ const NotificationStack = () => {
         };
     }, []);
     return ReactDOM.createPortal(React.createElement("div", { className: "fixed bottom-0 right-0 p-4 z-[1500] space-y-4" }, notifications.map((notification) => {
+        const handleChangeNotifications = () => {
+            const newNotif = notifications.filter((n) => n.id !== notification.id);
+            setNotifications(newNotif);
+        };
         let icon;
         switch (notification.color) {
             case 'success':
@@ -59,7 +62,7 @@ const NotificationStack = () => {
             default:
                 icon = notification.icon;
         }
-        return (React.createElement(NotificationContainer, { key: notification.id, title: notification.title, description: notification.description, icon: icon, open: true, color: notification.color, onClose: () => setNotifications((prev) => prev.filter((n) => n.id !== notification.id)) }));
+        return (React.createElement(NotificationContainer, { key: notification.id, title: notification.title, description: notification.description, icon: icon, open: true, color: notification.color, onClose: handleChangeNotifications }));
     })), document.body);
 };
 export const NotificationProvider = ({ children, }) => {
@@ -67,3 +70,4 @@ export const NotificationProvider = ({ children, }) => {
         children,
         React.createElement(NotificationStack, null)));
 };
+//# sourceMappingURL=index.js.map

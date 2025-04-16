@@ -32,3 +32,4 @@ const PrimaryModal = ({ title, content, confirmText = 'Confirm', cancelText = 'C
             : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", customAction: customAction }, content));
 };
 export default PrimaryModal;
+//# sourceMappingURL=PrimaryModal.js.map

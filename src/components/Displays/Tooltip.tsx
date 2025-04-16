@@ -130,9 +130,9 @@ const Tooltip = ({
           <div
             ref={dropdownRef}
             style={{
-              top: dropdownStyles?.top || 0,
-              left: dropdownStyles?.left || 0,
-              opacity: dropdownStyles?.opacity || 0,
+              top: dropdownStyles?.top ?? 0,
+              left: dropdownStyles?.left ?? 0,
+              opacity: dropdownStyles?.opacity ?? 0,
               transformOrigin: 'center center',
               transition: 'opacity 0.15s ease-out',
             }}

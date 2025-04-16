@@ -40,7 +40,7 @@ const Switch = (_a) => {
             setInternalChecked(defaultChecked || false);
         },
     }));
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const handleChange = () => {
         const newChecked = !checked;
@@ -103,3 +103,4 @@ const Switch = (_a) => {
             }) }, helperMessage))));
 };
 export default Switch;
+//# sourceMappingURL=Switch.js.map

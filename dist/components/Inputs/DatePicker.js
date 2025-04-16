@@ -2,9 +2,9 @@ import { __rest } from "tslib";
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
+import { formatDate } from '../../libs/inputDate';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 export const CancelButton = ({ onClick, }) => (React.createElement("button", { type: "button", onClick: onClick, className: "text-14px py-0.5 px-2 rounded text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark active:bg-neutral-30 dark:active:bg-neutral-30-dark border focus:ring-3 border-neutral-40 dark:border-neutral-40-dark drop-shadow focus:ring-primary-focus dark:focus:ring-primary-focus-dark" }, "Cancel"));
@@ -35,28 +35,29 @@ export const CancelButton = ({ onClick, }) => (React.createElement("button", { t
  *
  */
 const DatePicker = (_a) => {
+    var _b, _c, _d;
     var { id, value: valueProp, defaultValue = valueProp, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "error", "success", "loading", "disabledDate", "width", "showTime"]);
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(defaultValue || null);
     const isControlled = typeof valueProp !== 'undefined';
-    const value = isControlled && !isDropdownOpen ? valueProp : internalValue;
+    const value = isControlled && !dropdownOpen ? valueProp : internalValue;
     const [timeValue, setTimeValue] = React.useState({
-        hours: (value === null || value === void 0 ? void 0 : value.getHours()) || null,
-        minutes: (value === null || value === void 0 ? void 0 : value.getMinutes()) || null,
-        seconds: (value === null || value === void 0 ? void 0 : value.getSeconds()) || null,
+        hours: (_b = value === null || value === void 0 ? void 0 : value.getHours()) !== null && _b !== void 0 ? _b : null,
+        minutes: (_c = value === null || value === void 0 ? void 0 : value.getMinutes()) !== null && _c !== void 0 ? _c : null,
+        seconds: (_d = value === null || value === void 0 ? void 0 : value.getSeconds()) !== null && _d !== void 0 ? _d : null,
     });
     const [tempValue, setTempValue] = React.useState(value || null);
     const [calendarView, setCalendarView] = React.useState('date');
-    const [displayedDate, setDisplayedDate] = React.useState(value === null ? new Date() : value);
+    const [displayedDate, setDisplayedDate] = React.useState(value !== null && value !== void 0 ? value : new Date());
     const yearRange = getYearRange(displayedDate.getFullYear());
     const firstDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth(), 1);
     const lastDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() + 1, 0);
     const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     const scrollRefs = {
@@ -70,7 +71,7 @@ const DatePicker = (_a) => {
         seconds: React.useRef([]),
     };
     React.useEffect(() => {
-        if (!isDropdownOpen)
+        if (!dropdownOpen)
             return;
         // Delay to ensure dropdown is fully rendered before scrolling
         setTimeout(() => {
@@ -90,7 +91,7 @@ const DatePicker = (_a) => {
                 }
             });
         }, 50); // Small delay for rendering
-    }, [isDropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
+    }, [dropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -198,10 +199,11 @@ const DatePicker = (_a) => {
         handleChange(internalValue);
     };
     const handleSelectDate = (selectedDate) => {
+        var _a, _b, _c;
         const selectedTime = {
-            hours: timeValue.hours || 0,
-            minutes: timeValue.minutes || 0,
-            seconds: timeValue.seconds || 0,
+            hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
+            minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
+            seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
         };
         setTimeValue(selectedTime);
         const newDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
@@ -209,11 +211,12 @@ const DatePicker = (_a) => {
         setDisplayedDate(newDate);
     };
     const handleSelectTime = (category, selected) => {
+        var _a, _b, _c;
         const selectedDate = value || new Date();
         const selectedTime = {
-            hours: timeValue.hours || 0,
-            minutes: timeValue.minutes || 0,
-            seconds: timeValue.seconds || 0,
+            hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
+            minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
+            seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
             [category]: selected,
         };
         setTimeValue(selectedTime);
@@ -245,7 +248,7 @@ const DatePicker = (_a) => {
         setDisplayedDate(value || new Date());
         if (isControlled)
             setInternalValue(value);
-    }, [value, isDropdownOpen]);
+    }, [value, dropdownOpen]);
     const dropdownContent = (React.createElement("div", { className: "min-w-60" },
         calendarView === 'date' && (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "flex" },
@@ -360,9 +363,7 @@ const DatePicker = (_a) => {
                 'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark focus:!border-primary-main dark:focus:!border-primary-main-dark': !disabled,
                 'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
             }), ref: elementRef, style: width ? { width } : undefined },
-            React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: value
-                    ? dayjs(value).format(showTime ? 'D/M/YYYY HH:mm:ss' : 'D/M/YYYY')
-                    : '', placeholder: focused ? '' : placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+            React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: value ? formatDate(value, showTime) : '', placeholder: focused ? '' : placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
                     'text-14px py-1.5': size === 'default',
                     'text-18px py-3': size === 'large',
                 }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: () => { } })),
@@ -390,6 +391,7 @@ const DatePicker = (_a) => {
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336 }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336 }, dropdownContent)));
 };
 export default DatePicker;
+//# sourceMappingURL=DatePicker.js.map

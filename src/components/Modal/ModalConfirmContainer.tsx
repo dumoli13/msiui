@@ -100,7 +100,7 @@ const ModalConfirmContainer = ({
 
   return (
     <div
-      role="presentation"
+      role="none"
       id="modal-container"
       className="flex items-center justify-center z-[1300] inset-0 fixed"
       onKeyDown={handleKeyDown}
@@ -164,7 +164,7 @@ const ModalConfirmContainer = ({
               {confirmText}
             </Button>
           )}
-          {customAction && customAction.map((action) => action)}
+          {customAction?.map((action) => action)}
         </div>
       </div>
     </div>

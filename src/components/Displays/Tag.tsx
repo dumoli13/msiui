@@ -23,7 +23,7 @@ function Tag({
   color,
   size = 'default',
   onRemove,
-}: TagProps) {
+}: Readonly<TagProps>) {
   return (
     <div
       className={cx(

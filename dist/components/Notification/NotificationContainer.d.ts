@@ -26,7 +26,6 @@ export interface NotificationContainerProps {
  *    - 'info': Light blue progress bar and icon.
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
- * @returns {JSX.Element | null} The notification component that is displayed if `open` is `true`, otherwise `null`.
  */
 declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => React.JSX.Element | null;
 export default NotificationContainer;

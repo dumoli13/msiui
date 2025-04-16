@@ -63,3 +63,4 @@ const IconButton = (_a) => {
                 React.createElement(Icon, { name: "loader", size: 16, animation: "spin", strokeWidth: 4 }))))));
 };
 export default IconButton;
+//# sourceMappingURL=IconButton.js.map

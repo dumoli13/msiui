@@ -56,7 +56,7 @@ const ModalConfirmContainer = ({ open, title, children, icon, className, width =
     }, [open]);
     if (!open)
         return null;
-    return (React.createElement("div", { role: "presentation", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown },
+    return (React.createElement("div", { role: "none", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown },
         closeOnOverlayClick ? (React.createElement("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })) : (React.createElement("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })),
         React.createElement("div", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width }, tabIndex: -1, onSubmit: onConfirm },
             title && (React.createElement("div", { className: "pt-6 pb-2 px-6 flex items-center gap-4" },
@@ -65,7 +65,8 @@ const ModalConfirmContainer = ({ open, title, children, icon, className, width =
             React.createElement("div", { className: cx('pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto', { 'ml-10': !!icon }) }, children),
             React.createElement("div", { className: "px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md" },
                 onClose && (React.createElement(Button, { variant: "outlined", onClick: onClose, color: cancelButtonColor, size: "large" }, cancelText)),
-                onConfirm && (React.createElement(Button, { type: "button", variant: "contained", onClick: onConfirm, color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled, size: "large" }, confirmText)),
-                customAction && customAction.map((action) => action)))));
+                onConfirm && (React.createElement(Button, { type: "button", variant: "contained", onClick: onConfirm, color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled, size: "large" }, confirmText)), customAction === null || customAction === void 0 ? void 0 :
+                customAction.map((action) => action)))));
 };
 export default ModalConfirmContainer;
+//# sourceMappingURL=ModalConfirmContainer.js.map

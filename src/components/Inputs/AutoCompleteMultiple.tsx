@@ -99,7 +99,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   const [focused, setFocused] = React.useState(false);
-  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState<SelectValue<T, D>[]>(
     options.filter((item) => defaultValue.includes(item.value)) || [],
   );
@@ -114,7 +114,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
   const value = valueProp ?? internalValue; // Default to internal state if undefined
   const [inputValue, setInputValue] = React.useState('');
 
-  const helperMessage = errorProp || helperText;
+  const helperMessage = errorProp ?? helperText;
   const isError = errorProp;
   const disabled = loading || disabledProp;
 
@@ -384,7 +384,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
                 'cursor-not-allowed': disabled,
                 'hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color':
                   !disabled,
-                'rotate-180': isDropdownOpen,
+                'rotate-180': dropdownOpen,
               },
             )}
           >
@@ -441,7 +441,7 @@ const AutoCompleteMultiple = <T, D = undefined>({
         </div>
       )}
       <InputDropdown
-        open={isDropdownOpen}
+        open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         fullWidth

@@ -5,8 +5,8 @@ export interface PaginationButtonProps {
 }
 declare const PaginationButton: {
     (): null;
-    prev({ onClick, disabled }: PaginationButtonProps): React.JSX.Element;
-    next({ onClick, disabled }: PaginationButtonProps): React.JSX.Element;
+    Prev: ({ onClick, disabled }: PaginationButtonProps) => React.JSX.Element;
+    Next: ({ onClick, disabled }: PaginationButtonProps) => React.JSX.Element;
 };
 export default PaginationButton;
 //# sourceMappingURL=PaginationButton.d.ts.map

@@ -373,7 +373,9 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
     <span
       ref={ref}
       aria-label={name}
-      className={cx(className, { 'cursor-pointer': !!onClick })}
+      className={cx('aspect-square', className, {
+        'cursor-pointer': !!onClick,
+      })}
       {...(onClick && { onClick, role: 'button', tabIndex: 0 })}
     >
       <svg

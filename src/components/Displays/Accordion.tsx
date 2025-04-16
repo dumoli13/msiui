@@ -81,7 +81,7 @@ const Accordion = ({
 
   React.useEffect(() => {
     // Calculate the heights of all the accordion items
-    const newHeights = refs.current.map((ref) => ref?.scrollHeight || 0);
+    const newHeights = refs.current.map((ref) => ref?.scrollHeight ?? 0);
     setHeight(newHeights);
   }, [items]);
 

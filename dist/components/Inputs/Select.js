@@ -29,18 +29,19 @@ import InputDropdown from './InputDropdown';
  *
  */
 const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, }) => {
+    var _a;
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(options.find((item) => item.value === defaultValue) || null);
     React.useEffect(() => {
         setInternalValue(options.find((item) => item.value === defaultValue) || null);
     }, [options]);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -145,7 +146,7 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
                     'py-3': size === 'large',
                     'text-neutral-60 dark:text-neutral-60-dark': !value || !value.label,
                     '!bg-neutral-20 dark:!bg-neutral-30-dark cursor-not-allowed truncate': disabled,
-                }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef }, (value === null || value === void 0 ? void 0 : value.label) || placeholder),
+                }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef }, (_a = value === null || value === void 0 ? void 0 : value.label) !== null && _a !== void 0 ? _a : placeholder),
             React.createElement("div", { className: cx('flex gap-1 items-center', {
                     'text-16px': size === 'default',
                     'text-20px': size === 'large',
@@ -155,7 +156,7 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color': !disabled,
-                        'rotate-180': isDropdownOpen,
+                        'rotate-180': dropdownOpen,
                     }) },
                     React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70 dark:text-neutral-70-dark" },
@@ -176,6 +177,7 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
 };
 export default Select;
+//# sourceMappingURL=Select.js.map

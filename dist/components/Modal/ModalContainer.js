@@ -66,15 +66,16 @@ const ModalContainer = ({ open, title, children, icon, className, width = 804, c
     }, [open]);
     if (!open)
         return null;
-    return (React.createElement("div", { role: "presentation", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, ref: modalRef },
+    return (React.createElement("div", { role: "none", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, ref: modalRef },
         closeOnOverlayClick ? (React.createElement("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })) : (React.createElement("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })),
         React.createElement("form", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width }, tabIndex: -1, onSubmit: onConfirm },
             React.createElement("div", { className: "pt-6 pb-2 px-6 flex items-center gap-4" },
                 icon,
                 React.createElement("div", { className: "text-20px font-semibold text-neutral-100 dark:text-neutral-100-dark w-full break-words" }, title)),
             React.createElement("div", { className: cx('pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto', { 'ml-16': !!icon }) }, children),
-            footer ? (footer) : (React.createElement("div", { className: "px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md" }, customAction ? (customAction.map((action) => action)) : (React.createElement(React.Fragment, null,
+            footer || (React.createElement("div", { className: "px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md" }, customAction ? (customAction.map((action) => action)) : (React.createElement(React.Fragment, null,
                 onClose && (React.createElement(Button, { variant: "outlined", onClick: onClose, color: cancelButtonColor, size: "large" }, cancelText)),
                 onConfirm && (React.createElement(Button, { type: "submit", variant: "contained", color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled, size: "large" }, confirmText)))))))));
 };
 export default ModalContainer;
+//# sourceMappingURL=ModalContainer.js.map

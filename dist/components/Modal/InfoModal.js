@@ -29,3 +29,4 @@ const InfoModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", s
         }, confirmText: confirmText, confirmButtonColor: "info", customAction: customAction }, content));
 };
 export default InfoModal;
+//# sourceMappingURL=InfoModal.js.map

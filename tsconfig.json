@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "emitDeclarationOnly": false,
-    "module": "ESNext",
-    "target": "ES6",
-    "lib": ["dom", "es6"],
-    "sourceMap": false,
-    "declarationMap": true,
     "allowJs": false,
-    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "moduleResolution": "node",
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "importHelpers": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "jsx": "react",
+    "lib": ["dom", "es6"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES6"
   },
   "include": ["src"]
 }

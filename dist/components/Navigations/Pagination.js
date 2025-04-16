@@ -17,7 +17,7 @@ export const DEFAULT_ITEMS_PER_PAGE = [5, 10, 20, 30, 40, 50, 100];
  */
 const pageButtonStyle = cx('text-neutral-100 dark:text-neutral-100-dark text-16px h-8 min-w-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark bg-neutral-10 dark:bg-neutral-10-dark', 'disabled:bg-primary-surface dark:disabled:bg-primary-surface-dark disabled:text-primary-main dark:disabled:text-primary-main-dark disabled:border-primary-surface dark:disabled:border-primary-surface-dark disabled:cursor-default disabled:font-semibold', 'hover:bg-primary-hover hover:text-neutral-10');
 const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, pageSize, onPageChange, }) => {
-    const [itemsPerPage, setItemsPerPage] = React.useState(pageSize || itemPerPage[0]);
+    const [itemsPerPage, setItemsPerPage] = React.useState(pageSize !== null && pageSize !== void 0 ? pageSize : itemPerPage[0]);
     const totalPages = Math.ceil(total / itemsPerPage);
     const handlePageChange = (page) => {
         onPageChange === null || onPageChange === void 0 ? void 0 : onPageChange({ page: page, limit: itemsPerPage });
@@ -74,9 +74,10 @@ const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, 
     };
     return (React.createElement("div", { className: `flex gap-10 items-center justify-between ${totalPages > 1 ? 'flex-row' : 'flex-row-reverse'}` },
         totalPages > 1 && (React.createElement("div", { className: "flex item-center flex-wrap gap-2" },
-            React.createElement(PaginationButton.prev, { onClick: handlePrevPage, disabled: currentPage === 1 }),
+            React.createElement(PaginationButton.Prev, { onClick: handlePrevPage, disabled: currentPage === 1 }),
             renderPageNumbers(),
-            React.createElement(PaginationButton.next, { onClick: handleNextPage, disabled: currentPage === totalPages }))),
+            React.createElement(PaginationButton.Next, { onClick: handleNextPage, disabled: currentPage === totalPages }))),
         React.createElement("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark" }, itemPerPage.map((option) => (React.createElement("option", { key: option, value: option, className: "p-2" }, `${option}/page`))))));
 };
 export default Pagination;
+//# sourceMappingURL=Pagination.js.map

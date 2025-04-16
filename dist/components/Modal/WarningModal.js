@@ -34,3 +34,4 @@ const WarningModal = ({ icon = (React.createElement(Icon, { name: "alert-circle"
         }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "warning", customAction: customAction }, content));
 };
 export default WarningModal;
+//# sourceMappingURL=WarningModal.js.map

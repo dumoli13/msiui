@@ -13,6 +13,6 @@ export interface TagProps {
  * @property {'primary' | 'success' | 'danger' | 'warning' | 'info'} props.color - The color theme for the tag
  * .
  */
-declare function Tag({ className, children, color, size, onRemove, }: TagProps): React.JSX.Element;
+declare function Tag({ className, children, color, size, onRemove, }: Readonly<TagProps>): React.JSX.Element;
 export default Tag;
 //# sourceMappingURL=Tag.d.ts.map

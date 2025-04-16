@@ -21,7 +21,9 @@ const Icon = React.forwardRef((props, ref) => {
                 return baseStyle;
         }
     }, [animation]);
-    return (React.createElement("span", Object.assign({ ref: ref, "aria-label": name, className: cx(className, { 'cursor-pointer': !!onClick }) }, (onClick && { onClick, role: 'button', tabIndex: 0 })),
+    return (React.createElement("span", Object.assign({ ref: ref, "aria-label": name, className: cx('aspect-square', className, {
+            'cursor-pointer': !!onClick,
+        }) }, (onClick && { onClick, role: 'button', tabIndex: 0 })),
         React.createElement("svg", { viewBox: "0 0 24 24" // Maintain aspect ratio
             , width: size, height: size, stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle },
             React.createElement("use", { xlinkHref: `${icon}#${name}` })),
@@ -44,3 +46,4 @@ const Icon = React.forwardRef((props, ref) => {
 });
 Icon.displayName = 'Icon';
 export default Icon;
+//# sourceMappingURL=Icon.js.map

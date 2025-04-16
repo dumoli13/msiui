@@ -30,13 +30,13 @@ const PasswordField = (_a) => {
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', type, error: errorProp, success: successProp, loading = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "type", "error", "success", "loading", "width"]);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState(defaultValue || '');
+    const [internalValue, setInternalValue] = React.useState(defaultValue !== null && defaultValue !== void 0 ? defaultValue : '');
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
     const [showPassword, setShowPassword] = React.useState(false);
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
-    const disabled = loading || disabledProp;
+    const disabled = loading !== null && loading !== void 0 ? loading : disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -45,7 +45,7 @@ const PasswordField = (_a) => {
             (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
         },
         reset: () => {
-            setInternalValue(defaultValue || '');
+            setInternalValue(defaultValue !== null && defaultValue !== void 0 ? defaultValue : '');
         },
     }));
     const handleChange = (e) => {
@@ -103,3 +103,4 @@ const PasswordField = (_a) => {
             }) }, helperMessage))));
 };
 export default PasswordField;
+//# sourceMappingURL=PasswordField.js.map

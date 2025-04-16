@@ -65,7 +65,7 @@ const TimerField = (_a) => {
                 minutes: formatValue(internalValue ? Math.floor((internalValue % 3600) / 60) : 0),
                 seconds: formatValue(internalValue ? internalValue % 60 : 0),
             };
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -177,3 +177,4 @@ const TimerField = (_a) => {
             }) }, helperMessage))));
 };
 export default TimerField;
+//# sourceMappingURL=TimerField.js.map

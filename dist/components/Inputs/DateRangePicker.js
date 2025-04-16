@@ -2,9 +2,9 @@ import { __rest } from "tslib";
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import dayjs from 'dayjs';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isDateABeforeDateB, isDateBetween, isToday, } from '../../libs';
+import { formatDate, isValidDate } from '../../libs/inputDate';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
@@ -31,21 +31,21 @@ import InputDropdown from './InputDropdown';
  * @property {boolean} [showTime=false] - Whether time selection should be enabled in the date range picker.
  */
 const DateRangePicker = (_a) => {
-    var _b, _c, _d;
+    var _b, _c, _d, _e, _f, _g;
     var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "error", "success", "loading", "disabledDate", "width", "showTime"]);
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [pointer, setPointer] = React.useState(0);
     const [internalValue, setInternalValue] = React.useState(defaultValue || null);
     const isControlled = typeof valueProp !== 'undefined';
     const value = isControlled ? valueProp : internalValue;
     const [tempValue, setTempValue] = React.useState(value || [null, null]);
     const [timeValue, setTimeValue] = React.useState({
-        hours: ((_b = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _b === void 0 ? void 0 : _b.getHours()) || null, // if
-        minutes: ((_c = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _c === void 0 ? void 0 : _c.getMinutes()) || null,
-        seconds: ((_d = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _d === void 0 ? void 0 : _d.getSeconds()) || null,
+        hours: (_c = (_b = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _b === void 0 ? void 0 : _b.getHours()) !== null && _c !== void 0 ? _c : null, // if
+        minutes: (_e = (_d = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _d === void 0 ? void 0 : _d.getMinutes()) !== null && _e !== void 0 ? _e : null,
+        seconds: (_g = (_f = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _f === void 0 ? void 0 : _f.getSeconds()) !== null && _g !== void 0 ? _g : null,
     });
     const [calendarView, setCalendarView] = React.useState('date');
     const [displayedDate, setDisplayedDate] = React.useState(value === null ? new Date() : value[0]);
@@ -54,7 +54,7 @@ const DateRangePicker = (_a) => {
     const lastDate = new Date(displayedDate.getFullYear(), displayedDate.getMonth() + 1, 0);
     const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     const scrollRefs = {
@@ -68,7 +68,7 @@ const DateRangePicker = (_a) => {
         seconds: React.useRef([]),
     };
     React.useEffect(() => {
-        if (!isDropdownOpen)
+        if (!dropdownOpen)
             return;
         // Delay to ensure dropdown is fully rendered before scrolling
         setTimeout(() => {
@@ -88,7 +88,7 @@ const DateRangePicker = (_a) => {
                 }
             });
         }, 50); // Small delay for rendering
-    }, [isDropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
+    }, [dropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -198,7 +198,7 @@ const DateRangePicker = (_a) => {
         }
     }, [pointer]);
     const convertDateOnly = (start, end) => {
-        const newDate = [start, end];
+        let newDate = [start, end];
         if (start !== null && end !== null) {
             if (isDateABeforeDateB(start, end)) {
                 /**
@@ -207,8 +207,11 @@ const DateRangePicker = (_a) => {
                  * if position start and end is correct, and not null,
                  * close dropdown when pointer is 1
                  */
-                newDate[0] = dayjs(start).startOf('day').toDate();
-                newDate[1] = dayjs(end).endOf('day').toDate();
+                const startDate = new Date(start);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(end);
+                endDate.setHours(23, 59, 59, 999);
+                newDate = [startDate, endDate];
                 if (pointer === 1)
                     handleBlur();
             }
@@ -218,8 +221,11 @@ const DateRangePicker = (_a) => {
                  * if this happen, do not close dropdown,
                  * even when pointer is 1 so use can check or select new end date
                  */
-                newDate[0] = dayjs(end).startOf('day').toDate();
-                newDate[1] = dayjs(start).endOf('day').toDate();
+                const startDate = new Date(end);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(start);
+                endDate.setHours(23, 59, 59, 999);
+                newDate = [startDate, endDate];
             }
             handleChange(newDate);
         }
@@ -246,11 +252,12 @@ const DateRangePicker = (_a) => {
         setTempValue(newDate);
     };
     const handleSelectDate = (date) => {
+        var _a, _b, _c;
         if (showTime) {
             const selectedTime = {
-                hours: timeValue.hours || 0,
-                minutes: timeValue.minutes || 0,
-                seconds: timeValue.seconds || 0,
+                hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
+                minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
+                seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
             };
             setTimeValue(selectedTime);
             const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
@@ -270,11 +277,12 @@ const DateRangePicker = (_a) => {
         }
     };
     const handleSelectTime = (category, selected) => {
+        var _a, _b, _c;
         const selectedDate = (tempValue === null || tempValue === void 0 ? void 0 : tempValue[pointer]) || new Date();
         const selectedTime = {
-            hours: timeValue.hours || 0,
-            minutes: timeValue.minutes || 0,
-            seconds: timeValue.seconds || 0,
+            hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
+            minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
+            seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
             [category]: selected,
         };
         setTimeValue(selectedTime);
@@ -304,7 +312,6 @@ const DateRangePicker = (_a) => {
         handleChange(null);
         handleBlur();
     };
-    const formatDate = (date) => dayjs(date).format(showTime ? 'D/M/YYYY HH:mm:ss' : 'D/M/YYYY');
     React.useEffect(() => {
         if (value === null) {
             setTempValue([null, null]);
@@ -314,7 +321,7 @@ const DateRangePicker = (_a) => {
             setTempValue(value);
             setDisplayedDate(value[0] || new Date());
         }
-    }, [value, isDropdownOpen]);
+    }, [value, dropdownOpen]);
     const dropdownContent = (React.createElement("div", { className: "min-w-60" },
         calendarView === 'date' && (React.createElement(React.Fragment, null,
             React.createElement("div", { className: "px-4 flex flex-col gap-4 border-b border-neutral-40 dark:border-neutral-40-dark" },
@@ -324,13 +331,13 @@ const DateRangePicker = (_a) => {
                             'border-transparent': pointer !== 0,
                         }), onClick: () => handleFocus(0), disabled: pointer === 0 },
                         React.createElement("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark" }, "Start Date"),
-                        React.createElement("div", null, tempValue[0] ? formatDate(tempValue[0]) : '-')),
+                        React.createElement("div", null, tempValue[0] ? formatDate(tempValue[0], showTime) : '-')),
                     React.createElement("button", { type: "button", className: cx('flex-1 border-b-2', {
                             'border-primary-main dark:border-primary-main-dark': pointer === 1,
                             'border-transparent': pointer !== 1,
                         }), onClick: () => handleFocus(1), disabled: pointer === 1 || tempValue[0] === null },
                         React.createElement("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark" }, "End Date"),
-                        React.createElement("div", null, tempValue[1] ? formatDate(tempValue[1]) : '-')))),
+                        React.createElement("div", null, tempValue[1] ? formatDate(tempValue[1], showTime) : '-')))),
             React.createElement("div", { className: "flex" },
                 React.createElement("div", null,
                     React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
@@ -440,7 +447,7 @@ const DateRangePicker = (_a) => {
             React.createElement("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px" }, yearRange.map((item) => {
                 var _a;
                 const isDateSelected = displayedDate.getMonth() === item;
-                const [start, end] = (_a = tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => (v === null || v === void 0 ? void 0 : v.getFullYear()) || null)) !== null && _a !== void 0 ? _a : [null, null];
+                const [start, end] = (_a = tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => { var _a; return (_a = v === null || v === void 0 ? void 0 : v.getFullYear()) !== null && _a !== void 0 ? _a : null; })) !== null && _a !== void 0 ? _a : [null, null];
                 const isStartSelected = start !== null && item === start;
                 const isEndSelected = end !== null && item === end;
                 const isBetween = start !== null && end !== null && item > start && item < end;
@@ -476,9 +483,9 @@ const DateRangePicker = (_a) => {
                     'text-14px py-1.5': size === 'default',
                     'text-18px py-3': size === 'large',
                 }) }, value ? (React.createElement(React.Fragment, null,
-                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: dayjs(value[0]).isValid() ? formatDate(value[0]) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })),
+                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: isValidDate(value[0]) ? formatDate(value[0], showTime) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })),
                 React.createElement("div", null, "-"),
-                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: dayjs(value[1]).isValid() ? formatDate(value[1]) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(1), onClick: () => handleFocus(1), onChange: () => { } })))) : (React.createElement("input", Object.assign({}, props, { value: '', tabIndex: !disabled ? 0 : -1, id: id, placeholder: focused ? '' : placeholder, className: "flex-1 truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })))),
+                React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: isValidDate(value[1]) ? formatDate(value[1], showTime) : '', placeholder: focused ? '' : placeholder, className: "truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(1), onClick: () => handleFocus(1), onChange: () => { } })))) : (React.createElement("input", Object.assign({}, props, { value: '', tabIndex: !disabled ? 0 : -1, id: id, placeholder: focused ? '' : placeholder, className: "flex-1 truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onClick: () => handleFocus(0), onChange: () => { } })))),
             React.createElement("div", { className: cx('flex gap-1 items-center', {
                     'text-16px': size === 'default',
                     'text-20px': size === 'large',
@@ -506,6 +513,7 @@ const DateRangePicker = (_a) => {
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 400 }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 400 }, dropdownContent)));
 };
 export default DateRangePicker;
+//# sourceMappingURL=DateRangePicker.js.map

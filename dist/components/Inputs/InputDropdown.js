@@ -53,7 +53,7 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
         });
     }, [elementRef, dropdownRef, fullWidth]);
     React.useEffect(() => {
-        if (open) {
+        const handleOpenDropdown = () => {
             setDropdownStyles((prev) => (Object.assign(Object.assign({}, prev), { visibility: 'hidden' }))); // Hide before calculation
             setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
             const handleScrollOrResize = () => calculateDropdownPosition();
@@ -63,9 +63,15 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
                 window.removeEventListener('scroll', handleScrollOrResize);
                 window.removeEventListener('resize', handleScrollOrResize);
             };
+        };
+        const handleCloseDropdown = () => {
+            setDropdownStyles(null);
+        };
+        if (open) {
+            handleCloseDropdown();
         }
         else {
-            setDropdownStyles(null);
+            handleOpenDropdown();
         }
     }, [open, calculateDropdownPosition]);
     if (!open)
@@ -86,3 +92,4 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
         } }, children), document.body);
 };
 export default InputDropdown;
+//# sourceMappingURL=InputDropdown.js.map

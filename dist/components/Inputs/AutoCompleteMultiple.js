@@ -36,7 +36,7 @@ const AutoCompleteMultiple = (_a) => {
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [isDropdownOpen, setDropdownOpen] = React.useState(false);
+    const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(options.filter((item) => defaultValue.includes(item.value)) || []);
     React.useEffect(() => {
         setInternalValue(options.filter((item) => defaultValue.includes(item.value)) || []);
@@ -44,7 +44,7 @@ const AutoCompleteMultiple = (_a) => {
     const isControlled = valueProp !== undefined;
     const value = valueProp !== null && valueProp !== void 0 ? valueProp : internalValue; // Default to internal state if undefined
     const [inputValue, setInputValue] = React.useState('');
-    const helperMessage = errorProp || helperText;
+    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -183,7 +183,7 @@ const AutoCompleteMultiple = (_a) => {
                 React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark', {
                         'cursor-not-allowed': disabled,
                         'hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color': !disabled,
-                        'rotate-180': isDropdownOpen,
+                        'rotate-180': dropdownOpen,
                     }) },
                     React.createElement(Icon, { name: "chevron-down", size: 16, strokeWidth: 2 })),
                 loading && (React.createElement("div", { className: "text-neutral-70 dark:text-neutral-70-dark" },
@@ -204,6 +204,7 @@ const AutoCompleteMultiple = (_a) => {
                 'text-12px': size === 'default',
                 'text-16px': size === 'large',
             }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: isDropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
+        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true }, dropdownContent)));
 };
 export default AutoCompleteMultiple;
+//# sourceMappingURL=AutoCompleteMultiple.js.map

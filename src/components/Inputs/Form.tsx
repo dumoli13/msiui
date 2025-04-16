@@ -119,7 +119,7 @@ const Form = ({
 
       const childProps = child.props as InputProps<any>;
       if (isFormInput(child)) {
-        const name = childProps.name || childProps.id;
+        const name = childProps.name ?? childProps.id;
         if (name) {
           defaults[name] = childProps.defaultValue ?? '';
         }
@@ -149,7 +149,7 @@ const Form = ({
   ) => {
     if (typeof rule === 'string') return DEFAULT_ERROR_MESSAGES[ruleType];
 
-    const message = rule.message || DEFAULT_ERROR_MESSAGES[ruleType];
+    const message = rule.message ?? DEFAULT_ERROR_MESSAGES[ruleType];
     return message
       .replace('{minLength}', String(rule.minLength))
       .replace('{maxLength}', String(rule.maxLength))
@@ -264,7 +264,7 @@ const Form = ({
         defaultValue,
         inputRef: originalInputRef,
       } = childProps;
-      const fieldName = name || id;
+      const fieldName = name ?? id;
       if (!fieldName) return child;
 
       const handleChange = (value: any) => {
@@ -280,7 +280,7 @@ const Form = ({
         ...child.props,
         defaultValue,
         onChange: handleChange,
-        error: errors[fieldName] || undefined,
+        error: errors[fieldName] ?? undefined,
         disabled: formDisabled || childProps.disabled,
         inputRef: (ref: InputPropsRefType) => {
           if (fieldName) {

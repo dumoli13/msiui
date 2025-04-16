@@ -39,3 +39,4 @@ const FilterSelect = ({ type, value, option, label, onChange, }) => {
             }), title: "Select Option" })));
 };
 export default FilterSelect;
+//# sourceMappingURL=FilterSelect.js.map

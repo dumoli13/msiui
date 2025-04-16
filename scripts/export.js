@@ -67,9 +67,9 @@ const createGitTagAndPush = (version, baseBranch) => {
     execSync(`git checkout ${baseBranch}`);
     execSync(`git pull origin ${baseBranch}`);
 
-    const releaseBranch = `release/v${version}`;
-    console.log(`🌿 Creating release branch ${releaseBranch}...`);
-    execSync(`git checkout -b ${releaseBranch}`);
+    // const releaseBranch = `release/v${version}`;
+    // console.log(`🌿 Creating release branch ${releaseBranch}...`);
+    // execSync(`git checkout -b ${releaseBranch}`);
 
     if (stashCreated) {
       console.log('📦 Applying stashed changes...');
@@ -96,16 +96,16 @@ const createGitTagAndPush = (version, baseBranch) => {
     console.log(`🏷️ Creating tag v${version}...`);
     execSync(`git tag v${version}`);
 
-    console.log('🚀 Pushing tag and branch...');
+    // console.log('🚀 Pushing tag and branch...');
     execSync(`git push origin v${version}`);
-    execSync(`git push origin ${releaseBranch}`);
+    // execSync(`git push origin ${releaseBranch}`);
 
     console.log(`🔄 Switching back to ${currentBranch}...`);
     execSync(`git checkout ${currentBranch}`);
 
-    console.log(
-      `✅ Successfully created and pushed tag v${version} and branch ${releaseBranch}`,
-    );
+    // console.log(
+    //   `✅ Successfully created and pushed tag v${version} and branch ${releaseBranch}`,
+    // );
   } catch (error) {
     console.error(
       '❌ Error creating Git tag or pushing changes:',

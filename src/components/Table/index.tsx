@@ -81,7 +81,6 @@ export interface TableProps<T> {
   onRowSelect?: (row: number, value: boolean, selectedRows: number[]) => void; // selectedRows is indexes of the list
   sorting?: TableSortingProps<T> | null;
   onSort?: (sort: TableSortingProps<T>) => void;
-  render?: (value: any, record: T) => React.ReactNode;
   showDanger?: (record: T) => boolean;
   fullwidth?: boolean;
   showSelected?: boolean;
@@ -140,14 +139,22 @@ const Table = <T extends { [key: string]: any }>({
     let newConfig: TableSortingProps<T>;
 
     if (sortConfig.key === columnKey) {
+      let direction: 'asc' | 'desc' | null;
+      switch (sortConfig.direction) {
+        case 'asc':
+          direction = 'desc';
+          break;
+        case 'desc':
+          direction = null;
+          break;
+        default:
+          direction = 'asc';
+          break;
+      }
+
       newConfig = {
         key: columnKey,
-        direction:
-          sortConfig.direction === 'asc'
-            ? 'desc'
-            : sortConfig.direction === 'desc'
-              ? null
-              : 'asc',
+        direction,
       };
     } else {
       newConfig = { key: columnKey, direction: 'asc' };
@@ -214,7 +221,7 @@ const Table = <T extends { [key: string]: any }>({
                   style={{
                     width: col.width,
                     minWidth:
-                      col.width ||
+                      col.width ??
                       `${Math.max(
                         typeof col.width === 'number' ? col.width : 0,
                         col.minWidth
@@ -277,8 +284,8 @@ const Table = <T extends { [key: string]: any }>({
                     {col.filter !== undefined && col.filter === 'textfield' && (
                       <FilterSearch
                         label={col.label}
-                        value={col.filterValue as string}
-                        onChange={(value) => col.onChange?.(value as string)}
+                        value={col.filterValue}
+                        onChange={(value) => col.onChange?.(value)}
                       />
                     )}
                     {(col.filter === 'select' ||
@@ -302,7 +309,7 @@ const Table = <T extends { [key: string]: any }>({
           </thead>
           <tbody>
             {data.map((row, rowIndex) => {
-              const isDanger = showDanger && showDanger(row);
+              const isDanger = showDanger?.(row);
               const isSelected =
                 showSelected &&
                 selectedRows.some((index) => index === rowIndex);
