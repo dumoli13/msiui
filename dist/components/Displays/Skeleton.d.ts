@@ -1,8 +1,14 @@
 import React from 'react';
 export interface SkeletonProps {
-    width?: number;
-    height?: number;
+    width: number;
+    height: number;
     type?: 'circle' | 'rounded' | 'rect';
+}
+export interface SkeletonInputProps {
+    size?: 'default' | 'large';
+}
+export interface SkeletonTableProps {
+    column: number;
 }
 /**
  *
@@ -11,11 +17,12 @@ export interface SkeletonProps {
  *
  */
 declare const Skeleton: {
-    ({ width, height, type }: SkeletonProps): React.JSX.Element;
-    input(): React.JSX.Element;
-    table({ column }: {
-        column: number;
-    }): React.JSX.Element;
+    ({ width, height, type }: SkeletonProps): import("react/jsx-runtime").JSX.Element;
+    Input: React.FC<SkeletonInputProps>;
+    Table: {
+        ({ column }: SkeletonTableProps): import("react/jsx-runtime").JSX.Element;
+        displayName: string;
+    };
 };
 export default Skeleton;
 //# sourceMappingURL=Skeleton.d.ts.map

@@ -1,5 +1,8 @@
+// TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import { SelectValue } from './Select';
@@ -14,7 +17,7 @@ export interface AutoCompleteRef<T, D = undefined> {
 export interface AutoCompleteProps<T, D = undefined>
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'value' | 'defaultValue' | 'size'
+    'onChange' | 'value' | 'defaultValue' | 'size' | 'required'
   > {
   value?: SelectValue<T, D> | null;
   defaultValue?: T | null;
@@ -33,7 +36,7 @@ export interface AutoCompleteProps<T, D = undefined>
     | React.RefObject<AutoCompleteRef<T> | null>
     | React.RefCallback<AutoCompleteRef<T> | null>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   loading?: boolean;
   clearable?: boolean;
@@ -42,29 +45,26 @@ export interface AutoCompleteProps<T, D = undefined>
 
 /**
  *
- * A customizable input component that allows users to search through a list of options and select one.
- *
  * @property {SelectValue<T, D> | null} value - The currently selected value, if any. If controlled, this prop is required.
  * @property {T | null} defaultValue - The default value for the input. Used in uncontrolled mode.
- * @property {string} [label] - The label text displayed above or beside the input field.
+ * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<AutoCompleteRef<T>> | React.RefCallback<AutoCompleteRef<T>>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the input is focused.
- * @property {string} [placeholder=''] - Placeholder text displayed in the input when it’s empty.
- * @property {SelectValue<T, D>[]} options - An array of option objects, each containing a value and a label.
- * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function when an option is selected or cleared.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<AutoCompleteRef<T>> | React.RefCallback<AutoCompleteRef<T>>} [inputRef] - A ref to access the input field and its value programmatically.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {boolean} [clearable=false] - Whether the input has a clear button to remove selected values.
- * @property {number} [width] - Optional custom width for the input field.
- *
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
+ * @property {boolean} [clearable=false] - A flag that show clear button of input field if set to true.
+ * @property {SelectValue<T, D>[]} options - An array of option objects, each containing a value and a label.
  */
 
 const AutoComplete = <T, D = undefined>({
@@ -115,8 +115,8 @@ const AutoComplete = <T, D = undefined>({
   const [inputValue, setInputValue] = React.useState(value?.label ?? '');
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
-  const disabled = loading ?? disabledProp;
+  const isError = !!errorProp;
+  const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -195,9 +195,7 @@ const AutoComplete = <T, D = undefined>({
     setFilteredOptions(options);
   };
 
-  const handleClearValue = (e?: React.MouseEvent<HTMLDivElement>) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+  const handleClearValue = () => {
     setDropdownOpen(true);
     onChange?.(null);
     if (!isControlled) setInternalValue(null);
@@ -211,15 +209,12 @@ const AutoComplete = <T, D = undefined>({
     }
   };
 
-  const handleOptionSelect =
-    (option: SelectValue<T, D>) => (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setInputValue(option.label);
-      if (!isControlled) setInternalValue(option);
-      setDropdownOpen(false);
-      if (onChange) onChange(option);
-    };
+  const handleOptionSelect = (option: SelectValue<T, D>) => {
+    setInputValue(option.label);
+    if (!isControlled) setInternalValue(option);
+    setDropdownOpen(false);
+    if (onChange) onChange(option);
+  };
 
   const dropdownContent = (
     <>
@@ -227,7 +222,7 @@ const AutoComplete = <T, D = undefined>({
         <div
           role="button"
           key={String(option.value)}
-          onMouseDown={handleOptionSelect(option)}
+          onClick={() => handleOptionSelect(option)}
           className={cx('py-1.5 px-4 text-left break-words', {
             'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark':
               option.value === value?.value,
@@ -327,25 +322,19 @@ const AutoComplete = <T, D = undefined>({
           onClick={handleFocus}
           ref={valueRef}
         />
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          clearable={clearable && focused && !!value}
+          onClear={handleClearValue}
+          endIcon={endIcon}
         >
-          {clearable && focused && !!value && (
-            <div
-              title="Clear"
-              role="button"
-              onMouseDown={handleClearValue}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark p-0.5 text-neutral-70 dark:text-neutral-70-dark transition-color"
-            >
-              <Icon name="x-mark" strokeWidth={4} />
-            </div>
-          )}
-          <div
-            title="Open"
-            role="button"
+          <Icon
+            name="chevron-down"
+            size={20}
+            strokeWidth={2}
             onClick={handleDropdown}
             className={cx(
               'rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark',
@@ -356,59 +345,10 @@ const AutoComplete = <T, D = undefined>({
                 'rotate-180': dropdownOpen,
               },
             )}
-          >
-            <Icon name="chevron-down" size={16} strokeWidth={2} />
-          </div>
-          {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-          {!!endIcon && (
-            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
-              {endIcon}
-            </div>
-          )}
-        </div>
+          />
+        </InputEndIconWrapper>
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1 ', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
       <InputDropdown
         open={dropdownOpen}
         elementRef={elementRef}

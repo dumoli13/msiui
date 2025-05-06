@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import Icon from '../Icon';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 
 const formatValue = (value: string | number | null | undefined) => {
   if (value === '' || value === null || value === undefined) {
@@ -24,7 +25,7 @@ export interface NumberTextfieldRef {
 export interface NumberTextFieldProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size'
+    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
   > {
   id?: string;
   value?: number | null;
@@ -45,37 +46,34 @@ export interface NumberTextFieldProps
     | React.RefObject<NumberTextfieldRef | null>
     | React.RefCallback<NumberTextfieldRef | null>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   loading?: boolean;
   width?: number;
 }
 
 /**
- * NumberTextField Component
- *
- * A customizable input field designed for numeric values. This component formats and displays numbers with thousand separators, and it supports various features including label positioning, value clearing, validation feedback, and more.
  *
  * @property {number | null} [value] - The current value of the number field, passed from the parent component.
  * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
+ * @property {(value: number | null) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<NumberTextfieldRef> | React.RefCallback<NumberTextfieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should hide when the user starts typing.
- * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
  * @property {string} [className] - Additional class names to customize the component's style.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {string} [placeholder] - Placeholder text displayed when no value is entered.
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- * @property {RefObject<NumberTextfieldRef> | React.RefCallback<NumberTextfieldRef>} [inputRef] - A ref that provides access to the input element.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
+ * @property {boolean} [clearable=false] - A flag that show clear button of input field if set to true.
  *
  */
 
@@ -110,7 +108,7 @@ const NumberTextField = ({
     defaultValue !== undefined ? defaultValue : null,
   );
   const [internalStringValue, setInternalStringValue] = React.useState<string>(
-    defaultValue?.toString() || '',
+    defaultValue?.toString() ?? '',
   );
 
   const isControlled = valueProp !== undefined;
@@ -126,13 +124,11 @@ const NumberTextField = ({
   const displayValue = focused
     ? internalStringValue
     : isControlled
-      ? value === null
-        ? ''
-        : value
+      ? value || ''
       : formatValue(internalStringValue);
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
@@ -258,72 +254,17 @@ const NumberTextField = ({
           disabled={disabled}
           autoComplete="off"
         />
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
-        >
-          {clearable && focused && !!value && (
-            <div
-              title="Clear"
-              role="button"
-              onMouseDown={handleClearValue}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark p-0.5 text-neutral-70 dark:text-neutral-70-dark transition-color"
-            >
-              <Icon name="x-mark" strokeWidth={4} />
-            </div>
-          )}
-          {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-          {!!endIcon && (
-            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
-              {endIcon}
-            </div>
-          )}
-        </div>
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          clearable={clearable && focused && !!value}
+          onClear={handleClearValue}
+          endIcon={endIcon}
+        />
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1 ', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
     </div>
   );
 };

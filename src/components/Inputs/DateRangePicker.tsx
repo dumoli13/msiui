@@ -11,6 +11,8 @@ import {
   isToday,
 } from '../../libs';
 import { formatDate, isValidDate } from '../../libs/inputDate';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
@@ -26,10 +28,11 @@ export interface InputDateRangePickerRef {
 export interface DateRangePickerProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size'
+    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
   > {
   value?: InputDateRangeValue;
   defaultValue?: InputDateRangeValue;
+  clearable?: boolean;
   label?: string;
   labelPosition?: 'top' | 'left';
   autoHideLabel?: boolean;
@@ -41,7 +44,7 @@ export interface DateRangePickerProps
     | React.RefObject<InputDateRangePickerRef>
     | React.RefCallback<InputDateRangePickerRef>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   loading?: boolean;
   disabledDate?: (date: Date, firstSelectedDate: Date | null) => boolean;
@@ -50,26 +53,26 @@ export interface DateRangePickerProps
 }
 
 /**
- * A date range picker component that allows users to select a start and end date.
- * It supports customization options such as labels, helper text, validation, and disabled dates.
  *
  * @property {InputDateRangeValue} [value] - The selected date range. If provided, the component will be controlled.
  * @property {InputDateRangeValue} [defaultValue] - The initial date range for uncontrolled usage.
+ * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.*
  * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the input ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the input is focused.
- * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function triggered when the selected date range changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
+ * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
  * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
- * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A ref to access the date range picker element directly.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message displayed when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
  * @property {boolean} [showTime=false] - Whether time selection should be enabled in the date range picker.
+ * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
+ *
  */
 const DateRangePicker = ({
   id,
@@ -87,6 +90,7 @@ const DateRangePicker = ({
   fullWidth,
   inputRef,
   size = 'default',
+  clearable = false,
   error: errorProp,
   success: successProp,
   loading = false,
@@ -138,7 +142,7 @@ const DateRangePicker = ({
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
   const scrollRefs = {
@@ -463,9 +467,7 @@ const DateRangePicker = ({
     }
   };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleClearValue = () => {
     handleChange(null);
     handleBlur();
   };
@@ -526,64 +528,52 @@ const DateRangePicker = ({
             <div>
               <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
                 <div className="flex items-center">
-                  <div
-                    role="button"
-                    title="Previous Year"
+                  <Icon
+                    name="chevron-double-left"
+                    size={20}
+                    strokeWidth={2}
                     onClick={() => handleChangeYear(-1)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  >
-                    <Icon
-                      name="chevron-double-left"
-                      size={20}
-                      strokeWidth={2}
-                    />
-                  </div>
-                  <div
-                    role="button"
-                    title="Previous Month"
+                    className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+                  />
+                  <Icon
+                    name="chevron-left"
+                    size={20}
+                    strokeWidth={2}
                     onClick={handlePrevMonth}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  >
-                    <Icon name="chevron-left" size={20} strokeWidth={2} />
-                  </div>
+                    className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+                  />
                 </div>
                 <div className="flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark">
-                  <div
-                    role="button"
+                  <button
+                    type="button"
                     className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]"
                     onClick={() => handleChangeView('month')}
                   >
                     {monthFormatter.format(displayedDate)}
-                  </div>
-                  <div
-                    role="button"
+                  </button>
+                  <button
+                    type="button"
                     className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10"
                     onClick={() => handleChangeView('year')}
                   >
                     {displayedDate.getFullYear()}
-                  </div>
+                  </button>
                 </div>
                 <div className="flex items-center">
-                  <div
-                    role="button"
-                    title="Next Month"
+                  <Icon
+                    name="chevron-right"
+                    size={20}
+                    strokeWidth={2}
                     onClick={handleNextMonth}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  >
-                    <Icon name="chevron-right" size={20} strokeWidth={2} />
-                  </div>
-                  <div
-                    role="button"
-                    title="Next Year"
+                    className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+                  />
+                  <Icon
+                    name="chevron-double-right"
+                    size={20}
+                    strokeWidth={2}
                     onClick={() => handleChangeYear(1)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  >
-                    <Icon
-                      name="chevron-double-right"
-                      size={20}
-                      strokeWidth={2}
-                    />
-                  </div>
+                    className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+                  />
                 </div>
               </div>
               <div className="text-12px p-2">
@@ -637,11 +627,11 @@ const DateRangePicker = ({
                               }
                               className="px-0"
                             >
-                              <div
-                                role="button"
+                              <button
+                                type="button"
                                 onClick={() => handleChooseDate(date)}
                                 className={cx(
-                                  'text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center',
+                                  'w-full text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center',
                                   {
                                     'cursor-default text-neutral-30 dark:text-neutral-30-dark':
                                       isDateDisabled,
@@ -665,7 +655,7 @@ const DateRangePicker = ({
                                 )}
                               >
                                 {date?.getDate()}
-                              </div>
+                              </button>
                             </td>
                           );
                         })}
@@ -734,29 +724,27 @@ const DateRangePicker = ({
       {calendarView === 'month' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <div
-              role="button"
-              title="Previous Year"
+            <Icon
+              name="chevron-double-left"
+              size={20}
+              strokeWidth={2}
               onClick={() => handleChangeYear(-1)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            >
-              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
-            </div>
-            <div
-              role="button"
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            />
+            <button
+              type="button"
               className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark"
               onClick={() => handleChangeView('year')}
             >
               {displayedDate.getFullYear()}
-            </div>
-            <div
-              role="button"
-              title="Next Year"
+            </button>
+            <Icon
+              name="chevron-double-right"
+              size={20}
+              strokeWidth={2}
               onClick={() => handleChangeYear(1)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            >
-              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
-            </div>
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            />
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
             {MONTH_LIST.map((item) => {
@@ -779,8 +767,8 @@ const DateRangePicker = ({
                   className="flex justify-center items-center h-12 text-neutral-100 dark:text-neutral-100-dark"
                   key={item.value}
                 >
-                  <div
-                    role="button"
+                  <button
+                    type="button"
                     onClick={() => handleJumpMonth(item.value)}
                     className={cx(
                       'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center',
@@ -797,7 +785,7 @@ const DateRangePicker = ({
                     )}
                   >
                     {item.label}
-                  </div>
+                  </button>
                 </div>
               );
             })}
@@ -810,25 +798,23 @@ const DateRangePicker = ({
       {calendarView === 'year' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <div
-              role="button"
-              title="Previous Year"
+            <Icon
+              name="chevron-double-left"
+              size={20}
+              strokeWidth={2}
               onClick={() => handleChangeYear(-12)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            >
-              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
-            </div>
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            />
             <div className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark">
               {`${yearRange[0]} - ${yearRange[yearRange.length - 1]}`}
             </div>
-            <div
-              role="button"
-              title="Next Year"
+            <Icon
+              name="chevron-double-right"
+              size={20}
               onClick={() => handleChangeYear(12)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            >
-              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
-            </div>
+              strokeWidth={2}
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            />
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
             {yearRange.map((item) => {
@@ -847,11 +833,11 @@ const DateRangePicker = ({
                   className="flex justify-center items-center h-12 w-20 text-neutral-100 dark:text-neutral-100-dark"
                   key={item}
                 >
-                  <div
-                    role="button"
+                  <button
+                    type="button"
                     onClick={() => handleJumpYear(item)}
                     className={cx(
-                      'cursor-pointer w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center',
+                      'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md',
                       {
                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
                           !isDateSelected,
@@ -865,7 +851,7 @@ const DateRangePicker = ({
                     )}
                   >
                     {item}
-                  </div>
+                  </button>
                 </div>
               );
             })}
@@ -990,81 +976,27 @@ const DateRangePicker = ({
             />
           )}
         </div>
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          clearable={clearable && focused && !!value}
+          onClear={handleClearValue}
         >
-          {focused && !!value ? (
-            <div
-              title="Clear"
-              role="button"
-              onMouseDown={handleClearValue}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
-            >
-              <Icon name="x-mark" strokeWidth={3} />
-            </div>
-          ) : (
-            <div
-              title="Open"
-              role="button"
-              onClick={() => handleFocus(0)}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
-            >
-              <Icon name="calendar" strokeWidth={2} />
-            </div>
+          {(!clearable ||
+            (clearable && !focused) ||
+            (clearable && focused && !value)) && (
+            <Icon
+              name="calendar"
+              strokeWidth={2}
+              onClick={disabled ? undefined : () => handleFocus(0)}
+              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
+            />
           )}
-          {loading && (
-            <div
-              className={cx('text-neutral-70 dark:text-neutral-70-dark', {
-                'text-16px': size === 'default',
-                'text-20px': size === 'large',
-              })}
-            >
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-        </div>
+        </InputEndIconWrapper>
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
       <InputDropdown
         open={dropdownOpen}
         elementRef={elementRef}

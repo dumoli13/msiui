@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import ModalConfirmContainer from './ModalConfirmContainer';
 /**
@@ -24,12 +24,11 @@ const PrimaryModal = ({ title, content, confirmText = 'Confirm', cancelText = 'C
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, onClose: handleClose, onConfirm: onConfirm
+    root.render(_jsx(ModalConfirmContainer, { open: true, title: title, onClose: handleClose, onConfirm: onConfirm
             ? () => {
                 onConfirm();
                 handleClose();
             }
-            : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", customAction: customAction }, content));
+            : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", customAction: customAction, children: content }));
 };
 export default PrimaryModal;
-//# sourceMappingURL=PrimaryModal.js.map

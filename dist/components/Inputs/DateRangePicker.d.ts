@@ -6,9 +6,10 @@ export interface InputDateRangePickerRef {
     focus: () => void;
     reset: () => void;
 }
-export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size'> {
+export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required'> {
     value?: InputDateRangeValue;
     defaultValue?: InputDateRangeValue;
+    clearable?: boolean;
     label?: string;
     labelPosition?: 'top' | 'left';
     autoHideLabel?: boolean;
@@ -18,7 +19,7 @@ export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTM
     fullWidth?: boolean;
     inputRef?: React.RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>;
     size?: 'default' | 'large';
-    error?: string;
+    error?: boolean | string;
     success?: boolean;
     loading?: boolean;
     disabledDate?: (date: Date, firstSelectedDate: Date | null) => boolean;
@@ -26,27 +27,27 @@ export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTM
     showTime?: boolean;
 }
 /**
- * A date range picker component that allows users to select a start and end date.
- * It supports customization options such as labels, helper text, validation, and disabled dates.
  *
  * @property {InputDateRangeValue} [value] - The selected date range. If provided, the component will be controlled.
  * @property {InputDateRangeValue} [defaultValue] - The initial date range for uncontrolled usage.
+ * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.*
  * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the input ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the input is focused.
- * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function triggered when the selected date range changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
+ * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
  * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
- * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A ref to access the date range picker element directly.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message displayed when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
  * @property {boolean} [showTime=false] - Whether time selection should be enabled in the date range picker.
+ * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
+ *
  */
-declare const DateRangePicker: ({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, inputRef, size, error: errorProp, success: successProp, loading, disabledDate, width, showTime, ...props }: DateRangePickerProps) => React.JSX.Element;
+declare const DateRangePicker: ({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, inputRef, size, clearable, error: errorProp, success: successProp, loading, disabledDate, width, showTime, ...props }: DateRangePickerProps) => import("react/jsx-runtime").JSX.Element;
 export default DateRangePicker;
 //# sourceMappingURL=DateRangePicker.d.ts.map

@@ -1,3 +1,4 @@
+// TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
@@ -20,7 +21,7 @@ export interface InputDropdownProps {
  * @property {ReactNode} children - The content to display inside the dropdown (usually options or items).
  * @property {RefObject<HTMLDivElement>} elementRef - A reference to the element to which the dropdown is attached.
  * @property {RefObject<HTMLDivElement>} dropdownRef - A reference to the dropdown element itself.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
  *
  */
@@ -36,7 +37,7 @@ const InputDropdown = ({
   const [dropdownStyles, setDropdownStyles] = React.useState<{
     top?: number;
     left?: number;
-    width?: number;
+    width?: number | undefined;
     direction?: 'down' | 'up';
     visibility?: 'hidden' | 'visible';
   } | null>(null);
@@ -89,7 +90,7 @@ const InputDropdown = ({
   }, [elementRef, dropdownRef, fullWidth]);
 
   React.useEffect(() => {
-    const handleOpenDropdown = () => {
+    if (open) {
       setDropdownStyles((prev) => ({ ...prev, visibility: 'hidden' })); // Hide before calculation
       setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
 
@@ -101,16 +102,8 @@ const InputDropdown = ({
         window.removeEventListener('scroll', handleScrollOrResize);
         window.removeEventListener('resize', handleScrollOrResize);
       };
-    };
-
-    const handleCloseDropdown = () => {
-      setDropdownStyles(null);
-    };
-
-    if (open) {
-      handleCloseDropdown();
     } else {
-      handleOpenDropdown();
+      setDropdownStyles(null);
     }
   }, [open, calculateDropdownPosition]);
 

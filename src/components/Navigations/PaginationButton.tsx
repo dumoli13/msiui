@@ -14,7 +14,7 @@ export interface PaginationButtonProps {
  *
  * @interface PaginationButtonProps
  * @property {() => void} onClick - A callback function to be triggered when the button is clicked.
- * @property {boolean} [disabled] - An optional boolean that disables the button if set to true
+ * @property {boolean} [disabled] - A flag that disables the button if set to true
  *
  */
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -17,7 +17,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onCancel] - Callback function when the user cancels the action.
  *
  */
-const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
+const DangerModal = ({ icon = (_jsx(Icon, { name: "x-mark", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -25,13 +25,12 @@ const DangerModal = ({ icon = (React.createElement(Icon, { name: "x-mark", size:
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onClose: () => {
+    root.render(_jsx(ModalConfirmContainer, { open: true, title: title, icon: icon, onClose: () => {
             onCancel === null || onCancel === void 0 ? void 0 : onCancel();
             handleClose();
         }, onConfirm: () => {
             handleClose();
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
-        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger", customAction: customAction }, content));
+        }, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "danger", customAction: customAction, children: content }));
 };
 export default DangerModal;
-//# sourceMappingURL=DangerModal.js.map

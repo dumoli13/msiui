@@ -1,1 +1,1 @@
-{"version":3,"file":"PdfThumbnail.d.ts","sourceRoot":"","sources":["../../../src/components/Displays/PdfThumbnail.tsx"],"names":[],"mappings":""}
+{"version":3,"file":"PdfThumbnail.d.ts","sourceRoot":"","sources":["../../../src/components/Displays/PdfThumbnail.tsx"],"names":[],"mappings":"AAOA,MAAM,WAAW,iBAAiB;IAChC,IAAI,EAAE,MAAM,CAAC;CACd;AAED;;;;;;;;;;;;GAYG;AAEH,QAAA,MAAM,YAAY,GAAI,UAAU,iBAAiB,4CA8BhD,CAAC;AAEF,eAAe,YAAY,CAAC"}

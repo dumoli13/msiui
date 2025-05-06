@@ -33,6 +33,6 @@ export interface AccordionProps {
  * @property {Array<string | number>} [activeKey] - Keys of the currently active panels, for external control.
  * @property {(key: Array<string | number>) => void} [onChangeActiveKey] - Callback fired with the new active panel keys when the panel changes.
  */
-declare const Accordion: ({ items, collapsible, singleCollapse, defaultActiveKey, activeKey, onChangeActiveKey, size, className, }: AccordionProps) => React.JSX.Element;
+declare const Accordion: ({ items, collapsible, singleCollapse, defaultActiveKey, activeKey, onChangeActiveKey, size, className, }: AccordionProps) => import("react/jsx-runtime").JSX.Element;
 export default Accordion;
 //# sourceMappingURL=Accordion.d.ts.map

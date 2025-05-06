@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -15,7 +15,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onConfirm] - The callback function to be executed when the confirm button is clicked.
  *
  */
-const InfoModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-info-main dark:text-info-main-dark" })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
+const InfoModal = ({ icon = (_jsx(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-info-main dark:text-info-main-dark" })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
     document.body.appendChild(container);
@@ -23,10 +23,9 @@ const InfoModal = ({ icon = (React.createElement(Icon, { name: "alert-circle", s
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
+    root.render(_jsx(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, confirmButtonColor: "info", customAction: customAction }, content));
+        }, confirmText: confirmText, confirmButtonColor: "info", customAction: customAction, children: content }));
 };
 export default InfoModal;
-//# sourceMappingURL=InfoModal.js.map

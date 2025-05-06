@@ -101,4 +101,3 @@ export const COLORS = {
     },
 };
 export default COLORS;
-//# sourceMappingURL=color.js.map

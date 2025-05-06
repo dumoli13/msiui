@@ -1,5 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 
 export interface PasswordFieldRef {
@@ -12,7 +14,7 @@ export interface PasswordFieldRef {
 export interface PasswordFieldProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'size'
+    'onChange' | 'size' | 'required'
   > {
   value?: string;
   defaultValue?: string;
@@ -30,34 +32,33 @@ export interface PasswordFieldProps
     | React.RefObject<PasswordFieldRef | null>
     | React.RefCallback<PasswordFieldRef | null>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   loading?: boolean;
   width?: number;
 }
 
 /**
- * A customizable password input field that allows users to enter a password with the option to show/hide it.
- * It supports various features including label positioning, password visibility toggling, loading state, and validation feedback.
  *
  * @property {string} [value] - The current value of the password field, passed from the parent component.
  * @property {string} [defaultValue] - The initial value of the password field when the component is uncontrolled.
+ * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<PasswordFieldRef> | React.RefCallback<PasswordFieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should hide when the user starts typing.
- * @property {(value: string) => void} [onChange] - Callback function when the password value changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {string} [placeholder] - Placeholder text displayed when no value is entered.
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<PasswordFieldRef> | React.RefCallback<PasswordFieldRef>} [inputRef] - A ref that provides access to the input element.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
  *
  */
 
@@ -95,7 +96,7 @@ const PasswordField = ({
   const [showPassword, setShowPassword] = React.useState(false);
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading ?? disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
@@ -189,70 +190,22 @@ const PasswordField = ({
           aria-label={label}
           type={showPassword ? type : 'password'}
         />
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          endIcon={endIcon}
         >
-          <div
-            className="p-1.5 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark rounded-full text-neutral-50"
-            role="button"
+          <Icon
+            name={showPassword ? 'eye' : 'eye-slash'}
+            strokeWidth={2}
             onClick={() => setShowPassword(!showPassword)}
-            aria-label="Toggle Password Visibility"
-          >
-            <Icon name={showPassword ? 'eye' : 'eye-slash'} size={16} />
-          </div>
-          {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-          {!!endIcon && (
-            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
-              {endIcon}
-            </div>
-          )}
-        </div>
+            className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
+          />
+        </InputEndIconWrapper>
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1 ', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
     </div>
   );
 };

@@ -329,6 +329,7 @@ export interface IconProps {
   strokeWidth?: number;
   className?: string;
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
+  disabled?: boolean;
   animation?: 'spin' | 'pulse' | 'bounce' | 'ping';
 }
 
@@ -340,6 +341,7 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
     strokeWidth = 1,
     className,
     onClick,
+    disabled = false,
     animation,
   } = props;
 
@@ -373,10 +375,10 @@ const Icon = React.forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
     <span
       ref={ref}
       aria-label={name}
-      className={cx('aspect-square', className, {
-        'cursor-pointer': !!onClick,
+      className={cx('leading-none aspect-square', className, {
+        'cursor-pointer': !!onClick && !disabled,
       })}
-      {...(onClick && { onClick, role: 'button', tabIndex: 0 })}
+      {...(onClick && !disabled && { onClick, role: 'button', tabIndex: 0 })}
     >
       <svg
         viewBox="0 0 24 24" // Maintain aspect ratio

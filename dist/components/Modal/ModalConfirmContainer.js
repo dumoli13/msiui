@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import Button from '../Inputs/Button';
@@ -15,7 +16,7 @@ import Button from '../Inputs/Button';
  * @property {ReactNode} children - Content to be displayed inside the modal.
  * @property {ReactNode} [icon] - Optional icon to be displayed next to the title.
  * @property {string} [className] - Optional additional CSS classes for custom styling.
- * @property {number} [width=804] - Optional custom width for the input field.
+ * @property {number} [width=804] - Optional custom width for the input field (in px).
  * @property {boolean} [closeOnOverlayClick=false] - Determines whether the modal should close when clicking on the overlay (background).
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").
@@ -56,17 +57,6 @@ const ModalConfirmContainer = ({ open, title, children, icon, className, width =
     }, [open]);
     if (!open)
         return null;
-    return (React.createElement("div", { role: "none", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown },
-        closeOnOverlayClick ? (React.createElement("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })) : (React.createElement("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })),
-        React.createElement("div", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width }, tabIndex: -1, onSubmit: onConfirm },
-            title && (React.createElement("div", { className: "pt-6 pb-2 px-6 flex items-center gap-4" },
-                icon,
-                React.createElement("div", { className: "text-20px font-semibold text-neutral-100 dark:text-neutral-100-dark w-full break-words" }, title))),
-            React.createElement("div", { className: cx('pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto', { 'ml-10': !!icon }) }, children),
-            React.createElement("div", { className: "px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md" },
-                onClose && (React.createElement(Button, { variant: "outlined", onClick: onClose, color: cancelButtonColor, size: "large" }, cancelText)),
-                onConfirm && (React.createElement(Button, { type: "button", variant: "contained", onClick: onConfirm, color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled, size: "large" }, confirmText)), customAction === null || customAction === void 0 ? void 0 :
-                customAction.map((action) => action)))));
+    return (_jsxs("div", { role: "none", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, children: [closeOnOverlayClick ? (_jsx("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })) : (_jsx("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-neutral-100/50" })), _jsxs("div", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width }, tabIndex: -1, onSubmit: onConfirm, children: [title && (_jsxs("div", { className: "pt-6 pb-2 px-6 flex items-center gap-4", children: [icon, _jsx("div", { className: "text-20px font-semibold text-neutral-100 dark:text-neutral-100-dark w-full break-words", children: title })] })), _jsx("div", { className: cx('pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto', { 'ml-10': !!icon }), children: children }), _jsxs("div", { className: "px-6 py-3 bg-neutral-20 dark:bg-neutral-30-dark flex justify-end items-center gap-3 rounded-b-md", children: [onClose && (_jsx(Button, { variant: "outlined", onClick: onClose, color: cancelButtonColor, size: "large", children: cancelText })), onConfirm && (_jsx(Button, { type: "button", variant: "contained", onClick: onConfirm, color: confirmButtonColor, loading: confirmLoading, disabled: confirmDisabled, size: "large", children: confirmText })), customAction === null || customAction === void 0 ? void 0 : customAction.map((action) => action)] })] })] }));
 };
 export default ModalConfirmContainer;
-//# sourceMappingURL=ModalConfirmContainer.js.map

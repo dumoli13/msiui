@@ -1,3 +1,4 @@
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Modal';
@@ -28,9 +29,7 @@ const BreadcrumbLink = ({ item, isLast = false, isFormEdited, }) => {
             navigate(href);
         }
     };
-    return isLast ? (React.createElement("div", { className: "font-bold text-neutral-100 dark:text-neutral-100-dark" }, item.label)) : (React.createElement(React.Fragment, null,
-        item.href ? (React.createElement("div", { role: "link", tabIndex: 0, onClick: () => handleRoute(item.href), className: "cursor-pointer" }, item.label)) : (React.createElement("div", null, item.label)),
-        React.createElement("div", null, "/")));
+    return isLast ? (_jsx("div", { className: "font-bold text-neutral-100 dark:text-neutral-100-dark", children: item.label })) : (_jsxs(_Fragment, { children: [item.href ? (_jsx("div", { role: "link", tabIndex: 0, onClick: () => handleRoute(item.href), className: "cursor-pointer", children: item.label })) : (_jsx("div", { children: item.label })), _jsx("div", { children: "/" })] }));
 };
 /**
  *
@@ -50,21 +49,18 @@ const Breadcrumb = ({ items, maxDisplay = 4, isFormEdited = false, }) => {
     const shouldTruncate = items.length > maxDisplay;
     const renderItems = () => {
         if (!shouldTruncate) {
-            return parsedItem.map((item, index) => (React.createElement(BreadcrumbLink, { item: item, key: item.key, isLast: index === parsedItem.length - 1, isFormEdited: isFormEdited })));
+            return parsedItem.map((item, index) => (_jsx(BreadcrumbLink, { item: item, isLast: index === parsedItem.length - 1, isFormEdited: isFormEdited }, item.key)));
         }
         const leftCount = Math.floor(maxDisplay / 2);
         const rightCount = maxDisplay % 2 === 0 ? leftCount : leftCount + 1;
         const firstItems = parsedItem.slice(0, leftCount);
         const lastItems = parsedItem.slice(parsedItem.length - rightCount);
         return [
-            ...firstItems.map((item) => (React.createElement(BreadcrumbLink, { item: item, key: item.key, isLast: false, isFormEdited: isFormEdited }))),
-            React.createElement(React.Fragment, { key: "ellipsis" },
-                React.createElement("span", { className: "mx-2" }, "..."),
-                React.createElement("span", null, "/")),
-            ...lastItems.map((item, index) => (React.createElement(BreadcrumbLink, { item: item, key: item.key, isLast: index === lastItems.length - 1, isFormEdited: isFormEdited }))),
+            ...firstItems.map((item) => (_jsx(BreadcrumbLink, { item: item, isLast: false, isFormEdited: isFormEdited }, item.key))),
+            _jsxs(React.Fragment, { children: [_jsx("span", { className: "mx-2", children: "..." }), _jsx("span", { children: "/" })] }, "ellipsis"),
+            ...lastItems.map((item, index) => (_jsx(BreadcrumbLink, { item: item, isLast: index === lastItems.length - 1, isFormEdited: isFormEdited }, item.key))),
         ];
     };
-    return (React.createElement("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px" }, renderItems()));
+    return (_jsx("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px", children: renderItems() }));
 };
 export default Breadcrumb;
-//# sourceMappingURL=Breadcrumb.js.map

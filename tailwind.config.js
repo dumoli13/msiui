@@ -288,5 +288,36 @@ export const theme = {
     'accordion-up': 'accordion-up 0.2s ease-out',
   },
 };
-export const plugins = [require('tailwindcss-animate')];
+export const plugins = [
+  require('tailwindcss-animate'),
+  function ({ addComponents }) {
+    addComponents({
+      '.apple-scrollbar': {
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          borderRadius: '4px',
+        },
+        '&:hover::-webkit-scrollbar-thumb': {
+          background: 'rgba(10, 10, 10, 0.5)',
+        },
+      },
+    });
+
+    // Add Firefox-specific styles
+    addComponents({
+      '@supports (-moz-appearance:none)': {
+        '.apple-scrollbar': {
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255, 255, 255, 0.5) transparent',
+        },
+      },
+    });
+  },
+];
 export const darkMode = 'class';

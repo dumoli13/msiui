@@ -29,7 +29,7 @@ export type { TextAreaRef, TextAreaProps } from './TextArea';
 export { default as TextField } from './TextField';
 export type { TextfieldRef, TextFieldProps } from './TextField';
 export { default as TimerField } from './TimerField';
-export type { TimerTextfieldRef, TimerFieldProps } from './TimerField';
+export type { TimerFieldRef, TimerFieldProps } from './TimerField';
 export { default as Form } from './Form';
 export type { FormRef, FormRule, FormRules, FormProps } from './Form';
 //# sourceMappingURL=index.d.ts.map

@@ -1,9 +1,9 @@
 import React from 'react';
-export interface FormRef {
+export interface FormRef<T> {
     submit: () => void;
     reset: () => void;
     validate: () => boolean;
-    getValues: () => Record<string, any>;
+    getValues: () => T;
 }
 export type FormRule = {
     required?: boolean;
@@ -19,16 +19,15 @@ export type FormRule = {
     message?: string;
 } | 'required' | 'email' | 'url';
 export type FormRules = Record<string, FormRule[]>;
-export interface FormProps {
-    onSubmit: (values: Record<string, any>) => void;
+export interface FormProps<T> {
+    onSubmit: (values: T) => void;
     onReset?: () => void;
     className?: string;
     children: React.ReactNode;
     rules?: FormRules;
     disabled?: boolean;
-    initialValues?: Record<string, any>;
-    formRef?: React.Ref<FormRef>;
+    formRef?: React.Ref<FormRef<T>>;
 }
-declare const Form: ({ onSubmit, onReset, className, children, rules, disabled, initialValues, formRef, }: FormProps) => React.JSX.Element;
+declare const Form: <T>({ onSubmit, onReset, className, children, rules, disabled, formRef, }: FormProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default Form;
 //# sourceMappingURL=Form.d.ts.map

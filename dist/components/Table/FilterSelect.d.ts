@@ -1,4 +1,3 @@
-import React from 'react';
 import { SelectValue } from '../Inputs/Select';
 interface FilterSearchProps<T, D> {
     type: 'select' | 'autocomplete';
@@ -24,6 +23,6 @@ interface FilterSearchProps<T, D> {
  */
 declare const FilterSelect: <T extends {
     [key: string]: any;
-}, D>({ type, value, option, label, onChange, }: FilterSearchProps<T, D>) => React.JSX.Element;
+}, D>({ type, value, option, label, onChange, }: FilterSearchProps<T, D>) => import("react/jsx-runtime").JSX.Element;
 export default FilterSelect;
 //# sourceMappingURL=FilterSelect.d.ts.map

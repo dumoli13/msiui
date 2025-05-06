@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import Icon from '../Icon';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 
 export interface TextfieldRef {
   element: HTMLInputElement | null;
@@ -12,7 +13,7 @@ export interface TextfieldRef {
 export interface TextFieldProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'size'
+    'onChange' | 'size' | 'required'
   > {
   value?: string | number;
   defaultValue?: string | number;
@@ -38,27 +39,26 @@ export interface TextFieldProps
 
 /**
  *
- * A customizable input field component that supports various features such as labels, icons, error/success states,
- * placeholder text, and the ability to clear the input value. It can be used for both controlled and uncontrolled form inputs.
- *
  * @property {string | number} [value] - The value of the input. If provided, the input will be controlled.
  * @property {string | number} [defaultValue] - The initial value of the input for uncontrolled usage.
+ * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<TextfieldRef> | React.RefCallback<TextfieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the input is focused.
- * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {string} [placeholder] - Placeholder text displayed inside the input when it is empty.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] -
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<TextfieldRef> | React.RefCallback<TextfieldRef>} [inputRef] - A ref to access the input element directly.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
  * @property {boolean} [clearable=false] - Whether the input field should have a clear button to reset its value.
- * @property {boolean | string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {number} [width] - Optional custom width for the input field.
  *
  */
 
@@ -97,7 +97,7 @@ const TextField = ({
 
   const helperMessage =
     errorProp && typeof errorProp === 'string' ? errorProp : helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
@@ -199,72 +199,17 @@ const TextField = ({
           aria-label={label}
           ref={elementRef}
         />
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
-        >
-          {clearable && focused && !!value && (
-            <div
-              title="Clear"
-              role="button"
-              onMouseDown={handleClearValue}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark p-0.5 text-neutral-70 dark:text-neutral-70-dark transition-color"
-            >
-              <Icon name="x-mark" strokeWidth={4} />
-            </div>
-          )}
-          {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-          {!!endIcon && (
-            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
-              {endIcon}
-            </div>
-          )}
-        </div>
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          clearable={clearable && focused && !!value}
+          onClear={handleClearValue}
+          endIcon={endIcon}
+        />
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
     </div>
   );
 };

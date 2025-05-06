@@ -1,4 +1,3 @@
-import React from 'react';
 export interface StepProps {
     active: number;
     items: Array<{
@@ -25,6 +24,6 @@ export interface StepProps {
  * @property {boolean} [disabled=false] - A flag that disables the ability to change steps.*
  *
  */
-declare function Steps({ active, items, onChange, disabled, }: Readonly<StepProps>): React.JSX.Element;
+declare function Steps({ active, items, onChange, disabled, }: Readonly<StepProps>): import("react/jsx-runtime").JSX.Element;
 export default Steps;
 //# sourceMappingURL=Steps.d.ts.map

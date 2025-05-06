@@ -23,4 +23,3 @@ export function isValidDate(value) {
     const date = new Date(value);
     return !isNaN(date.getTime());
 }
-//# sourceMappingURL=inputDate.js.map

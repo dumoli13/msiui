@@ -1,16 +1,16 @@
 import { __rest } from "tslib";
-import React from 'react';
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import cx from 'classnames';
 import Tooltip from '../Displays/Tooltip';
 import Icon from '../Icon';
 /**
  * @property {'contained' | 'secondary' | 'outlined' | 'text'} props.variant - The variant of the button.
  * @property {'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'} props.color - The color theme for the button.
- * @property {boolean} [loading=false] - Whether the button should show a loading state.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
  * @property {IconButtonProps} props - The properties for the IconButton component.
  * @property {string} [className] - Additional class names to apply to the button.
- * @property {boolean} [disabled=false] - Whether the button is disabled.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {() => void} [onClick] - Callback function to handle click events.
  * @property {string} [ariaLabel] - Aria-label for accessibility.
  * @property {'small' | 'default' | 'large'} [size='default'] - The size of the button.
@@ -20,11 +20,10 @@ import Icon from '../Icon';
  */
 const IconButton = (_a) => {
     var { variant = 'contained', color = 'primary', className, disabled = false, loading = false, icon, size = 'default', onClick, title, titleVerticalAlign = 'bottom', titleHorizontalAlign = 'center' } = _a, props = __rest(_a, ["variant", "color", "className", "disabled", "loading", "icon", "size", "onClick", "title", "titleVerticalAlign", "titleHorizontalAlign"]);
-    return (React.createElement(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled },
-        React.createElement("button", Object.assign({}, props, { disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0', {
-                'p-2 text-28px': size === 'large',
-                'p-1.5 text-20px': size === 'default',
-                'p-1.5 text-16px': size === 'small',
+    return (_jsx(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled, children: _jsxs("button", Object.assign({}, props, { disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square', {
+                'w-[44px] h-[44px] text-28px': size === 'large',
+                'w-[32px] h-[32px] text-20px': size === 'default',
+                'w-[28px] h-[28px] text-16px': size === 'small',
             }, 
             // Variants
             {
@@ -55,12 +54,11 @@ const IconButton = (_a) => {
                 'text-danger-main dark:text-danger-main-dark hover:text-danger-hover dark:hover:text-danger-hover-dark active:text-danger-pressed dark:active:text-danger-pressed-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': color === 'danger' && variant === 'text',
                 'text-warning-main dark:text-warning-main-dark hover:text-warning-hover dark:hover:text-warning-hover-dark active:text-warning-pressed dark:active:text-warning-pressed-dark focus:ring-warning-focus dark:focus:ring-warning-focus-dark': color === 'warning' && variant === 'text',
                 'text-info-main dark:text-info-main-dark hover:text-info-hover dark:hover:text-info-hover-dark active:text-info-pressed dark:active:text-info-pressed-dark focus:ring-info-focus dark:focus:ring-info-focus-dark': color === 'info' && variant === 'text',
-            }, className) }),
-            React.createElement("span", { className: cx('flex justify-center items-center gap-1.5', {
-                    invisible: loading,
-                }) }, icon),
-            loading && (React.createElement("span", { className: "absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center" },
-                React.createElement(Icon, { name: "loader", size: 16, animation: "spin", strokeWidth: 4 }))))));
+            }, className), children: [_jsx("span", { className: cx('flex justify-center items-center gap-1.5', {
+                        invisible: loading,
+                    }), children: icon }), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
+                        'text-16px': size !== 'large',
+                        'text-20px': size === 'large',
+                    }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] })) }));
 };
 export default IconButton;
-//# sourceMappingURL=IconButton.js.map

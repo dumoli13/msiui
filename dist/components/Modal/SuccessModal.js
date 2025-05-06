@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -18,7 +18,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-const SuccessModal = ({ icon = (React.createElement(Icon, { name: "check", size: 24, strokeWidth: 3, className: "text-success-main dark:text-success-main-dark" })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
+const SuccessModal = ({ icon = (_jsx(Icon, { name: "check", size: 24, strokeWidth: 3, className: "text-success-main dark:text-success-main-dark" })), title, content, confirmText = 'OK', onConfirm, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -26,10 +26,9 @@ const SuccessModal = ({ icon = (React.createElement(Icon, { name: "check", size:
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
+    root.render(_jsx(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, confirmButtonColor: "success", customAction: customAction }, content));
+        }, confirmText: confirmText, confirmButtonColor: "success", customAction: customAction, children: content }));
 };
 export default SuccessModal;
-//# sourceMappingURL=SuccessModal.js.map

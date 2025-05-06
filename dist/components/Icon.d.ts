@@ -7,6 +7,7 @@ export interface IconProps {
     strokeWidth?: number;
     className?: string;
     onClick?: React.MouseEventHandler<HTMLSpanElement>;
+    disabled?: boolean;
     animation?: 'spin' | 'pulse' | 'bounce' | 'ping';
 }
 declare const Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<HTMLSpanElement>>;

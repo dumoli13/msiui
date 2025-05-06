@@ -1,3 +1,4 @@
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Icon from '../Icon';
@@ -40,34 +41,31 @@ const NotificationStack = () => {
             addNotificationToStack = null;
         };
     }, []);
-    return ReactDOM.createPortal(React.createElement("div", { className: "fixed bottom-0 right-0 p-4 z-[1500] space-y-4" }, notifications.map((notification) => {
-        const handleChangeNotifications = () => {
-            const newNotif = notifications.filter((n) => n.id !== notification.id);
-            setNotifications(newNotif);
-        };
-        let icon;
-        switch (notification.color) {
-            case 'success':
-                icon = (React.createElement(Icon, { name: "check-circle", size: 24, strokeWidth: 3, className: "text-success-main dark:text-success-main-dark" }));
-                break;
-            case 'danger':
-                icon = (React.createElement(Icon, { name: "x-circle", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" }));
-                break;
-            case 'warning':
-                icon = (React.createElement(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-warning-main dark:text-warning-main-dark" }));
-                break;
-            case 'info':
-                icon = (React.createElement(Icon, { name: "information-circle", size: 24, strokeWidth: 3, className: "text-info-main dark:text-info-main-dark" }));
-                break;
-            default:
-                icon = notification.icon;
-        }
-        return (React.createElement(NotificationContainer, { key: notification.id, title: notification.title, description: notification.description, icon: icon, open: true, color: notification.color, onClose: handleChangeNotifications }));
-    })), document.body);
+    return ReactDOM.createPortal(_jsx("div", { className: "fixed bottom-0 right-0 p-4 z-[1500] space-y-4", children: notifications.map((notification) => {
+            const handleChangeNotifications = () => {
+                const newNotif = notifications.filter((n) => n.id !== notification.id);
+                setNotifications(newNotif);
+            };
+            let icon;
+            switch (notification.color) {
+                case 'success':
+                    icon = (_jsx(Icon, { name: "check-circle", size: 24, strokeWidth: 3, className: "text-success-main dark:text-success-main-dark" }));
+                    break;
+                case 'danger':
+                    icon = (_jsx(Icon, { name: "x-circle", size: 24, strokeWidth: 3, className: "text-danger-main dark:text-danger-main-dark" }));
+                    break;
+                case 'warning':
+                    icon = (_jsx(Icon, { name: "alert-circle", size: 24, strokeWidth: 3, className: "text-warning-main dark:text-warning-main-dark" }));
+                    break;
+                case 'info':
+                    icon = (_jsx(Icon, { name: "information-circle", size: 24, strokeWidth: 3, className: "text-info-main dark:text-info-main-dark" }));
+                    break;
+                default:
+                    icon = notification.icon;
+            }
+            return (_jsx(NotificationContainer, { title: notification.title, description: notification.description, icon: icon, open: true, color: notification.color, onClose: handleChangeNotifications }, notification.id));
+        }) }), document.body);
 };
 export const NotificationProvider = ({ children, }) => {
-    return (React.createElement(React.Fragment, null,
-        children,
-        React.createElement(NotificationStack, null)));
+    return (_jsxs(_Fragment, { children: [children, _jsx(NotificationStack, {})] }));
 };
-//# sourceMappingURL=index.js.map

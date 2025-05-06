@@ -44,4 +44,3 @@ export function getYearRange(year) {
     const upperBound = lowerBound + step;
     return Array.from({ length: upperBound - lowerBound }, (_, i) => lowerBound + i);
 }
-//# sourceMappingURL=inputValidation.js.map

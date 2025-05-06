@@ -6,7 +6,7 @@ export interface TagProps {
   className?: string;
   children: string;
   color: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-  size?: 'default' | 'large';
+  size?: 'small' | 'default' | 'large';
   onRemove?: () => void;
 }
 
@@ -15,19 +15,20 @@ export interface TagProps {
  * @property {string} [props.className] - Additional class names to apply to the tag.
  * @property {string} props.children - The content to be displayed inside the tag.
  * @property {'primary' | 'success' | 'danger' | 'warning' | 'info'} props.color - The color theme for the tag
- * .
+ *
  */
+
 function Tag({
   className,
   children,
-  color,
+  color = 'primary',
   size = 'default',
   onRemove,
 }: Readonly<TagProps>) {
   return (
     <div
       className={cx(
-        'ring-[1.5px] border-box truncate flex items-center justify-center w-fit py-1.5 px-3 rounded-lg font-medium',
+        'ring-[1.5px] border-box truncate flex items-center justify-center w-fit py-0.5 px-2 rounded-lg font-medium',
         {
           'ring-primary-border dark:ring-primary-border-dark text-primary-main dark:text-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark':
             color === 'primary',
@@ -41,7 +42,8 @@ function Tag({
             color === 'info',
           'ring-neutral-60 dark:ring-neutral-60-dark text-neutral-80 dark:text-neutral-80-dark bg-neutral-15 dark:bg-neutral-15-dark':
             color === 'neutral',
-          'text-12px': size === 'default',
+          'text-12px': size === 'small',
+          'text-14px': size === 'default',
           'text-16px': size === 'large',
         },
         className,

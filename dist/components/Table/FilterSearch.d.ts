@@ -1,4 +1,3 @@
-import React from 'react';
 interface FilterSearchProps {
     value?: string;
     label?: string;
@@ -16,6 +15,6 @@ interface FilterSearchProps {
  * @property {(value: string) => void} onChange - Callback function triggered whenever the value of the search input changes.
  *
  */
-declare const FilterSearch: ({ value, label, onChange }: FilterSearchProps) => React.JSX.Element;
+declare const FilterSearch: ({ value, label, onChange }: FilterSearchProps) => import("react/jsx-runtime").JSX.Element;
 export default FilterSearch;
 //# sourceMappingURL=FilterSearch.d.ts.map

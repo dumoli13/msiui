@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import PaginationButton from './PaginationButton';
@@ -40,44 +41,38 @@ const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, 
     const renderPageNumbers = () => {
         const pages = [];
         const maxVisiblePages = 5;
-        pages.push(React.createElement("button", { type: "button", key: 1, className: pageButtonStyle, onClick: () => handlePageChange(1), disabled: 1 === currentPage }, "1"));
+        pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(1), disabled: 1 === currentPage, children: "1" }, 1));
         if (totalPages <= maxVisiblePages) {
             for (let item = 2; item <= totalPages; item++) {
-                pages.push(React.createElement("button", { type: "button", key: item, className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage }, item));
+                pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage, children: item }, item));
             }
         }
         else {
             if (currentPage <= 3) {
                 for (let item = 2; item <= 4; item++) {
-                    pages.push(React.createElement("button", { type: "button", key: item, className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage }, item));
+                    pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage, children: item }, item));
                 }
                 if (totalPages > 5) {
-                    pages.push(React.createElement("span", { key: "end-ellipsis", className: "px-2" }, "..."));
+                    pages.push(_jsx("span", { className: "px-2", children: "..." }, "end-ellipsis"));
                 }
             }
             else if (currentPage > 3 && currentPage < totalPages - 2) {
-                pages.push(React.createElement("span", { key: "start-ellipsis", className: "px-2" }, "..."));
+                pages.push(_jsx("span", { className: "px-2", children: "..." }, "start-ellipsis"));
                 for (let item = currentPage - 1; item <= currentPage + 1; item++) {
-                    pages.push(React.createElement("button", { type: "button", key: item, className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage }, item));
+                    pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage, children: item }, item));
                 }
-                pages.push(React.createElement("span", { key: "end-ellipsis", className: "px-2" }, "..."));
+                pages.push(_jsx("span", { className: "px-2", children: "..." }, "end-ellipsis"));
             }
             else {
-                pages.push(React.createElement("span", { key: "start-ellipsis", className: "px-2" }, "..."));
+                pages.push(_jsx("span", { className: "px-2", children: "..." }, "start-ellipsis"));
                 for (let item = totalPages - 3; item <= totalPages - 1; item++) {
-                    pages.push(React.createElement("button", { type: "button", key: item, className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage }, item));
+                    pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(item), disabled: item === currentPage, children: item }, item));
                 }
             }
-            pages.push(React.createElement("button", { type: "button", key: totalPages, className: pageButtonStyle, onClick: () => handlePageChange(totalPages), disabled: totalPages === currentPage }, totalPages));
+            pages.push(_jsx("button", { type: "button", className: pageButtonStyle, onClick: () => handlePageChange(totalPages), disabled: totalPages === currentPage, children: totalPages }, totalPages));
         }
         return pages;
     };
-    return (React.createElement("div", { className: `flex gap-10 items-center justify-between ${totalPages > 1 ? 'flex-row' : 'flex-row-reverse'}` },
-        totalPages > 1 && (React.createElement("div", { className: "flex item-center flex-wrap gap-2" },
-            React.createElement(PaginationButton.Prev, { onClick: handlePrevPage, disabled: currentPage === 1 }),
-            renderPageNumbers(),
-            React.createElement(PaginationButton.Next, { onClick: handleNextPage, disabled: currentPage === totalPages }))),
-        React.createElement("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark" }, itemPerPage.map((option) => (React.createElement("option", { key: option, value: option, className: "p-2" }, `${option}/page`))))));
+    return (_jsxs("div", { className: `flex gap-10 items-center justify-between ${totalPages > 1 ? 'flex-row' : 'flex-row-reverse'}`, children: [totalPages > 1 && (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PaginationButton.Prev, { onClick: handlePrevPage, disabled: currentPage === 1 }), renderPageNumbers(), _jsx(PaginationButton.Next, { onClick: handleNextPage, disabled: currentPage === totalPages })] })), _jsx("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: itemPerPage.map((option) => (_jsx("option", { value: option, className: "p-2", children: `${option}/page` }, option))) })] }));
 };
 export default Pagination;
-//# sourceMappingURL=Pagination.js.map

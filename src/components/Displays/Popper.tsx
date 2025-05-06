@@ -24,7 +24,7 @@ export interface PopperProps {
  *
  * @interface PopperProps
  * @property {string} [className] - Additional class names to apply to the popper container.
- * @property {boolean} [disabled=false] - A flag that disables the toggle functionality.
+ * @property {boolean} [disabled=false] - A flag that disables the toggle functionality if set to true.
  * @property {ReactNode} content - The content to be displayed inside the popper when open.
  * @property {ReactNode} children - The content or elements to which the component's behavior or functionality is applied.
  * @property {boolean} [open] - A controlled flag that determines whether the popper is visible or not.

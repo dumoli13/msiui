@@ -22,11 +22,11 @@ export interface IconButtonProps
 /**
  * @property {'contained' | 'secondary' | 'outlined' | 'text'} props.variant - The variant of the button.
  * @property {'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'} props.color - The color theme for the button.
- * @property {boolean} [loading=false] - Whether the button should show a loading state.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
  * @property {ReactNode} [icon] - Icon to be displayed inside the button.
  * @property {IconButtonProps} props - The properties for the IconButton component.
  * @property {string} [className] - Additional class names to apply to the button.
- * @property {boolean} [disabled=false] - Whether the button is disabled.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {() => void} [onClick] - Callback function to handle click events.
  * @property {string} [ariaLabel] - Aria-label for accessibility.
  * @property {'small' | 'default' | 'large'} [size='default'] - The size of the button.
@@ -62,11 +62,11 @@ const IconButton = ({
         onClick={onClick}
         aria-label={title}
         className={cx(
-          'relative rounded-md font-medium disabled:cursor-not-allowed shrink-0',
+          'relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square',
           {
-            'p-2 text-28px': size === 'large',
-            'p-1.5 text-20px': size === 'default',
-            'p-1.5 text-16px': size === 'small',
+            'w-[44px] h-[44px] text-28px': size === 'large',
+            'w-[32px] h-[32px] text-20px': size === 'default',
+            'w-[28px] h-[28px] text-16px': size === 'small',
           },
           // Variants
           {
@@ -133,8 +133,16 @@ const IconButton = ({
           {icon}
         </span>
         {loading && (
-          <span className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center">
-            <Icon name="loader" size={16} animation="spin" strokeWidth={4} />
+          <span
+            className={cx(
+              'absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center',
+              {
+                'text-16px': size !== 'large',
+                'text-20px': size === 'large',
+              },
+            )}
+          >
+            <Icon name="loader" animation="spin" strokeWidth={2} />
           </span>
         )}
       </button>

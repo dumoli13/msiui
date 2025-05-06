@@ -118,7 +118,7 @@ const NotificationContainer = ({
           name="x-mark"
           size={16}
           strokeWidth={2}
-          className="shrink-0 text-neutral-60 dark:text-neutral-60-dark"
+          className="shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
           onClick={handleClose}
         />
         <div className="absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark">

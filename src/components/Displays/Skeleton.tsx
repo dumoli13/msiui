@@ -3,9 +3,17 @@ import React from 'react';
 import cx from 'classnames';
 
 export interface SkeletonProps {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
   type?: 'circle' | 'rounded' | 'rect';
+}
+
+export interface SkeletonInputProps {
+  size?: 'default' | 'large';
+}
+
+export interface SkeletonTableProps {
+  column: number;
 }
 
 /**
@@ -17,7 +25,7 @@ export interface SkeletonProps {
 const Skeleton = ({ width, height, type = 'circle' }: SkeletonProps) => {
   return (
     <div
-      className={cx('bg-neutral-30 dark:bg-neutral-30-dark animate-pulse', {
+      className={cx('bg-neutral-40  dark:bg-neutral-40-dark animate-pulse', {
         'rounded-full': type === 'circle',
         'rounded-md': type === 'rounded',
         'shrink-0': !!height || !!width,
@@ -29,17 +37,24 @@ const Skeleton = ({ width, height, type = 'circle' }: SkeletonProps) => {
     />
   );
 };
+const SkeletonInput: React.FC<SkeletonInputProps> = ({ size = 'default' }) => (
+  <div>
+    <div className="w-1/5 h-5 mb-1 bg-neutral-40 dark:bg-neutral-40-dark rounded-full animate-pulse" />
+    <div
+      className={cx(
+        'w-full bg-neutral-40 dark:bg-neutral-40-dark rounded-full animate-pulse',
+        {
+          'h-[42px]': size === 'default',
+          'h-[54px]': size === 'large',
+        },
+      )}
+    />
+  </div>
+);
+SkeletonInput.displayName = 'SkeletonInput';
+Skeleton.Input = SkeletonInput;
 
-Skeleton.input = () => {
-  return (
-    <div>
-      <div className="w-1/5 h-7 mb-1 bg-neutral-30 dark:bg-neutral-30-dark rounded-full animate-pulse" />
-      <div className="w-full h-[57px] bg-neutral-30 dark:bg-neutral-30-dark rounded-full animate-pulse" />
-    </div>
-  );
-};
-
-Skeleton.table = ({ column }: { column: number }) => {
+const SkeletonTable = ({ column }: SkeletonTableProps) => {
   return (
     <div className="overflow-y-auto border border-neutral-30 dark:border-neutral-30-dark rounded-md">
       <table className="w-full">
@@ -88,5 +103,7 @@ Skeleton.table = ({ column }: { column: number }) => {
     </div>
   );
 };
+SkeletonTable.displayName = 'SkeletonTable';
+Skeleton.Table = SkeletonTable;
 
 export default Skeleton;

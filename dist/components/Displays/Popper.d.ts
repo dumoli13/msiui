@@ -20,7 +20,7 @@ export interface PopperProps {
  *
  * @interface PopperProps
  * @property {string} [className] - Additional class names to apply to the popper container.
- * @property {boolean} [disabled=false] - A flag that disables the toggle functionality.
+ * @property {boolean} [disabled=false] - A flag that disables the toggle functionality if set to true.
  * @property {ReactNode} content - The content to be displayed inside the popper when open.
  * @property {ReactNode} children - The content or elements to which the component's behavior or functionality is applied.
  * @property {boolean} [open] - A controlled flag that determines whether the popper is visible or not.
@@ -31,6 +31,6 @@ export interface PopperProps {
  * @property {('left' | 'center' | 'right')} [transformOriginHorizontal='left'] - The horizontal transform origin for popper animations.
  *
  */
-declare const Popper: ({ className, disabled, content, children, open: openProp, onOpen, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopperProps) => React.JSX.Element;
+declare const Popper: ({ className, disabled, content, children, open: openProp, onOpen, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopperProps) => import("react/jsx-runtime").JSX.Element;
 export default Popper;
 //# sourceMappingURL=Popper.d.ts.map

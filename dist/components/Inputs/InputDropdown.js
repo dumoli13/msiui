@@ -1,3 +1,5 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+// TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
@@ -10,7 +12,7 @@ import { createPortal } from 'react-dom';
  * @property {ReactNode} children - The content to display inside the dropdown (usually options or items).
  * @property {RefObject<HTMLDivElement>} elementRef - A reference to the element to which the dropdown is attached.
  * @property {RefObject<HTMLDivElement>} dropdownRef - A reference to the dropdown element itself.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
  *
  */
@@ -53,7 +55,7 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
         });
     }, [elementRef, dropdownRef, fullWidth]);
     React.useEffect(() => {
-        const handleOpenDropdown = () => {
+        if (open) {
             setDropdownStyles((prev) => (Object.assign(Object.assign({}, prev), { visibility: 'hidden' }))); // Hide before calculation
             setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
             const handleScrollOrResize = () => calculateDropdownPosition();
@@ -63,20 +65,14 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
                 window.removeEventListener('scroll', handleScrollOrResize);
                 window.removeEventListener('resize', handleScrollOrResize);
             };
-        };
-        const handleCloseDropdown = () => {
-            setDropdownStyles(null);
-        };
-        if (open) {
-            handleCloseDropdown();
         }
         else {
-            handleOpenDropdown();
+            setDropdownStyles(null);
         }
     }, [open, calculateDropdownPosition]);
     if (!open)
         return null;
-    return createPortal(React.createElement("div", { role: "button", tabIndex: 0, onMouseDown: (e) => e.stopPropagation(), ref: dropdownRef, style: {
+    return createPortal(_jsx("div", { role: "button", tabIndex: 0, onMouseDown: (e) => e.stopPropagation(), ref: dropdownRef, style: {
             position: 'absolute',
             top: dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top,
             left: dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left,
@@ -89,7 +85,6 @@ const InputDropdown = ({ open, children, elementRef, dropdownRef, fullWidth, max
             if (e.key === 'Enter' || e.key === ' ') {
                 e.stopPropagation();
             }
-        } }, children), document.body);
+        }, children: children }), document.body);
 };
 export default InputDropdown;
-//# sourceMappingURL=InputDropdown.js.map

@@ -10,6 +10,6 @@ export interface TooltipProps {
     title: string;
     disabled?: boolean;
 }
-declare const Tooltip: ({ children, verticalAlign, horizontalAlign, arrow, mouseEnterDelay, mouseLeaveDelay, title, disabled, }: TooltipProps) => React.JSX.Element;
+declare const Tooltip: ({ children, verticalAlign, horizontalAlign, arrow, mouseEnterDelay, mouseLeaveDelay, title, disabled, }: TooltipProps) => import("react/jsx-runtime").JSX.Element;
 export default Tooltip;
 //# sourceMappingURL=Tooltip.d.ts.map

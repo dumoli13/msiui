@@ -17,6 +17,6 @@ export interface BreadcrumbProps {
  * @property {number} [maxDisplay=4] - The maximum number of breadcrumb items to display before truncation.
  *
  */
-declare const Breadcrumb: ({ items, maxDisplay, isFormEdited, }: BreadcrumbProps) => React.JSX.Element;
+declare const Breadcrumb: ({ items, maxDisplay, isFormEdited, }: BreadcrumbProps) => import("react/jsx-runtime").JSX.Element;
 export default Breadcrumb;
 //# sourceMappingURL=Breadcrumb.d.ts.map

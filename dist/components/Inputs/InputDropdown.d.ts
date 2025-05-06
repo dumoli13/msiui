@@ -16,7 +16,7 @@ export interface InputDropdownProps {
  * @property {ReactNode} children - The content to display inside the dropdown (usually options or items).
  * @property {RefObject<HTMLDivElement>} elementRef - A reference to the element to which the dropdown is attached.
  * @property {RefObject<HTMLDivElement>} dropdownRef - A reference to the dropdown element itself.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
  *
  */

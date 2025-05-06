@@ -37,7 +37,7 @@ export interface ModalProps {
  * @property {ReactNode} children - Content to be displayed inside the modal.
  * @property {ReactNode} [icon] - Optional icon to be displayed next to the title.
  * @property {string} [className] - Optional additional CSS classes for custom styling.
- * @property {number} [width=804] - Optional custom width for the input field.
+ * @property {number} [width=804] - Optional custom width for the input field (in px).
  * @property {boolean} [closeOnOverlayClick=false] - Determines whether the modal should close when clicking on the overlay (background).
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  * @property {string} [cancelText='Cancel'] - The text to display on the cancel button (default is "Cancel").

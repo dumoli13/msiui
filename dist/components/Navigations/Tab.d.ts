@@ -13,6 +13,6 @@ export interface TabProps {
     onTabClick?: (key: string | number) => void;
     onTabClose?: (key: string | number) => void;
 }
-declare const Tab: ({ items, defaultActiveKey, activeKey: propActiveKey, onChange, onTabClick, onTabClose, }: TabProps) => React.JSX.Element;
+declare const Tab: ({ items, defaultActiveKey, activeKey: propActiveKey, onChange, onTabClick, onTabClose, }: TabProps) => import("react/jsx-runtime").JSX.Element;
 export default Tab;
 //# sourceMappingURL=Tab.d.ts.map

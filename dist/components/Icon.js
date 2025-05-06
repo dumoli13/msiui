@@ -1,8 +1,9 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import icon from '../assets/icon.svg';
 const Icon = React.forwardRef((props, ref) => {
-    const { name, color = 'currentColor', size = '1em', strokeWidth = 1, className, onClick, animation, } = props;
+    const { name, color = 'currentColor', size = '1em', strokeWidth = 1, className, onClick, disabled = false, animation, } = props;
     const animationStyle = React.useMemo(() => {
         const baseStyle = {
             display: 'inline-block',
@@ -21,13 +22,10 @@ const Icon = React.forwardRef((props, ref) => {
                 return baseStyle;
         }
     }, [animation]);
-    return (React.createElement("span", Object.assign({ ref: ref, "aria-label": name, className: cx('aspect-square', className, {
-            'cursor-pointer': !!onClick,
-        }) }, (onClick && { onClick, role: 'button', tabIndex: 0 })),
-        React.createElement("svg", { viewBox: "0 0 24 24" // Maintain aspect ratio
-            , width: size, height: size, stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle },
-            React.createElement("use", { xlinkHref: `${icon}#${name}` })),
-        React.createElement("style", null, `
+    return (_jsxs("span", Object.assign({ ref: ref, "aria-label": name, className: cx('leading-none aspect-square', className, {
+            'cursor-pointer': !!onClick && !disabled,
+        }) }, (onClick && !disabled && { onClick, role: 'button', tabIndex: 0 }), { children: [_jsx("svg", { viewBox: "0 0 24 24" // Maintain aspect ratio
+                , width: size, height: size, stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle, children: _jsx("use", { xlinkHref: `${icon}#${name}` }) }), _jsx("style", { children: `
           @keyframes spin {
             to { transform: rotate(360deg); }
           }
@@ -42,8 +40,7 @@ const Icon = React.forwardRef((props, ref) => {
           @keyframes ping {
             75%, 100% { transform: scale(2); opacity: 0; }
           }
-        `)));
+        ` })] })));
 });
 Icon.displayName = 'Icon';
 export default Icon;
-//# sourceMappingURL=Icon.js.map

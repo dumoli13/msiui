@@ -1,5 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
+import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 
 export interface CheckboxRef {
@@ -12,7 +13,7 @@ export interface CheckboxRef {
 export interface CheckboxProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'size' | 'placeholder'
+    'onChange' | 'size' | 'placeholder' | 'required'
   > {
   label?: string;
   labelPosition?: 'top' | 'bottom' | 'left' | 'right';
@@ -26,30 +27,27 @@ export interface CheckboxProps
     | React.RefObject<CheckboxRef | null>
     | React.RefCallback<CheckboxRef | null>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   loading?: boolean;
   width?: number;
 }
 
 /**
  *
- * A customizable checkbox input that allows users to select or deselect an option. It supports both controlled
- * and uncontrolled modes, provides an indeterminate state, and handles accessibility features like `aria-label`.
- *
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'bottom' | 'left' | 'right'} [labelPosition='right'] - The position of the label relative to the field ('top' or 'left').
  * @property {boolean} [checked] - The controlled value of the checkbox. If provided, the component acts as a controlled component.
  * @property {boolean} [defaultChecked=false] - The default checked state if `checked` is not provided. Used in uncontrolled mode.
+ * @property {(checked: boolean) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<CheckboxRef>} [inputRef] - A reference to access the input field and its value programmatically.
+ * @property {string} [label] - The label text displayed above or beside the input field.
+ * @property {'top' | 'bottom' | 'left' | 'right'} [labelPosition='right'] - The position of the label relative to the field ('top' or 'left').
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
+ * @property {number} [width] - Optional custom width for the input field (in px).
  * @property {boolean} [indeterminate=false] - If true, the checkbox will appear in an indeterminate state.
- * @property {function} [onChange] - Callback function invoked when the checkbox value changes. Provides the new `checked` state.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {RefObject<CheckboxRef>} [inputRef] - A reference to the checkbox element.
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {number} [width] - Optional custom width for the input field.
  * @property {string} [aria-label] - The ARIA label for accessibility purposes.
- *
  */
 
 const Checkbox = ({
@@ -77,7 +75,7 @@ const Checkbox = ({
   const value = isControlled ? valueProp : internalValue;
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
@@ -173,9 +171,12 @@ const Checkbox = ({
             {...props}
           />
           {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
+            <Icon
+              name="loader"
+              animation="spin"
+              strokeWidth={2}
+              className="text-neutral-70 dark:text-neutral-70-dark"
+            />
           )}
           {!loading && value && !indeterminate && (
             <Icon
@@ -203,18 +204,7 @@ const Checkbox = ({
           </span>
         )}
       </label>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
     </div>
   );
 };

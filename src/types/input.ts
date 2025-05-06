@@ -12,7 +12,7 @@ import {
   SwitchRef,
   TextAreaRef,
   TextfieldRef,
-  TimerTextfieldRef,
+  TimerFieldRef,
 } from '../components';
 
 export type InputPropsRefType =
@@ -28,14 +28,14 @@ export type InputPropsRefType =
   | SwitchRef
   | TextAreaRef
   | TextfieldRef
-  | TimerTextfieldRef;
+  | TimerFieldRef;
 
 export interface InputProps<T> {
   id?: string;
   name?: string;
   label?: string;
   helperText?: string;
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;

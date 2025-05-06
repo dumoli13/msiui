@@ -1,3 +1,4 @@
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import Popper from '../Displays/Popper';
@@ -29,14 +30,10 @@ const FilterSelect = ({ type, value, option, label, onChange, }) => {
             setOpen(false);
         }
     };
-    return (React.createElement(Popper, { open: open, onOpen: setOpen, content: React.createElement(React.Fragment, null,
-            type === 'select' && (React.createElement(Select, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 })),
-            type === 'autocomplete' && (React.createElement(AutoComplete, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 }))) },
-        React.createElement(IconButton, { icon: React.createElement(Icon, { name: "chevron-down", size: 16, className: cx({
+    return (_jsx(Popper, { open: open, onOpen: setOpen, content: _jsxs(_Fragment, { children: [type === 'select' && (_jsx(Select, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 })), type === 'autocomplete' && (_jsx(AutoComplete, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280 }))] }), children: _jsx(IconButton, { icon: _jsx(Icon, { name: "chevron-down", size: 16, className: cx({
                     'text-primary-main dark:text-primary-main-dark': value,
                 }) }), variant: "outlined", className: cx({
                 'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': value,
-            }), title: "Select Option" })));
+            }), title: "Select Option" }) }));
 };
 export default FilterSelect;
-//# sourceMappingURL=FilterSelect.js.map

@@ -1,42 +1,42 @@
 import { __rest } from "tslib";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
 import { formatDate } from '../../libs/inputDate';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
-export const CancelButton = ({ onClick, }) => (React.createElement("button", { type: "button", onClick: onClick, className: "text-14px py-0.5 px-2 rounded text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark active:bg-neutral-30 dark:active:bg-neutral-30-dark border focus:ring-3 border-neutral-40 dark:border-neutral-40-dark drop-shadow focus:ring-primary-focus dark:focus:ring-primary-focus-dark" }, "Cancel"));
+export const CancelButton = ({ onClick, }) => (_jsx("button", { type: "button", onClick: onClick, className: "text-14px py-0.5 px-2 rounded text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark active:bg-neutral-30 dark:active:bg-neutral-30-dark border focus:ring-3 border-neutral-40 dark:border-neutral-40-dark drop-shadow focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: "Cancel" }));
 /**
- *
- * A date picker input component that allows users to select a date, month, or year.
- * The component provides a calendar view with the option to select a date, switch to month or year views,
- * and also supports clearing the selected value, selecting today's date, and disabling specific dates.
- * It is highly customizable, supporting error messages, success states, and additional helper text.
  *
  * @property {InputDateValue} value - The currently selected date. If provided, the component behaves as a controlled component.
  * @property {InputDateValue} [defaultValue=null] - The default date to display if no value is provided (used in uncontrolled mode).
+ * @property {(value: InputDateValue) => void} [onChange] -Callback function to handle input changes.
+ * @property {RefObject<InputDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether to hide the label when the input is focused.
- * @property {function} [onChange] - Callback function invoked when the date changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {string} [placeholder='Input date'] - Placeholder text for the input field.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
- * @property {RefObject<InputDatePickerRef>} [inputRef] - A reference to the date picker input element.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
+ * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
  * @property {boolean} [showTime=false] - Whether to show the time picker.
+ * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
+ * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
  *
  */
 const DatePicker = (_a) => {
     var _b, _c, _d;
-    var { id, value: valueProp, defaultValue = valueProp, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "error", "success", "loading", "disabledDate", "width", "showTime"]);
+    var { id, value: valueProp, defaultValue = valueProp, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "clearable", "error", "success", "loading", "disabledDate", "width", "showTime"]);
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
@@ -58,7 +58,7 @@ const DatePicker = (_a) => {
     const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
     const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
-    const isError = errorProp;
+    const isError = !!errorProp;
     const disabled = loading || disabledProp;
     const scrollRefs = {
         hours: React.useRef(null),
@@ -207,8 +207,13 @@ const DatePicker = (_a) => {
         };
         setTimeValue(selectedTime);
         const newDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
-        setInternalValue(newDate);
         setDisplayedDate(newDate);
+        if (showTime) {
+            setInternalValue(newDate);
+        }
+        else {
+            handleChange(newDate);
+        }
     };
     const handleSelectTime = (category, selected) => {
         var _a, _b, _c;
@@ -249,149 +254,67 @@ const DatePicker = (_a) => {
         if (isControlled)
             setInternalValue(value);
     }, [value, dropdownOpen]);
-    const dropdownContent = (React.createElement("div", { className: "min-w-60" },
-        calendarView === 'date' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex" },
-                React.createElement("div", null,
-                    React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
-                        React.createElement("div", { className: "flex items-center" },
-                            React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                                React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                            React.createElement("div", { role: "button", title: "Previous Month", onClick: () => handlePrevMonth, className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                                React.createElement(Icon, { name: "chevron-left", size: 20, strokeWidth: 2 }))),
-                        React.createElement("div", { className: "flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark" },
-                            React.createElement("div", { role: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]", onClick: () => handleChangeView('month') }, monthFormatter.format(displayedDate)),
-                            React.createElement("div", { role: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10", onClick: () => handleChangeView('year') }, displayedDate.getFullYear())),
-                        React.createElement("div", { className: "flex items-center" },
-                            React.createElement("div", { role: "button", title: "Next Month", onClick: handleNextMonth, className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                                React.createElement(Icon, { name: "chevron-right", size: 20, strokeWidth: 2 })),
-                            React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                                React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 })))),
-                    React.createElement("div", { className: "text-12px p-2" },
-                        React.createElement("table", { className: "w-full" },
-                            React.createElement("thead", null,
-                                React.createElement("tr", null, days.map((day) => (React.createElement("th", { key: day },
-                                    React.createElement("div", { className: "text-center p-1 font-normal w-8" }, day)))))),
-                            React.createElement("tbody", null, dateMatrix.map((row, rowIdx) => (React.createElement("tr", { key: rowIdx }, row.map((date, dateIdx) => {
-                                const isDateDisabled = date === null || disabledDate(date, tempValue);
-                                const isDateSelected = date
-                                    ? tempValue !== null &&
-                                        areDatesEqual(date, tempValue)
-                                    : false;
-                                const handleChooseDate = (date) => (e) => {
-                                    if (isDateDisabled || !date)
-                                        return;
-                                    e === null || e === void 0 ? void 0 : e.preventDefault();
-                                    e === null || e === void 0 ? void 0 : e.stopPropagation();
-                                    handleSelectDate(date);
-                                };
-                                return (React.createElement("td", { key: dateIdx, "aria-label": date ? date.toDateString() : 'Disabled date', className: "px-0" },
-                                    React.createElement("div", { className: "flex justify-center items-center" },
-                                        React.createElement("div", { role: "button", onClick: handleChooseDate(date), className: cx('rounded-md text-14px mt-0.5 transition-colors duration-200 ease-in w-7 h-7 flex items-center justify-center', {
-                                                'cursor-default text-neutral-30 dark:text-neutral-30-dark': isDateDisabled,
-                                                'cursor-pointer text-neutral-100 dark:text-neutral-100-dark': !isDateDisabled,
-                                                'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateDisabled && !isDateSelected,
-                                                'border border-primary-main': isToday(date) && !isDateSelected,
-                                                'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark': isDateSelected,
-                                            }) }, date === null || date === void 0 ? void 0 : date.getDate()))));
-                            })))))))),
-                showTime && (React.createElement("div", { className: "border-l border-neutral-40 dark:border-neutral-40-dark text-14px" },
-                    React.createElement("div", { className: "h-[49px] border-b border-neutral-40 dark:border-neutral-40-dark" }),
-                    React.createElement("div", { className: "flex" }, Object.keys(TimeUnit).map((key) => {
-                        const unit = key;
-                        const length = unit === TimeUnit.hours ? 24 : 60;
-                        return (React.createElement("div", { key: unit, ref: scrollRefs[unit], className: "text-neutral-100 dark:text-neutral-100-dark max-h-[234px] overflow-y-auto p-2 apple-scrollbar flex flex-col gap-1 border-l border-neutral-40 dark:border-neutral-40-dark first:border-none" }, Array.from({ length }).map((_, idx) => (React.createElement("button", { type: "button", key: idx, ref: (el) => {
-                                itemRefs[unit].current[idx] = el;
-                            }, className: cx('w-10 text-center rounded py-0.5', {
-                                'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark cursor-default': idx === timeValue[unit],
-                                'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': idx !== timeValue[unit],
-                            }), onClick: () => handleSelectTime(unit, idx) }, idx.toString().padStart(2, '0'))))));
-                    }))))),
-            showTime ? (React.createElement("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-between py-2 px-3" },
-                React.createElement("div", { className: "text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", role: "button", onClick: handleToday }, "Now"),
-                React.createElement("button", { type: "button", onClick: handleConfirmDateTime, className: cx('text-14px py-0.5 px-2 rounded disabled:border', 'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed', 'dark:text-neutral-10-dark dark:disabled:border-neutral-40-dark dark:disabled:text-neutral-60-dark dark:disabled:bg-neutral-30-dark dark:bg-primary-main-dark dark:hover:bg-primary-hover-dark dark:active:bg-primary-pressed-dark'), disabled: disabled }, "OK"))) : (React.createElement("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex justify-center p-2.5 text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", role: "button", onClick: handleToday }, "Today")))),
-        calendarView === 'month' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
-                React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                    React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                React.createElement("div", { role: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year') }, displayedDate.getFullYear()),
-                React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                    React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
-            React.createElement("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px" }, MONTH_LIST.map((item) => {
-                const isDateSelected = value &&
-                    value.getFullYear() === displayedDate.getFullYear() &&
-                    value.getMonth() === item.value;
-                return (React.createElement("div", { className: "flex justify-center items-center h-12 text-neutral-100 dark:text-neutral-100-dark", key: item.value },
-                    React.createElement("div", { role: "button", onClick: () => handleJumpMonth(item.value), className: cx('w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md', {
-                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateSelected,
-                            'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark rounded-md': isDateSelected,
-                        }) }, item.label)));
-            })),
-            React.createElement("div", { className: "flex justify-end gap-3 px-2" },
-                React.createElement(CancelButton, { onClick: () => handleChangeView('date') })))),
-        calendarView === 'year' && (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark" },
-                React.createElement("div", { role: "button", title: "Previous Year", onClick: () => handleChangeYear(-12), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                    React.createElement(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 })),
-                React.createElement("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark" }, `${yearRange[0]} - ${yearRange[yearRange.length - 1]}`),
-                React.createElement("div", { role: "button", title: "Next Year", onClick: () => handleChangeYear(12), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" },
-                    React.createElement(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }))),
-            React.createElement("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px" }, yearRange.map((item) => {
-                const isDateSelected = (value === null || value === void 0 ? void 0 : value.getFullYear()) === item;
-                return (React.createElement("div", { className: "flex justify-center items-center h-12 w-20 text-neutral-100 dark:text-neutral-100-dark", key: item },
-                    React.createElement("div", { role: "button", onClick: () => handleJumpYear(item), className: cx('cursor-pointer transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md', {
-                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateSelected,
-                            'bg-primary-main dark:bg-primary-main-dark text-neutral-10 rounded-md dark:text-neutral-10-dark': isDateSelected,
-                        }) }, item)));
-            })),
-            React.createElement("div", { className: "flex justify-end gap-3 px-2" },
-                React.createElement(CancelButton, { onClick: () => handleChangeView('date') }))))));
-    return (React.createElement("div", { className: cx('relative text-14px', {
+    const dropdownContent = (_jsxs("div", { className: "min-w-60", children: [calendarView === 'date' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex", children: [_jsxs("div", { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-double-left", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-left", size: 32, strokeWidth: 2, onClick: () => handlePrevMonth, className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsxs("div", { className: "flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark", children: [_jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]", onClick: () => handleChangeView('month'), children: monthFormatter.format(displayedDate) }), _jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() })] }), _jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-right", size: 32, strokeWidth: 2, onClick: handleNextMonth, className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-double-right", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(1), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] })] }), _jsx("div", { className: "text-12px p-2", children: _jsxs("table", { className: "w-full", children: [_jsx("thead", { children: _jsx("tr", { children: days.map((day) => (_jsx("th", { children: _jsx("div", { className: "text-center p-1 font-normal w-8", children: day }) }, day))) }) }), _jsx("tbody", { children: dateMatrix.map((row, rowIdx) => (_jsx("tr", { children: row.map((date, dateIdx) => {
+                                                            const isDateDisabled = date === null || disabledDate(date, tempValue);
+                                                            const isDateSelected = date
+                                                                ? tempValue !== null &&
+                                                                    areDatesEqual(date, tempValue)
+                                                                : false;
+                                                            const handleChooseDate = (date) => {
+                                                                if (isDateDisabled || !date)
+                                                                    return;
+                                                                handleSelectDate(date);
+                                                            };
+                                                            return (_jsx("td", { "aria-label": date ? date.toDateString() : 'Disabled date', className: "px-0", children: _jsx("div", { className: "flex justify-center items-center", children: _jsx("button", { type: "button", onClick: () => handleChooseDate(date), className: cx('rounded-md text-14px mt-0.5 transition-colors duration-200 ease-in w-7 h-7 flex items-center justify-center', {
+                                                                            'cursor-default text-neutral-30 dark:text-neutral-30-dark': isDateDisabled,
+                                                                            'cursor-pointer text-neutral-100 dark:text-neutral-100-dark': !isDateDisabled,
+                                                                            'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateDisabled && !isDateSelected,
+                                                                            'border border-primary-main': isToday(date) && !isDateSelected,
+                                                                            'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark': isDateSelected,
+                                                                        }), children: date === null || date === void 0 ? void 0 : date.getDate() }) }) }, dateIdx));
+                                                        }) }, rowIdx))) })] }) })] }), showTime && (_jsxs("div", { className: "border-l border-neutral-40 dark:border-neutral-40-dark text-14px", children: [_jsx("div", { className: "h-[49px] border-b border-neutral-40 dark:border-neutral-40-dark" }), _jsx("div", { className: "flex", children: Object.keys(TimeUnit).map((key) => {
+                                            const unit = key;
+                                            const length = unit === TimeUnit.hours ? 24 : 60;
+                                            return (_jsx("div", { ref: scrollRefs[unit], className: "text-neutral-100 dark:text-neutral-100-dark max-h-[234px] overflow-y-auto p-2 apple-scrollbar flex flex-col gap-1 border-l border-neutral-40 dark:border-neutral-40-dark first:border-none", children: Array.from({ length }).map((_, idx) => (_jsx("button", { type: "button", ref: (el) => {
+                                                        itemRefs[unit].current[idx] = el;
+                                                    }, className: cx('w-10 text-center rounded py-0.5', {
+                                                        'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark cursor-default': idx === timeValue[unit],
+                                                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': idx !== timeValue[unit],
+                                                    }), onClick: () => handleSelectTime(unit, idx), children: idx.toString().padStart(2, '0') }, idx))) }, unit));
+                                        }) })] }))] }), showTime ? (_jsxs("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-between py-2 px-3", children: [_jsx("button", { className: "text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", type: "button", onClick: handleToday, children: "Now" }), _jsx("button", { type: "button", onClick: handleConfirmDateTime, className: cx('text-14px py-0.5 px-2 rounded disabled:border', 'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed', 'dark:text-neutral-10-dark dark:disabled:border-neutral-40-dark dark:disabled:text-neutral-60-dark dark:disabled:bg-neutral-30-dark dark:bg-primary-main-dark dark:hover:bg-primary-hover-dark dark:active:bg-primary-pressed-dark'), disabled: disabled, children: "OK" })] })) : (_jsx("button", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex justify-center p-2.5 text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", type: "button", onClick: handleToday, children: "Today" }))] })), calendarView === 'month' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("button", { type: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() }), _jsx(Icon, { name: "chevron-double-right", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(1), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px", children: MONTH_LIST.map((item) => {
+                            const isDateSelected = value &&
+                                value.getFullYear() === displayedDate.getFullYear() &&
+                                value.getMonth() === item.value;
+                            return (_jsx("div", { className: "flex justify-center items-center h-12 text-neutral-100 dark:text-neutral-100-dark", children: _jsx("button", { type: "button", onClick: () => handleJumpMonth(item.value), className: cx('w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md', {
+                                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateSelected,
+                                        'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark rounded-md': isDateSelected,
+                                    }), children: item.label }) }, item.value));
+                        }) }), _jsx("div", { className: "flex justify-end gap-3 px-2", children: _jsx(CancelButton, { onClick: () => handleChangeView('date') }) })] })), calendarView === 'year' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(-12), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark", children: `${yearRange[0]} - ${yearRange[yearRange.length - 1]}` }), _jsx(Icon, { name: "chevron-double-right", size: 32, strokeWidth: 2, onClick: () => handleChangeYear(12), className: "p-1.5 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px", children: yearRange.map((item) => {
+                            const isDateSelected = (value === null || value === void 0 ? void 0 : value.getFullYear()) === item;
+                            return (_jsx("div", { className: "flex justify-center items-center h-12 w-20 text-neutral-100 dark:text-neutral-100-dark", children: _jsx("button", { type: "button", onClick: () => handleJumpYear(item), className: cx('w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md', {
+                                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateSelected,
+                                        'bg-primary-main dark:bg-primary-main-dark text-neutral-10 rounded-md dark:text-neutral-10-dark': isDateSelected,
+                                    }), children: item }) }, item));
+                        }) }), _jsx("div", { className: "flex justify-end gap-3 px-2", children: _jsx(CancelButton, { onClick: () => handleChangeView('date') }) })] }))] }));
+    return (_jsxs("div", { className: cx('relative text-14px', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className) },
-        ((autoHideLabel && focused) || !autoHideLabel) && label && (React.createElement("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1', {
-                'text-14px': size === 'default',
-                'text-18px': size === 'large',
-            }) }, label)),
-        React.createElement("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
-                'w-full': fullWidth,
-                'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
-                'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
-                'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
-                'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
-                'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark focus:!border-primary-main dark:focus:!border-primary-main-dark': !disabled,
-                'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
-            }), ref: elementRef, style: width ? { width } : undefined },
-            React.createElement("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: value ? formatDate(value, showTime) : '', placeholder: focused ? '' : placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
-                    'text-14px py-1.5': size === 'default',
-                    'text-18px py-3': size === 'large',
-                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: () => { } })),
-            React.createElement("div", { className: cx('flex gap-1 items-center', {
-                    'text-16px': size === 'default',
-                    'text-20px': size === 'large',
-                }) },
-                focused && !!value ? (React.createElement("div", { title: "Clear", role: "button", onMouseDown: handleClearValue, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" },
-                    React.createElement(Icon, { name: "x-mark", strokeWidth: 3 }))) : (React.createElement("div", { title: "Open", role: "button", onClick: handleDropdown, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" },
-                    React.createElement(Icon, { name: "calendar", strokeWidth: 2 }))),
-                loading && (React.createElement("div", { className: "text-neutral-70 dark:text-neutral-70-dark" },
-                    React.createElement(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }))),
-                successProp && (React.createElement("div", { className: cx('shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center', {
-                        'h-4 w-4 text-12px': size === 'default',
-                        'h-5 w-5 text-16px': size === 'large',
-                    }) },
-                    React.createElement(Icon, { name: "check", strokeWidth: 3 }))),
-                isError && (React.createElement("div", { className: cx('shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center', {
-                        'h-4 w-4 text-12px': size === 'default',
-                        'h-5 w-5 text-16px': size === 'large',
-                    }) }, "!")))),
-        helperMessage && (React.createElement("div", { className: cx('w-full text-left mt-1', {
-                'text-danger-main dark:text-danger-main-dark': isError,
-                'text-neutral-60 dark:text-neutral-60-dark': !isError,
-                'text-12px': size === 'default',
-                'text-16px': size === 'large',
-            }) }, helperMessage)),
-        React.createElement(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336 }, dropdownContent)));
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1', {
+                    'text-14px': size === 'default',
+                    'text-18px': size === 'large',
+                }), children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
+                    'w-full': fullWidth,
+                    'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
+                    'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
+                    'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
+                    'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
+                    'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark focus:!border-primary-main dark:focus:!border-primary-main-dark': !disabled,
+                    'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
+                }), ref: elementRef, style: width ? { width } : undefined, children: [_jsx("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: value ? formatDate(value, showTime) : '', placeholder: focused ? '' : placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+                            'text-14px py-1.5': size === 'default',
+                            'text-18px py-3': size === 'large',
+                        }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: () => { } })), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, size: size, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
+                            (clearable && !focused) ||
+                            (clearable && focused && !value)) && (_jsx(Icon, { name: "calendar", strokeWidth: 2, onClick: disabled ? undefined : handleDropdown, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
 };
 export default DatePicker;
-//# sourceMappingURL=DatePicker.js.map

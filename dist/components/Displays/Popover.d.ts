@@ -29,6 +29,6 @@ export interface PopoverProps {
  * @property {('left' | 'center' | 'right')} [transformOriginHorizontal='left'] - The horizontal transform origin for the popover's animation.
  *
  */
-declare const Popover: ({ children, className, open, elementRef, onClose, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopoverProps) => React.JSX.Element | null;
+declare const Popover: ({ children, className, open, elementRef, onClose, verticalAlign, horizontalAlign, transformOriginVertical, transformOriginHorizontal, }: PopoverProps) => import("react/jsx-runtime").JSX.Element | null;
 export default Popover;
 //# sourceMappingURL=Popover.d.ts.map

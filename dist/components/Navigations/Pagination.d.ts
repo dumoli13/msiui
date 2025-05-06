@@ -1,4 +1,3 @@
-import React from 'react';
 export declare const DEFAULT_PAGE_SIZE = 10;
 export declare const DEFAULT_ITEMS_PER_PAGE: number[];
 export type Pagination<T> = {
@@ -18,6 +17,6 @@ export interface PaginationProps {
     itemPerPage?: Array<number>;
     onPageChange?: (data: PaginationDataType) => void;
 }
-declare const Pagination: ({ total, currentPage, itemPerPage, pageSize, onPageChange, }: PaginationProps) => React.JSX.Element;
+declare const Pagination: ({ total, currentPage, itemPerPage, pageSize, onPageChange, }: PaginationProps) => import("react/jsx-runtime").JSX.Element;
 export default Pagination;
 //# sourceMappingURL=Pagination.d.ts.map

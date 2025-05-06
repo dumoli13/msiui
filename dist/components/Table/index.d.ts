@@ -82,6 +82,6 @@ export interface TableProps<T> {
  */
 declare const Table: <T extends {
     [key: string]: any;
-}>({ columns, data, stickyHeader, maxHeight, selectedRows: selectedRowsProp, onRowSelect, sorting, showDanger, onSort, fullwidth, showSelected, size, verticalAlign, }: TableProps<T>) => React.JSX.Element;
+}>({ columns, data, stickyHeader, maxHeight, selectedRows: selectedRowsProp, onRowSelect, sorting, showDanger, onSort, fullwidth, showSelected, size, verticalAlign, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
 export default Table;
 //# sourceMappingURL=index.d.ts.map

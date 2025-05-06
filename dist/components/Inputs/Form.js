@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import React from 'react';
 const normalizeRule = (rule) => {
     if (typeof rule === 'string') {
@@ -52,29 +53,8 @@ const isFormInput = (element) => {
     return (React.isValidElement(element) &&
         INPUT_TYPES.includes((_a = element.type) === null || _a === void 0 ? void 0 : _a.name));
 };
-const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = false, initialValues = {}, formRef, }) => {
+const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = false, formRef, }) => {
     const inputRefsRef = React.useRef({});
-    const [values, setValues] = React.useState(() => {
-        const defaults = Object.assign({}, initialValues);
-        const getDefaultValue = (child) => {
-            var _a, _b;
-            if (!React.isValidElement(child))
-                return defaults;
-            const childProps = child.props;
-            if (isFormInput(child)) {
-                const name = (_a = childProps.name) !== null && _a !== void 0 ? _a : childProps.id;
-                if (name) {
-                    defaults[name] = (_b = childProps.defaultValue) !== null && _b !== void 0 ? _b : '';
-                }
-            }
-            if (childProps.children) {
-                React.Children.map(childProps.children, getDefaultValue);
-            }
-            return defaults;
-        };
-        React.Children.forEach(children, getDefaultValue);
-        return Object.assign(Object.assign({}, defaults), initialValues);
-    });
     const [errors, setErrors] = React.useState({});
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const formDisabled = disabled || isSubmitting;
@@ -93,12 +73,22 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
     };
     const validate = React.useCallback(() => {
         const newErrors = {};
+        const typedValues = {};
+        for (const key in inputRefsRef.current) {
+            typedValues[key] = inputRefsRef.current[key]
+                .value;
+        }
         Object.entries(rules).forEach(([fieldName, fieldRules]) => {
-            const value = values[fieldName];
+            const value = typedValues[fieldName];
             for (const rule of fieldRules) {
                 const normalizedRule = normalizeRule(rule);
                 if (normalizedRule.required &&
-                    (value === undefined || value === null || value === '')) {
+                    (value === undefined || // Check for undefined
+                        value === null || // Check for null
+                        value === '' || // Check for empty string
+                        (Array.isArray(value) && value.length === 0) || // Check for empty array
+                        (value instanceof Date && isNaN(value.getTime()))) // Check for invalid Dayjs instance
+                ) {
                     newErrors[fieldName] = getErrorMessage(rule, 'required');
                     break;
                 }
@@ -158,7 +148,7 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
         });
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    }, [rules, values]);
+    }, [rules]);
     const enhanceChild = (child) => {
         var _a;
         if (!React.isValidElement(child))
@@ -170,7 +160,6 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
             if (!fieldName)
                 return child;
             const handleChange = (value) => {
-                setValues((prev) => (Object.assign(Object.assign({}, prev), { [fieldName]: value })));
                 if (errors[fieldName]) {
                     setErrors((prev) => (Object.assign(Object.assign({}, prev), { [fieldName]: undefined })));
                 }
@@ -200,12 +189,16 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
     const handleSubmit = () => {
         setIsSubmitting(true);
         const isValid = validate();
-        if (isValid)
-            onSubmit(values);
+        if (isValid) {
+            const result = {};
+            for (const key in inputRefsRef.current) {
+                result[key] = inputRefsRef.current[key].value;
+            }
+            onSubmit(result);
+        }
         setIsSubmitting(false);
     };
     const handleReset = () => {
-        setValues(initialValues);
         Object.values(inputRefsRef.current).forEach((ref) => {
             if (ref && typeof ref.reset === 'function') {
                 ref.reset();
@@ -218,15 +211,20 @@ const Form = ({ onSubmit, onReset, className, children, rules = {}, disabled = f
         submit: handleSubmit,
         reset: handleReset,
         validate,
-        getValues: () => values,
+        getValues: () => {
+            const result = {};
+            for (const key in inputRefsRef.current) {
+                result[key] = inputRefsRef.current[key].value;
+            }
+            return result;
+        },
     }));
-    return (React.createElement("form", { className: className, onSubmit: (e) => {
+    return (_jsx("form", { className: className, onSubmit: (e) => {
             e.preventDefault();
             handleSubmit();
         }, onReset: (e) => {
             e.preventDefault();
             handleReset();
-        } }, React.Children.map(children, enhanceChild)));
+        }, children: React.Children.map(children, enhanceChild) }));
 };
 export default Form;
-//# sourceMappingURL=Form.js.map

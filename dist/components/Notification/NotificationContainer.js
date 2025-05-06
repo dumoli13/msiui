@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
@@ -72,24 +73,15 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     };
     if (!visible)
         return null;
-    return (React.createElement("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave },
-        React.createElement("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden" },
-            React.createElement("div", { className: "shrink-0" }, icon),
-            React.createElement("div", null,
-                React.createElement("div", { className: "text-24px mb-2 break-words" }, title),
-                React.createElement("p", { className: "text-20px break-words" }, description)),
-            React.createElement(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "shrink-0 text-neutral-60 dark:text-neutral-60-dark", onClick: handleClose }),
-            React.createElement("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark" },
-                React.createElement("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
-                        'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
-                        'bg-success-main dark:bg-success-main-dark': color === 'success',
-                        'bg-danger-main dark:bg-danger-main-dark': color === 'danger',
-                        'bg-warning-main dark:bg-warning-main-dark': color === 'warning',
-                        'bg-info-main dark:bg-info-main-dark': color === 'info',
-                    }), style: {
-                        width: `${progressWidth}%`,
-                        transitionDuration: '0s',
-                    } })))));
+    return (_jsx("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, children: _jsxs("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden", children: [_jsx("div", { className: "shrink-0", children: icon }), _jsxs("div", { children: [_jsx("div", { className: "text-24px mb-2 break-words", children: title }), _jsx("p", { className: "text-20px break-words", children: description })] }), _jsx(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color", onClick: handleClose }), _jsx("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark", children: _jsx("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
+                            'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
+                            'bg-success-main dark:bg-success-main-dark': color === 'success',
+                            'bg-danger-main dark:bg-danger-main-dark': color === 'danger',
+                            'bg-warning-main dark:bg-warning-main-dark': color === 'warning',
+                            'bg-info-main dark:bg-info-main-dark': color === 'info',
+                        }), style: {
+                            width: `${progressWidth}%`,
+                            transitionDuration: '0s',
+                        } }) })] }) }));
 };
 export default NotificationContainer;
-//# sourceMappingURL=NotificationContainer.js.map

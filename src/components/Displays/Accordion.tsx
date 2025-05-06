@@ -48,13 +48,6 @@ const Accordion = ({
   size = 'default',
   className,
 }: AccordionProps) => {
-  // Validation: Prevent using both `defaultActiveKey` and `activeKey`
-  if (activeKey && defaultActiveKey.length > 0) {
-    throw new Error(
-      'You cannot use both `activeKey` and `defaultActiveKey` at the same time.',
-    );
-  }
-
   // Validation: Ensure only one active key for singleCollapse
   if (singleCollapse) {
     if (defaultActiveKey.length > 1) {
@@ -145,7 +138,7 @@ const Accordion = ({
                   aria-label="toggle"
                   onClick={() => handleToggle(item.key)}
                   className={cx(
-                    'text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
+                    'h-10 w-10 flex items-center justify-center text-neutral-90 dark:text-neutral-90-dark rounded-full -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >
@@ -175,7 +168,7 @@ const Accordion = ({
                 </div>
                 <div
                   className={cx(
-                    'text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
+                    'h-10 w-10 text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >

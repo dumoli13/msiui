@@ -115,8 +115,16 @@ const Button = React.forwardRef(
           {endIcon}
         </span>
         {loading && (
-          <span className="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center">
-            <Icon name="loader" animation="spin" strokeWidth={4} size={24} />
+          <span
+            className={cx(
+              'absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center',
+              {
+                'text-16px': size !== 'large',
+                'text-20px': size === 'large',
+              },
+            )}
+          >
+            <Icon name="loader" animation="spin" strokeWidth={2} />
           </span>
         )}
       </button>

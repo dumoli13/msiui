@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -16,7 +16,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {() => void} [onCancel] - Callback function called when the user cancels the action or closes the modal.
  *
  */
-const ConfirmModal = ({ icon = (React.createElement(Icon, { name: "alert-triangle", size: 24, className: "text-neutral-90 dark:text-neutral-90-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
+const ConfirmModal = ({ icon = (_jsx(Icon, { name: "alert-triangle", size: 24, className: "text-neutral-90 dark:text-neutral-90-dark" })), title, content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onCancel, customAction, }) => {
     const container = document.createElement('div');
     const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
     document.body.appendChild(container);
@@ -24,13 +24,12 @@ const ConfirmModal = ({ icon = (React.createElement(Icon, { name: "alert-triangl
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(React.createElement(ModalConfirmContainer, { open: true, title: title, icon: icon, onClose: () => {
+    root.render(_jsx(ModalConfirmContainer, { open: true, title: title, icon: icon, onClose: () => {
             onCancel === null || onCancel === void 0 ? void 0 : onCancel();
             handleClose();
         }, onConfirm: () => {
             onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
             handleClose();
-        }, confirmText: confirmText, cancelText: cancelText, customAction: customAction }, content));
+        }, confirmText: confirmText, cancelText: cancelText, customAction: customAction, children: content }));
 };
 export default ConfirmModal;
-//# sourceMappingURL=ConfirmModal.js.map

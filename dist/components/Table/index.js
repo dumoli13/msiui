@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
@@ -65,73 +66,47 @@ const Table = ({ columns, data, stickyHeader = false, maxHeight = 680, selectedR
             setInternalSelectedRows(newSelectedRows);
         }
     };
-    return (React.createElement("div", { className: cx('text-neutral-100 dark:text-neutral-100-dark overflow-x-auto', { 'w-full': fullwidth }) },
-        React.createElement("div", { className: "overflow-y-auto border border-neutral-30 dark:border-neutral-30-dark rounded-md", style: stickyHeader ? { maxHeight } : undefined },
-            React.createElement("table", { className: "min-w-full border-collapse", style: { tableLayout: 'auto' } },
-                React.createElement("thead", { className: cx({
-                        'sticky top-0 bg-neutral-10 shadow-md z-10': stickyHeader,
-                    }) },
-                    React.createElement("tr", null,
-                        showSelected && (React.createElement("th", { className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
-                                'text-18px': size === 'large',
-                                'text-14px': size === 'default',
-                            }) },
-                            React.createElement("div", { className: "flex items-center justify-center" }, "Select"))),
-                        columns.map((col) => {
-                            var _a;
-                            return (React.createElement("th", { key: col.key.toString(), className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
+    return (_jsx("div", { className: cx('text-neutral-100 dark:text-neutral-100-dark overflow-x-auto', { 'w-full': fullwidth }), children: _jsx("div", { className: "overflow-y-auto border border-neutral-30 dark:border-neutral-30-dark rounded-md", style: stickyHeader ? { maxHeight } : undefined, children: _jsxs("table", { className: "min-w-full border-collapse", style: { tableLayout: 'auto' }, children: [_jsx("thead", { className: cx({
+                            'sticky top-0 bg-neutral-10 shadow-md z-10': stickyHeader,
+                        }), children: _jsxs("tr", { children: [showSelected && (_jsx("th", { className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
+                                        'text-18px': size === 'large',
+                                        'text-14px': size === 'default',
+                                    }), children: _jsx("div", { className: "flex items-center justify-center", children: "Select" }) })), columns.map((col) => {
+                                    var _a;
+                                    return (_jsx("th", { className: cx('font-medium text-left bg-neutral-20 dark:bg-neutral-20-dark px-4 py-3 border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
+                                            'text-18px': size === 'large',
+                                            'text-14px': size === 'default',
+                                        }), style: {
+                                            width: col.width,
+                                            minWidth: (_a = col.width) !== null && _a !== void 0 ? _a : `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
+                                                ? parseInt(col.minWidth.toString(), 10)
+                                                : 0, 150)}px`,
+                                        }, children: _jsxs("div", { className: "flex gap-4 items-center justify-between", children: [col.sortable ? (_jsxs("div", { role: "button", className: "w-full flex items-center gap-2.5", onClick: () => col.sortable && handleSort(col.key), children: [col.subLabel ? (_jsxs("div", { className: "flex flex-col items-center", children: [col.label, _jsx("span", { className: "text-16px", children: col.subLabel })] })) : (col.label), col.sortable && (_jsxs("div", { className: "flex flex-col gap-0.5", children: [_jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                                                        sortConfig.direction === 'asc'
+                                                                        ? 'border-primary-main dark:border-primary-main-dark'
+                                                                        : 'border-neutral-60 dark:border-neutral-60-dark'}` }), _jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
+                                                                        sortConfig.direction === 'desc'
+                                                                        ? 'border-primary-main dark:border-primary-main-dark'
+                                                                        : 'border-neutral-60 dark:border-neutral-60-dark'}` })] }))] })) : (_jsx("div", { className: "w-full flex items-center", children: col.subLabel ? (_jsxs("div", { className: "flex flex-col items-start", children: [col.label, _jsx("span", { className: "text-16px", children: col.subLabel })] })) : (col.label) })), col.filter !== undefined && col.filter === 'textfield' && (_jsx(FilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })), (col.filter === 'select' ||
+                                                    col.filter === 'autocomplete') && (_jsx(FilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } }))] }) }, col.key.toString()));
+                                })] }) }), _jsx("tbody", { children: data.map((row, rowIndex) => {
+                            const isDanger = showDanger === null || showDanger === void 0 ? void 0 : showDanger(row);
+                            const isSelected = showSelected &&
+                                selectedRows.some((index) => index === rowIndex);
+                            return (_jsxs("tr", { className: cx('group border-b border-neutral-30 last:border-none', {
                                     'text-18px': size === 'large',
                                     'text-14px': size === 'default',
-                                }), style: {
-                                    width: col.width,
-                                    minWidth: (_a = col.width) !== null && _a !== void 0 ? _a : `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
-                                        ? parseInt(col.minWidth.toString(), 10)
-                                        : 0, 150)}px`,
-                                } },
-                                React.createElement("div", { className: "flex gap-4 items-center justify-between" },
-                                    col.sortable ? (React.createElement("div", { role: "button", className: "w-full flex items-center gap-2.5", onClick: () => col.sortable && handleSort(col.key) },
-                                        col.subLabel ? (React.createElement("div", { className: "flex flex-col items-center" },
-                                            col.label,
-                                            React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label),
-                                        col.sortable && (React.createElement("div", { className: "flex flex-col gap-0.5" },
-                                            React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                                    sortConfig.direction === 'asc'
-                                                    ? 'border-primary-main dark:border-primary-main-dark'
-                                                    : 'border-neutral-60 dark:border-neutral-60-dark'}` }),
-                                            React.createElement("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === sortConfig.key &&
-                                                    sortConfig.direction === 'desc'
-                                                    ? 'border-primary-main dark:border-primary-main-dark'
-                                                    : 'border-neutral-60 dark:border-neutral-60-dark'}` }))))) : (React.createElement("div", { className: "w-full flex items-center" }, col.subLabel ? (React.createElement("div", { className: "flex flex-col items-start" },
-                                        col.label,
-                                        React.createElement("span", { className: "text-16px" }, col.subLabel))) : (col.label))),
-                                    col.filter !== undefined && col.filter === 'textfield' && (React.createElement(FilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })),
-                                    (col.filter === 'select' ||
-                                        col.filter === 'autocomplete') && (React.createElement(FilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => { var _a; return (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value); } })))));
-                        }))),
-                React.createElement("tbody", null, data.map((row, rowIndex) => {
-                    const isDanger = showDanger === null || showDanger === void 0 ? void 0 : showDanger(row);
-                    const isSelected = showSelected &&
-                        selectedRows.some((index) => index === rowIndex);
-                    return (React.createElement("tr", { key: rowIndex, className: cx('group border-b border-neutral-30 last:border-none', {
-                            'text-18px': size === 'large',
-                            'text-14px': size === 'default',
-                            'bg-danger-surface dark:bg-danger-surface-dark hover:bg-danger-border/20 dark:hover:bg-danger-border/20-dark': isDanger,
-                            'bg-neutral-10 dark:bg-neutral-10-dark even:bg-neutral-15 dark:even:bg-neutral-15-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDanger,
-                        }) },
-                        showSelected && (React.createElement("td", { className: "py-1.5 text-center break-words", style: { verticalAlign: verticalAlign } },
-                            React.createElement("div", { className: cx('px-4 py-3', {
-                                    'bg-primary-surface dark:bg-primary-surface-dark': isSelected,
-                                }) },
-                                React.createElement(Checkbox, { id: `select_row_${rowIndex}`, checked: isSelected, onChange: (isChecked) => handleRowSelect(rowIndex, isChecked), disabled: !onRowSelect, className: "h-5", "aria-label": `select_row_${rowIndex}` })))),
-                        columns.map((col) => {
-                            const rowCol = col.dataIndex ? row[col.dataIndex] : null;
-                            const value = rowCol == null || rowCol === '' ? '-' : rowCol;
-                            return (React.createElement("td", { key: col.key.toString(), className: "py-1.5 break-words", style: { verticalAlign: verticalAlign } },
-                                React.createElement("div", { className: cx('px-4 py-3', {
-                                        'bg-primary-surface dark:bg-primary-surface-dark': isSelected,
-                                    }) }, col.render ? (col.render(rowCol, row, rowIndex)) : (React.createElement("div", { className: "line-clamp-3" }, value)))));
-                        })));
-                }))))));
+                                    'bg-danger-surface dark:bg-danger-surface-dark hover:bg-danger-border/20 dark:hover:bg-danger-border/20-dark': isDanger,
+                                    'bg-neutral-10 dark:bg-neutral-10-dark even:bg-neutral-15 dark:even:bg-neutral-15-dark hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDanger,
+                                }), children: [showSelected && (_jsx("td", { className: "py-1.5 text-center break-words", style: { verticalAlign: verticalAlign }, children: _jsx("div", { className: cx('px-4 py-3', {
+                                                'bg-primary-surface dark:bg-primary-surface-dark': isSelected,
+                                            }), children: _jsx(Checkbox, { id: `select_row_${rowIndex}`, checked: isSelected, onChange: (isChecked) => handleRowSelect(rowIndex, isChecked), disabled: !onRowSelect, className: "h-5", "aria-label": `select_row_${rowIndex}` }) }) })), columns.map((col) => {
+                                        const rowCol = col.dataIndex ? row[col.dataIndex] : null;
+                                        const value = rowCol == null || rowCol === '' ? '-' : rowCol;
+                                        return (_jsx("td", { className: "py-1.5 break-words", style: { verticalAlign: verticalAlign }, children: _jsx("div", { className: cx('px-4 py-3', {
+                                                    'bg-primary-surface dark:bg-primary-surface-dark': isSelected,
+                                                }), children: col.render ? (col.render(rowCol, row, rowIndex)) : (_jsx("div", { className: "line-clamp-3", children: value })) }) }, col.key.toString()));
+                                    })] }, rowIndex));
+                        }) })] }) }) }));
 };
 export default Table;
-//# sourceMappingURL=index.js.map

@@ -14,5 +14,5 @@ export declare const useNotification: () => (notification: {
 }) => void;
 export declare const NotificationProvider: ({ children, }: {
     children: React.ReactNode;
-}) => React.JSX.Element;
+}) => import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

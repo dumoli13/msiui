@@ -27,6 +27,6 @@ export interface NotificationContainerProps {
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => React.JSX.Element | null;
+declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => import("react/jsx-runtime").JSX.Element | null;
 export default NotificationContainer;
 //# sourceMappingURL=NotificationContainer.d.ts.map

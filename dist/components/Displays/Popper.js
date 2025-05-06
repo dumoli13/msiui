@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
@@ -10,7 +11,7 @@ import { createPortal } from 'react-dom';
  *
  * @interface PopperProps
  * @property {string} [className] - Additional class names to apply to the popper container.
- * @property {boolean} [disabled=false] - A flag that disables the toggle functionality.
+ * @property {boolean} [disabled=false] - A flag that disables the toggle functionality if set to true.
  * @property {ReactNode} content - The content to be displayed inside the popper when open.
  * @property {ReactNode} children - The content or elements to which the component's behavior or functionality is applied.
  * @property {boolean} [open] - A controlled flag that determines whether the popper is visible or not.
@@ -129,15 +130,11 @@ const Popper = ({ className, disabled = false, content, children, open: openProp
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-    return (React.createElement("div", { className: cx('relative', className) },
-        React.createElement("div", { ref: elementRef },
-            React.createElement("div", { role: "button", tabIndex: -1, "aria-pressed": isDropdownOpen ? 'true' : 'false', onClick: handleDropdownToggle }, children)),
-        isDropdownOpen &&
-            createPortal(React.createElement("div", { ref: popperRef, style: {
-                    top: dropdownPosition.top,
-                    left: dropdownPosition.left,
-                    transformOrigin: `${transformOriginHorizontal} ${transformOriginVertical}`,
-                }, className: "text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]" }, content), document.body)));
+    return (_jsxs("div", { className: cx('relative', className), children: [_jsx("div", { ref: elementRef, children: _jsx("div", { role: "button", tabIndex: -1, "aria-pressed": isDropdownOpen ? 'true' : 'false', onClick: handleDropdownToggle, children: children }) }), isDropdownOpen &&
+                createPortal(_jsx("div", { ref: popperRef, style: {
+                        top: dropdownPosition.top,
+                        left: dropdownPosition.left,
+                        transformOrigin: `${transformOriginHorizontal} ${transformOriginVertical}`,
+                    }, className: "text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[100]", children: content }), document.body)] }));
 };
 export default Popper;
-//# sourceMappingURL=Popper.js.map

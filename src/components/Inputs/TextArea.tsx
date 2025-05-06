@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import Icon from '../Icon';
+import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
+import InputHelper from '../Displays/InputHelper';
 
 export interface TextAreaRef {
   element: HTMLTextAreaElement | null;
@@ -12,7 +13,7 @@ export interface TextAreaRef {
 export interface TextAreaProps
   extends Omit<
     React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    'onChange' | 'size'
+    'onChange' | 'size' | 'required'
   > {
   value?: string;
   defaultValue?: string;
@@ -29,39 +30,35 @@ export interface TextAreaProps
     | React.RefObject<TextAreaRef | null>
     | React.RefCallback<TextAreaRef | null>;
   size?: 'default' | 'large';
-  error?: string;
+  error?: boolean | string;
   success?: boolean;
   loading?: boolean;
-  minLines?: number;
-  maxLines?: number;
+  lines?: number;
   width?: number;
 }
 
 /**
  *
- * A customizable multi-line text input component that supports various features such as labels, icons, error/success states,
- * placeholder text, and the ability to handle dynamic height (min/max lines). This component is ideal for longer form inputs
- * like comments, descriptions, or messages.
- *
  * @property {string} [value] - The value of the textarea. If provided, the textarea will be controlled.
  * @property {string} [defaultValue] - The initial value of the textarea for uncontrolled usage.
+ * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
+ * @property {RefObject<TextAreaRef> | React.RefCallback<TextAreaRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should automatically hide when the textarea is focused.
- * @property {(value: string) => void} [onChange] - Callback function to handle textarea value changes.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation.
- * @property {string} [placeholder] - Placeholder text displayed inside the textarea when it is empty.
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
+ * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
+ * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
+ * @property {ReactNode} [helperText] - A helper message displayed below the input field.
+ * @property {string} [className] - Additional class names to customize the component's style.
+ * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
+ * @property {boolean} [success] - A flag to display success of input field if set to true.
+ * @property {boolean} [loading=false] - A flag to display loading state if set to true.
+ * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
  * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
  * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {RefObject<TextAreaRef> | React.RefCallback<TextAreaRef>} [inputRef] - A ref to access the textarea element directly.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {number} [minLines=2] - The minimum number of lines (rows) visible in the textarea.
- * @property {number} [maxLines] - The maximum number of lines (rows) the textarea can expand to.
- * @property {number} [width] - Optional custom width for the input field.
+ * @property {'default' | 'large'} [size='default'] - The size of the input field.
+ * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
+ * @property {number} [width] - Optional custom width for the input field (in px).
+ * @property {number} [lines=2] - The minimum number of lines (rows) visible in the textarea.
  *
  */
 
@@ -86,8 +83,7 @@ const TextArea = ({
   error: errorProp,
   success: successProp,
   loading = false,
-  minLines = 2,
-  maxLines,
+  lines: minLines = 2,
   width,
   ...props
 }: TextAreaProps) => {
@@ -100,7 +96,7 @@ const TextArea = ({
   const value = isControlled ? valueProp.toString() : internalValue;
 
   const helperMessage = errorProp ?? helperText;
-  const isError = errorProp;
+  const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
@@ -195,67 +191,19 @@ const TextArea = ({
           rows={minLines}
           ref={elementRef}
           style={{
-            minHeight: `${minLines * 1.5}em`,
-            maxHeight: maxLines ? `${maxLines * 1.5}em` : undefined,
+            minHeight: `${minLines * 24}px`,
           }}
           aria-label={label}
         />
-        <div
-          className={cx('flex gap-1 items-center', {
-            'text-16px': size === 'default',
-            'text-20px': size === 'large',
-          })}
-        >
-          {loading && (
-            <div className="text-neutral-70 dark:text-neutral-70-dark">
-              <Icon name="loader" animation="spin" strokeWidth={2} />
-            </div>
-          )}
-          {successProp && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              <Icon name="check" strokeWidth={3} />
-            </div>
-          )}
-          {isError && (
-            <div
-              className={cx(
-                'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
-                {
-                  'h-4 w-4 text-12px': size === 'default',
-                  'h-5 w-5 text-16px': size === 'large',
-                },
-              )}
-            >
-              !
-            </div>
-          )}
-          {!!endIcon && (
-            <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
-              {endIcon}
-            </div>
-          )}
-        </div>
+        <InputEndIconWrapper
+          loading={loading}
+          error={isError}
+          success={successProp}
+          size={size}
+          endIcon={endIcon}
+        />
       </div>
-      {helperMessage && (
-        <div
-          className={cx('w-full text-left mt-1', {
-            'text-danger-main dark:text-danger-main-dark': isError,
-            'text-neutral-60 dark:text-neutral-60-dark': !isError,
-            'text-12px': size === 'default',
-            'text-16px': size === 'large',
-          })}
-        >
-          {helperMessage}
-        </div>
-      )}
+      <InputHelper message={helperMessage} error={isError} size={size} />
     </div>
   );
 };

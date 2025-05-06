@@ -1,11 +1,11 @@
 import React from 'react';
 import { InputProps, InputPropsRefType } from '../../types/input';
 
-export interface FormRef {
+export interface FormRef<T> {
   submit: () => void;
   reset: () => void;
   validate: () => boolean;
-  getValues: () => Record<string, any>;
+  getValues: () => T;
 }
 
 export type FormRule =
@@ -44,15 +44,14 @@ const normalizeRule = (rule: FormRule) => {
   return rule;
 };
 
-export interface FormProps {
-  onSubmit: (values: Record<string, any>) => void;
+export interface FormProps<T> {
+  onSubmit: (values: T) => void;
   onReset?: () => void;
   className?: string;
   children: React.ReactNode;
   rules?: FormRules;
   disabled?: boolean;
-  initialValues?: Record<string, any>;
-  formRef?: React.Ref<FormRef>;
+  formRef?: React.Ref<FormRef<T>>;
 }
 
 /**
@@ -99,40 +98,16 @@ const isFormInput = (
   );
 };
 
-const Form = ({
+const Form = <T,>({
   onSubmit,
   onReset,
   className,
   children,
   rules = {},
   disabled = false,
-  initialValues = {},
   formRef,
-}: FormProps) => {
+}: FormProps<T>) => {
   const inputRefsRef = React.useRef<Record<string, InputPropsRefType>>({});
-
-  const [values, setValues] = React.useState<Record<string, any>>(() => {
-    const defaults: Record<string, any> = { ...initialValues };
-
-    const getDefaultValue = (child: React.ReactNode): Record<string, any> => {
-      if (!React.isValidElement(child)) return defaults;
-
-      const childProps = child.props as InputProps<any>;
-      if (isFormInput(child)) {
-        const name = childProps.name ?? childProps.id;
-        if (name) {
-          defaults[name] = childProps.defaultValue ?? '';
-        }
-      }
-      if (childProps.children) {
-        React.Children.map(childProps.children, getDefaultValue);
-      }
-      return defaults;
-    };
-
-    React.Children.forEach(children, getDefaultValue);
-    return { ...defaults, ...initialValues };
-  });
 
   const [errors, setErrors] = React.useState<
     Record<string, string | undefined>
@@ -159,16 +134,25 @@ const Form = ({
 
   const validate = React.useCallback(() => {
     const newErrors: Record<string, string> = {};
+    const typedValues = {} as T;
+    for (const key in inputRefsRef.current) {
+      typedValues[key as keyof T] = inputRefsRef.current[key]
+        .value as T[keyof T];
+    }
 
     Object.entries(rules).forEach(([fieldName, fieldRules]) => {
-      const value = values[fieldName];
+      const value = typedValues[fieldName as keyof T];
 
       for (const rule of fieldRules) {
         const normalizedRule = normalizeRule(rule);
 
         if (
           normalizedRule.required &&
-          (value === undefined || value === null || value === '')
+          (value === undefined || // Check for undefined
+            value === null || // Check for null
+            value === '' || // Check for empty string
+            (Array.isArray(value) && value.length === 0) || // Check for empty array
+            (value instanceof Date && isNaN(value.getTime()))) // Check for invalid Dayjs instance
         ) {
           newErrors[fieldName] = getErrorMessage(rule, 'required');
           break;
@@ -250,7 +234,7 @@ const Form = ({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [rules, values]);
+  }, [rules]);
 
   const enhanceChild = (child: React.ReactNode): React.ReactNode => {
     if (!React.isValidElement(child)) return child;
@@ -268,7 +252,6 @@ const Form = ({
       if (!fieldName) return child;
 
       const handleChange = (value: any) => {
-        setValues((prev) => ({ ...prev, [fieldName]: value }));
         if (errors[fieldName]) {
           setErrors((prev) => ({ ...prev, [fieldName]: undefined }));
         }
@@ -312,12 +295,17 @@ const Form = ({
   const handleSubmit = () => {
     setIsSubmitting(true);
     const isValid = validate();
-    if (isValid) onSubmit(values);
+    if (isValid) {
+      const result = {} as T;
+      for (const key in inputRefsRef.current) {
+        result[key as keyof T] = inputRefsRef.current[key].value as T[keyof T];
+      }
+      onSubmit(result);
+    }
     setIsSubmitting(false);
   };
 
   const handleReset = () => {
-    setValues(initialValues);
     Object.values(inputRefsRef.current).forEach((ref) => {
       if (ref && typeof ref.reset === 'function') {
         ref.reset();
@@ -331,7 +319,13 @@ const Form = ({
     submit: handleSubmit,
     reset: handleReset,
     validate,
-    getValues: () => values,
+    getValues: () => {
+      const result = {} as T;
+      for (const key in inputRefsRef.current) {
+        result[key as keyof T] = inputRefsRef.current[key].value as T[keyof T];
+      }
+      return result;
+    },
   }));
 
   return (

@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
@@ -21,10 +22,6 @@ import Icon from '../Icon';
  * @property {(key: Array<string | number>) => void} [onChangeActiveKey] - Callback fired with the new active panel keys when the panel changes.
  */
 const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaultActiveKey = [], activeKey, onChangeActiveKey, size = 'default', className, }) => {
-    // Validation: Prevent using both `defaultActiveKey` and `activeKey`
-    if (activeKey && defaultActiveKey.length > 0) {
-        throw new Error('You cannot use both `activeKey` and `defaultActiveKey` at the same time.');
-    }
     // Validation: Ensure only one active key for singleCollapse
     if (singleCollapse) {
         if (defaultActiveKey.length > 1) {
@@ -67,33 +64,23 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
         }
         onChangeActiveKey === null || onChangeActiveKey === void 0 ? void 0 : onChangeActiveKey(newOpenIndex);
     };
-    return (React.createElement("div", { className: cx('box-shadow rounded-md border border-neutral-40 dark:border-neutral-40-dark', className) }, items.map((item, index) => {
-        const isOpen = openIndex.includes(item.key);
-        return (React.createElement("div", { key: item.key, className: "accordion-item border-b border-neutral-40 dark:border-neutral-40-dark last:border-b-0 transition-all duration-300" },
-            collapsible === 'icon' ? (React.createElement("div", { className: cx('flex justify-between items-center text-24px', {
-                    'px-6': size === 'default',
-                    'px-10': size === 'large',
-                }) },
-                React.createElement("div", { className: cx('w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', { 'py-4': size === 'default', 'py-8': size === 'large' }) }, item.title),
-                React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }) },
-                    React.createElement(Icon, { name: "chevron-down", size: 24 })))) : (React.createElement("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('flex justify-between items-center text-24px', {
-                    'px-6': size === 'default',
-                    'px-10': size === 'large',
-                }) },
-                React.createElement("div", { className: cx('text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', {
-                        'py-4': size === 'default',
-                        'py-8 ': size === 'large',
-                    }) }, item.title),
-                React.createElement("div", { className: cx('text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }) },
-                    React.createElement(Icon, { name: "chevron-down", size: 24 })))),
-            React.createElement("div", { ref: (el) => {
-                    refs.current[index] = el;
-                }, style: { maxHeight: isOpen ? `${height[index]}px` : '0px' }, className: "overflow-hidden transition-all duration-300" },
-                React.createElement("div", { className: cx('text-neutral-90 dark:text-neutral-90-dark text-20px', {
-                        'mx-6 pt-1 pb-6': size === 'default',
-                        'mx-10 py-10 border-t border-neutral-40 dark:border-neutral-40-dark': size === 'large',
-                    }) }, item.content))));
-    })));
+    return (_jsx("div", { className: cx('box-shadow rounded-md border border-neutral-40 dark:border-neutral-40-dark', className), children: items.map((item, index) => {
+            const isOpen = openIndex.includes(item.key);
+            return (_jsxs("div", { className: "accordion-item border-b border-neutral-40 dark:border-neutral-40-dark last:border-b-0 transition-all duration-300", children: [collapsible === 'icon' ? (_jsxs("div", { className: cx('flex justify-between items-center text-24px', {
+                            'px-6': size === 'default',
+                            'px-10': size === 'large',
+                        }), children: [_jsx("div", { className: cx('w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', { 'py-4': size === 'default', 'py-8': size === 'large' }), children: item.title }), _jsx("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('h-10 w-10 flex items-center justify-center text-neutral-90 dark:text-neutral-90-dark rounded-full -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }), children: _jsx(Icon, { name: "chevron-down", size: 24 }) })] })) : (_jsxs("div", { role: "button", "aria-label": "toggle", onClick: () => handleToggle(item.key), className: cx('flex justify-between items-center text-24px', {
+                            'px-6': size === 'default',
+                            'px-10': size === 'large',
+                        }), children: [_jsx("div", { className: cx('text-24px font-medium text-neutral-100 dark:text-neutral-100-dark', {
+                                    'py-4': size === 'default',
+                                    'py-8 ': size === 'large',
+                                }), children: item.title }), _jsx("div", { className: cx('h-10 w-10 text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300', { 'rotate-180': isOpen }), children: _jsx(Icon, { name: "chevron-down", size: 24 }) })] })), _jsx("div", { ref: (el) => {
+                            refs.current[index] = el;
+                        }, style: { maxHeight: isOpen ? `${height[index]}px` : '0px' }, className: "overflow-hidden transition-all duration-300", children: _jsx("div", { className: cx('text-neutral-90 dark:text-neutral-90-dark text-20px', {
+                                'mx-6 pt-1 pb-6': size === 'default',
+                                'mx-10 py-10 border-t border-neutral-40 dark:border-neutral-40-dark': size === 'large',
+                            }), children: item.content }) })] }, item.key));
+        }) }));
 };
 export default Accordion;
-//# sourceMappingURL=Accordion.js.map
