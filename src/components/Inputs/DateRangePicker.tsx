@@ -11,11 +11,12 @@ import {
   isToday,
 } from '../../libs';
 import { formatDate, isValidDate } from '../../libs/inputDate';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export type InputDateRangeValue = [Date, Date] | null;
 export interface InputDateRangePickerRef {
@@ -41,8 +42,8 @@ export interface DateRangePickerProps
   placeholder?: string;
   fullWidth?: boolean;
   inputRef?:
-    | React.RefObject<InputDateRangePickerRef>
-    | React.RefCallback<InputDateRangePickerRef>;
+    | React.RefObject<InputDateRangePickerRef | null>
+    | React.RefCallback<InputDateRangePickerRef | null>;
   size?: 'default' | 'large';
   error?: boolean | string;
   success?: boolean;
@@ -876,18 +877,9 @@ const DateRangePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

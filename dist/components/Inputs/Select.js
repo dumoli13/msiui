@@ -1,10 +1,11 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 /**
  *
  * @property {SelectValue<T, D> | null} [value] - The currently selected value, passed from the parent component.
@@ -96,24 +97,19 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
             return;
         setDropdownOpen((prev) => !prev);
     };
-    const handleOptionSelect = (option) => (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleOptionSelect = (option) => {
+        onChange === null || onChange === void 0 ? void 0 : onChange(option);
         if (!isControlled)
             setInternalValue(option);
         setDropdownOpen(false);
-        if (onChange)
-            onChange(option);
     };
-    const handleClearValue = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const handleClearValue = () => {
         setDropdownOpen(true);
         onChange === null || onChange === void 0 ? void 0 : onChange(null);
         if (!isControlled)
             setInternalValue(null);
     };
-    const dropdownContent = (_jsxs(_Fragment, { children: [options.map((option) => (_jsx("div", { role: "button", onMouseDown: handleOptionSelect(option), className: cx('py-1.5 px-4 text-left break-words', {
+    const dropdownContent = (_jsxs(_Fragment, { children: [options.map((option) => (_jsx("div", { role: "button", onClick: () => handleOptionSelect(option), className: cx('py-1.5 px-4 text-left break-words', {
                     'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark': option.value === (value === null || value === void 0 ? void 0 : value.value),
                     'cursor-pointer hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': option.value !== (value === null || value === void 0 ? void 0 : value.value),
                     'text-14px': size === 'default',
@@ -122,10 +118,7 @@ const Select = ({ id, value: valueProp, defaultValue, label, labelPosition = 'to
     return (_jsxs("div", { className: cx('relative', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1 font-medium', {
-                    'text-14px': size === 'default',
-                    'text-18px': size === 'large',
-                }), children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: id, size: size, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
                     'w-full': fullWidth,
                     'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
                     'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,

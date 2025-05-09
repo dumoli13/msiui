@@ -27,8 +27,8 @@ export interface TextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInput
 }
 /**
  *
- * @property {string | number} [value] - The value of the input. If provided, the input will be controlled.
- * @property {string | number} [defaultValue] - The initial value of the input for uncontrolled usage.
+ * @property {string | number} [value] - The current value of the number field, passed from the parent component.
+ * @property {string | number} [defaultValue] - The default value. Use when the component is not controlled.
  * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
  * @property {RefObject<TextfieldRef> | React.RefCallback<TextfieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.

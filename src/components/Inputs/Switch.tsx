@@ -1,7 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export interface SwitchRef {
   element: HTMLInputElement | null;
@@ -125,24 +126,15 @@ const Switch = ({
         )}
       >
         {label && (
-          <label
-            htmlFor={id}
-            className={cx(
-              'block text-left text-neutral-80 dark:text-neutral-100-dark',
-              {
-                'text-14px': size === 'default',
-                'text-18px': size === 'large',
-              },
-            )}
-          >
+          <InputLabel id={id} size={size}>
             {label}
-          </label>
+          </InputLabel>
         )}
         <div
           role="button"
           tabIndex={!disabled ? 0 : -1}
           className={cx(
-            'w-fit flex items-center gap-2.5 border border-neutral-40 dark:border-neutral-40-dark rounded-md',
+            'w-fit flex items-center gap-2.5 border rounded-md focus:ring-3',
             {
               'bg-neutral-20 dark:bg-neutral-20-dark opacity-50':
                 loading || disabled,
@@ -150,8 +142,11 @@ const Switch = ({
               'cursor-not-allowed': disabled,
               'p-2': size === 'default',
               'p-3': size === 'large',
-              'bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark':
-                !loading && !disabled,
+              'border-neutral-40 dark:border-neutral-40-dark focus:ring-primary-focus dark:focus:ring-primary-focus-dark bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark':
+                !isError && !loading && !disabled,
+              'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
+                isError,
+              '': !isError,
             },
           )}
           onMouseDown={!loading && !disabled ? handleChange : undefined}

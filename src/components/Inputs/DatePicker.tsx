@@ -4,10 +4,11 @@ import cx from 'classnames';
 import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
 import { formatDate } from '../../libs/inputDate';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export const CancelButton = ({
   onClick,
@@ -53,7 +54,7 @@ export interface DatePickerProps
   error?: boolean | string;
   success?: boolean;
   loading?: boolean;
-  disabledDate?: (date: Date, firstSelectedDate: InputDateValue) => boolean;
+  disabledDate?: (date: Date) => boolean;
   width?: number;
   showTime?: boolean;
 }
@@ -81,7 +82,6 @@ export interface DatePickerProps
  * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
  *
  */
-
 const DatePicker = ({
   id,
   value: valueProp,
@@ -101,7 +101,7 @@ const DatePicker = ({
   error: errorProp,
   success: successProp,
   loading = false,
-  disabledDate = () => false,
+  disabledDate,
   width,
   showTime = false,
   ...props
@@ -487,7 +487,7 @@ const DatePicker = ({
                       <tr key={rowIdx}>
                         {row.map((date, dateIdx) => {
                           const isDateDisabled =
-                            date === null || disabledDate(date, tempValue);
+                            date === null || disabledDate?.(date);
                           const isDateSelected = date
                             ? tempValue !== null &&
                               areDatesEqual(date, tempValue)
@@ -738,18 +738,9 @@ const DatePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

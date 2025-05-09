@@ -2,8 +2,8 @@ import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
+import InputHelper from './InputHelper';
 /**
  *
  * @property {boolean} [checked] - The controlled value of the checkbox. If provided, the component acts as a controlled component.
@@ -83,7 +83,7 @@ const Checkbox = (_a) => {
                                     target: { checked: !value },
                                 });
                             }
-                        }, children: [_jsx("input", Object.assign({ id: id, tabIndex: !disabled ? 0 : -1, type: "checkbox", className: "hidden", checked: value, onChange: handleChange, disabled: disabled, "aria-label": ariaLabel, ref: elementRef, onFocus: handleFocus, onBlur: handleBlur }, props)), loading && (_jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2, className: "text-neutral-70 dark:text-neutral-70-dark" })), !loading && value && !indeterminate && (_jsx(Icon, { name: "check", strokeWidth: 4, size: size === 'default' ? 14 : 18, className: cx('absolute', {
+                        }, children: [_jsx("input", Object.assign({ id: id, tabIndex: !disabled ? 0 : -1, type: "checkbox", className: "hidden", checked: value, onChange: handleChange, disabled: disabled, "aria-label": ariaLabel, ref: elementRef, onFocus: handleFocus, onBlur: handleBlur }, props)), loading && (_jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2, className: "text-neutral-70 dark:text-neutral-70-dark" })), !loading && value && !indeterminate && (_jsx(Icon, { name: "check", strokeWidth: 4, size: size === 'default' ? 14 : 18, className: cx({
                                     'text-neutral-10 dark:text-neutral-10-dark': !disabled,
                                     'text-neutral-60 dark:text-neutral-60-dark': disabled,
                                 }) })), !loading && !value && indeterminate && (_jsx("span", { className: "absolute w-2.5 h-2.5 rounded-sm bg-primary-main dark:bg-primary-main-dark" }))] }), !!label && (_jsx("span", { className: cx('text-neutral-90 dark:text-neutral-90-dark', {

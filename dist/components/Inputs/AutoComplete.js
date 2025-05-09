@@ -3,13 +3,14 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 // TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 /**
  *
- * @property {SelectValue<T, D> | null} value - The currently selected value, if any. If controlled, this prop is required.
+ * @property {SelectValue<T, D> | null} value - The value of the input. If provided, the input will be controlled.
  * @property {T | null} defaultValue - The default value for the input. Used in uncontrolled mode.
  * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function to handle input changes.
  * @property {RefObject<AutoCompleteRef<T>> | React.RefCallback<AutoCompleteRef<T>>} [inputRef] - A reference to access the input field and its value programmatically.
@@ -32,7 +33,7 @@ import InputDropdown from './InputDropdown';
  */
 const AutoComplete = (_a) => {
     var _b;
-    var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "placeholder", "options", "onChange", "className", "helperText", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "clearable", "width"]);
+    var { id, value: valueProp, defaultValue, label, labelPosition = 'top', autoHideLabel = false, placeholder, options, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "placeholder", "options", "onChange", "className", "helperText", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "clearable", "width"]);
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -124,12 +125,12 @@ const AutoComplete = (_a) => {
         }
     };
     const handleOptionSelect = (option) => {
-        setInputValue(option.label);
-        if (!isControlled)
+        onChange === null || onChange === void 0 ? void 0 : onChange(option);
+        if (!isControlled) {
             setInternalValue(option);
+            setInputValue(option.label);
+        }
         setDropdownOpen(false);
-        if (onChange)
-            onChange(option);
     };
     const dropdownContent = (_jsxs(_Fragment, { children: [filteredOptions.map((option) => (_jsx("div", { role: "button", onClick: () => handleOptionSelect(option), className: cx('py-1.5 px-4 text-left break-words', {
                     'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark': option.value === (value === null || value === void 0 ? void 0 : value.value),
@@ -140,10 +141,7 @@ const AutoComplete = (_a) => {
     return (_jsxs("div", { className: cx('relative', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1', {
-                    'text-14px': size === 'default',
-                    'text-18px': size === 'large',
-                }), children: label })), _jsxs("div", { className: cx(' relative px-3 border rounded-md py-1 flex gap-2 items-center', {
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: id, size: size, children: label })), _jsxs("div", { className: cx(' relative px-3 border rounded-md py-1 flex gap-2 items-center', {
                     'w-full': fullWidth,
                     'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
                     'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,

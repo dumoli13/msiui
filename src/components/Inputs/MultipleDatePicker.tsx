@@ -5,11 +5,12 @@ import { MONTH_LIST } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
 import { formatDate } from '../../libs/inputDate';
 import { Tag } from '../Displays';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export type InputMultipleDateValue = Date[];
 export interface InputMultipleDatePickerRef {
@@ -51,7 +52,7 @@ export interface MultipleDatePickerProps
  * @property {InputDateValue} value - The currently selected date. If provided, the component behaves as a controlled component.
  * @property {InputDateValue} [defaultValue=null] - The default date to display if no value is provided (used in uncontrolled mode).
  * @property {function} [onChange] - Callback function to handle input changes.
- * @property {RefObject<InputDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
+ * @property {RefObject<InputMultipleDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
  * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
@@ -552,18 +553,9 @@ const MultipleDatePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(
@@ -591,7 +583,7 @@ const MultipleDatePicker = ({
           role="button"
           tabIndex={!disabled ? 0 : -1}
           aria-pressed="true"
-          className={cx('flex flex-1 gap-2 items-center flex-wrap', {
+          className={cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
             'w-full': fullWidth,
             'cursor-text': !disabled,
             'cursor-not-allowed': disabled,
@@ -604,7 +596,7 @@ const MultipleDatePicker = ({
             const tagValue = formatDate(selected);
             return (
               <div
-                className={cx({
+                className={cx('flex items-center', {
                   'h-[32px]': size === 'default',
                   'h-[44px]': size === 'large',
                 })}
@@ -615,6 +607,7 @@ const MultipleDatePicker = ({
                 ) : (
                   <Tag
                     color="info"
+                    size={size}
                     onRemove={
                       isControlled
                         ? undefined

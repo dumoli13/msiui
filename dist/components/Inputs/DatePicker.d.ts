@@ -25,7 +25,7 @@ export interface DatePickerProps extends Omit<React.InputHTMLAttributes<HTMLInpu
     error?: boolean | string;
     success?: boolean;
     loading?: boolean;
-    disabledDate?: (date: Date, firstSelectedDate: InputDateValue) => boolean;
+    disabledDate?: (date: Date) => boolean;
     width?: number;
     showTime?: boolean;
 }

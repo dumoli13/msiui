@@ -29,7 +29,7 @@ export interface MultipleDatePickerProps extends Omit<React.InputHTMLAttributes<
  * @property {InputDateValue} value - The currently selected date. If provided, the component behaves as a controlled component.
  * @property {InputDateValue} [defaultValue=null] - The default date to display if no value is provided (used in uncontrolled mode).
  * @property {function} [onChange] - Callback function to handle input changes.
- * @property {RefObject<InputDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
+ * @property {RefObject<InputMultipleDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
  * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
  * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.

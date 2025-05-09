@@ -30,7 +30,7 @@ export interface AutoCompleteProps<T, D = undefined> extends Omit<React.InputHTM
 }
 /**
  *
- * @property {SelectValue<T, D> | null} value - The currently selected value, if any. If controlled, this prop is required.
+ * @property {SelectValue<T, D> | null} value - The value of the input. If provided, the input will be controlled.
  * @property {T | null} defaultValue - The default value for the input. Used in uncontrolled mode.
  * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function to handle input changes.
  * @property {RefObject<AutoCompleteRef<T>> | React.RefCallback<AutoCompleteRef<T>>} [inputRef] - A reference to access the input field and its value programmatically.

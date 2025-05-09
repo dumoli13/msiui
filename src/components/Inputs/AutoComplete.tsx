@@ -1,10 +1,11 @@
 // TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 import { SelectValue } from './Select';
 
 export interface AutoCompleteRef<T, D = undefined> {
@@ -45,7 +46,7 @@ export interface AutoCompleteProps<T, D = undefined>
 
 /**
  *
- * @property {SelectValue<T, D> | null} value - The currently selected value, if any. If controlled, this prop is required.
+ * @property {SelectValue<T, D> | null} value - The value of the input. If provided, the input will be controlled.
  * @property {T | null} defaultValue - The default value for the input. Used in uncontrolled mode.
  * @property {(value: SelectValue<T, D> | null) => void} [onChange] - Callback function to handle input changes.
  * @property {RefObject<AutoCompleteRef<T>> | React.RefCallback<AutoCompleteRef<T>>} [inputRef] - A reference to access the input field and its value programmatically.
@@ -66,7 +67,6 @@ export interface AutoCompleteProps<T, D = undefined>
  * @property {boolean} [clearable=false] - A flag that show clear button of input field if set to true.
  * @property {SelectValue<T, D>[]} options - An array of option objects, each containing a value and a label.
  */
-
 const AutoComplete = <T, D = undefined>({
   id,
   value: valueProp,
@@ -74,7 +74,7 @@ const AutoComplete = <T, D = undefined>({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
-  placeholder = '',
+  placeholder,
   options,
   onChange,
   className,
@@ -210,10 +210,12 @@ const AutoComplete = <T, D = undefined>({
   };
 
   const handleOptionSelect = (option: SelectValue<T, D>) => {
-    setInputValue(option.label);
-    if (!isControlled) setInternalValue(option);
+    onChange?.(option);
+    if (!isControlled) {
+      setInternalValue(option);
+      setInputValue(option.label);
+    }
     setDropdownOpen(false);
-    if (onChange) onChange(option);
   };
 
   const dropdownContent = (
@@ -258,18 +260,9 @@ const AutoComplete = <T, D = undefined>({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

@@ -1,7 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export interface TextfieldRef {
   element: HTMLInputElement | null;
@@ -39,8 +40,8 @@ export interface TextFieldProps
 
 /**
  *
- * @property {string | number} [value] - The value of the input. If provided, the input will be controlled.
- * @property {string | number} [defaultValue] - The initial value of the input for uncontrolled usage.
+ * @property {string | number} [value] - The current value of the number field, passed from the parent component.
+ * @property {string | number} [defaultValue] - The default value. Use when the component is not controlled.
  * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
  * @property {RefObject<TextfieldRef> | React.RefCallback<TextfieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
  * @property {string} [label] - The label text displayed above or beside the input field.
@@ -140,18 +141,9 @@ const TextField = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

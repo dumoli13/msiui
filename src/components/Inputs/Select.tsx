@@ -1,9 +1,10 @@
 import React from 'react';
 import cx from 'classnames';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export type SelectValue<T, D = undefined> = {
   value: T;
@@ -181,18 +182,13 @@ const Select = <T, D = undefined>({
     setDropdownOpen((prev) => !prev);
   };
 
-  const handleOptionSelect =
-    (option: SelectValue<T, D>) => (e: React.MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!isControlled) setInternalValue(option);
-      setDropdownOpen(false);
-      if (onChange) onChange(option);
-    };
+  const handleOptionSelect = (option: SelectValue<T, D>) => {
+    onChange?.(option);
+    if (!isControlled) setInternalValue(option);
+    setDropdownOpen(false);
+  };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleClearValue = () => {
     setDropdownOpen(true);
     onChange?.(null);
     if (!isControlled) setInternalValue(null);
@@ -204,7 +200,7 @@ const Select = <T, D = undefined>({
         <div
           role="button"
           key={String(option.value)}
-          onMouseDown={handleOptionSelect(option)}
+          onClick={() => handleOptionSelect(option)}
           className={cx('py-1.5 px-4 text-left break-words', {
             'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark':
               option.value === value?.value,
@@ -240,18 +236,9 @@ const Select = <T, D = undefined>({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1 font-medium',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

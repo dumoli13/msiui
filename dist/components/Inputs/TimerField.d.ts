@@ -21,7 +21,7 @@ export interface TimerFieldProps extends Omit<React.InputHTMLAttributes<HTMLInpu
     fullWidth?: boolean;
     startIcon?: React.ReactNode;
     endIcon?: React.ReactNode;
-    inputRef?: React.RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>;
+    inputRef?: React.RefObject<TimerFieldRef | null> | React.RefCallback<TimerFieldRef | null>;
     size?: 'default' | 'large';
     error?: boolean | string;
     success?: boolean;
@@ -30,7 +30,7 @@ export interface TimerFieldProps extends Omit<React.InputHTMLAttributes<HTMLInpu
 }
 /**
  *
- * @property {number | null} [value] - The current value of the number field, passed from the parent component.
+ * @property {number | null} [value] - The current value of the input, passed from the parent component.
  * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
  * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
  * @property {RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>} [inputRef] - A ref that provides access to the input element.

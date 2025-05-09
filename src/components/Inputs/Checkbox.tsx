@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
+import InputHelper from './InputHelper';
 
 export interface CheckboxRef {
   element: HTMLInputElement | null;
@@ -13,7 +13,7 @@ export interface CheckboxRef {
 export interface CheckboxProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'size' | 'placeholder' | 'required'
+    'onChange' | 'size' | 'placeholder' | 'required' | 'value'
   > {
   label?: string;
   labelPosition?: 'top' | 'bottom' | 'left' | 'right';
@@ -183,7 +183,7 @@ const Checkbox = ({
               name="check"
               strokeWidth={4}
               size={size === 'default' ? 14 : 18}
-              className={cx('absolute', {
+              className={cx({
                 'text-neutral-10 dark:text-neutral-10-dark': !disabled,
                 'text-neutral-60 dark:text-neutral-60-dark': disabled,
               })}

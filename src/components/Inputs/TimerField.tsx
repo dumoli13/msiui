@@ -1,10 +1,11 @@
 import React from 'react';
 import cx from 'classnames';
 import { TimeUnit } from '../../const/datePicker';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 
 export interface TimerFieldRef {
   element: HTMLInputElement | null;
@@ -32,7 +33,9 @@ export interface TimerFieldProps
   fullWidth?: boolean;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
-  inputRef?: React.RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>;
+  inputRef?:
+    | React.RefObject<TimerFieldRef | null>
+    | React.RefCallback<TimerFieldRef | null>;
   size?: 'default' | 'large';
   error?: boolean | string;
   success?: boolean;
@@ -42,7 +45,7 @@ export interface TimerFieldProps
 
 /**
  *
- * @property {number | null} [value] - The current value of the number field, passed from the parent component.
+ * @property {number | null} [value] - The current value of the input, passed from the parent component.
  * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
  * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
  * @property {RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>} [inputRef] - A ref that provides access to the input element.
@@ -292,18 +295,9 @@ const TimerField = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <label
-          htmlFor={id}
-          className={cx(
-            'shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
-        >
+        <InputLabel id={id} size={size}>
           {label}
-        </label>
+        </InputLabel>
       )}
       <div
         className={cx(

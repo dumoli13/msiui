@@ -58,7 +58,7 @@ const InputEndIconWrapper = ({
       {error && (
         <div
           className={cx(
-            'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center',
+            'shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center leading-none',
             {
               'h-4 w-4 text-12px': size === 'default',
               'h-5 w-5 text-16px': size === 'large',

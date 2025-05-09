@@ -20,7 +20,7 @@ export type FormRule = {
 } | 'required' | 'email' | 'url';
 export type FormRules = Record<string, FormRule[]>;
 export interface FormProps<T> {
-    onSubmit: (values: T) => void;
+    onSubmit: (values: T) => Promise<void> | void;
     onReset?: () => void;
     className?: string;
     children: React.ReactNode;

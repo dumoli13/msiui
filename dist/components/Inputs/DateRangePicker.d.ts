@@ -17,7 +17,7 @@ export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTM
     helperText?: React.ReactNode;
     placeholder?: string;
     fullWidth?: boolean;
-    inputRef?: React.RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>;
+    inputRef?: React.RefObject<InputDateRangePickerRef | null> | React.RefCallback<InputDateRangePickerRef | null>;
     size?: 'default' | 'large';
     error?: boolean | string;
     success?: boolean;

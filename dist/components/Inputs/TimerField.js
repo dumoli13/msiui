@@ -3,13 +3,14 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import { TimeUnit } from '../../const/datePicker';
-import InputEndIconWrapper from '../Displays/InputEndIconWrapper';
-import InputHelper from '../Displays/InputHelper';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
+import InputEndIconWrapper from './InputEndIconWrapper';
+import InputHelper from './InputHelper';
+import InputLabel from './InputLabel';
 /**
  *
- * @property {number | null} [value] - The current value of the number field, passed from the parent component.
+ * @property {number | null} [value] - The current value of the input, passed from the parent component.
  * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
  * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
  * @property {RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>} [inputRef] - A ref that provides access to the input element.
@@ -165,10 +166,7 @@ const TimerField = (_a) => {
     return (_jsxs("div", { className: cx('relative', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx("label", { htmlFor: id, className: cx('shrink-0 block text-left text-neutral-80 dark:text-neutral-100-dark mb-1', {
-                    'text-14px': size === 'default',
-                    'text-18px': size === 'large',
-                }), children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: id, size: size, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
                     'w-full': fullWidth,
                     'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
                     'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
@@ -190,6 +188,6 @@ const TimerField = (_a) => {
                                 'py-3': size === 'large',
                             }), disabled: disabled, autoComplete: "off" })) }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, size: size, clearable: clearable && !!focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: (!clearable ||
                             (clearable && !focused) ||
-                            (clearable && focused && !value)) && (_jsx(Icon, { name: "clock", strokeWidth: 2, onClick: handleDropdown, disabled: disabled, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
+                            (clearable && focused && !value)) && (_jsx(Icon, { name: "clock", strokeWidth: 2, onClick: handleDropdown, disabled: disabled, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
 };
 export default TimerField;
