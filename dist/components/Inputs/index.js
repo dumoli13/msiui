@@ -9,6 +9,7 @@ export { default as IconButton } from './IconButton';
 export { default as InputDropdown } from './InputDropdown';
 export { default as NumberTextField } from './NumberTextField';
 export { default as PasswordField } from './PasswordField';
+export { default as RadioGroup } from './RadioGroup';
 export { default as Select } from './Select';
 export { default as Switch } from './Switch';
 export { default as TextArea } from './TextArea';

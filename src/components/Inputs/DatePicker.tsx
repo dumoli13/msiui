@@ -1,9 +1,9 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import cx from 'classnames';
-import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
+import dayjs from 'dayjs';
+import { MONTH_LIST, PickerType, TimeUnit } from '../../const/datePicker';
 import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
-import { formatDate } from '../../libs/inputDate';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
@@ -31,14 +31,16 @@ export interface InputDatePickerRef {
   value: InputDateValue;
   focus: () => void;
   reset: () => void;
+  disabled: boolean;
 }
 export interface DatePickerProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
+    'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked'
   > {
   value?: InputDateValue;
   defaultValue?: InputDateValue;
+  initialValue?: InputDateValue;
   clearable?: boolean;
   label?: string;
   labelPosition?: 'top' | 'left';
@@ -57,35 +59,20 @@ export interface DatePickerProps
   disabledDate?: (date: Date) => boolean;
   width?: number;
   showTime?: boolean;
+  picker?: PickerType;
+  format?: string;
+  required?: boolean;
 }
 
 /**
- *
- * @property {InputDateValue} value - The currently selected date. If provided, the component behaves as a controlled component.
- * @property {InputDateValue} [defaultValue=null] - The default date to display if no value is provided (used in uncontrolled mode).
- * @property {(value: InputDateValue) => void} [onChange] -Callback function to handle input changes.
- * @property {RefObject<InputDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {boolean} [showTime=false] - Whether to show the time picker.
- * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
- * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- *
+ * The Date Picker component lets users select a date. User can also set a time of the date.
  */
 const DatePicker = ({
   id,
+  name,
   value: valueProp,
-  defaultValue = valueProp,
+  defaultValue,
+  initialValue = null,
   label,
   labelPosition = 'top',
   autoHideLabel = false,
@@ -104,6 +91,9 @@ const DatePicker = ({
   disabledDate,
   width,
   showTime = false,
+  format: formatProps,
+  picker = 'date',
+  required,
   ...props
 }: DatePickerProps) => {
   const elementRef = React.useRef<HTMLDivElement>(null);
@@ -111,8 +101,16 @@ const DatePicker = ({
   const [focused, setFocused] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState(
-    defaultValue || null,
+    defaultValue || initialValue,
   );
+
+  let format = formatProps;
+  if (!format) {
+    if (picker === 'year') format = 'YYYY';
+    else if (picker === 'month') format = 'M/YYYY';
+    else format = 'D/M/YYYY';
+    if (showTime) format = `${format} HH:mm:ss`;
+  }
 
   const isControlled = typeof valueProp !== 'undefined';
   const value = isControlled && !dropdownOpen ? valueProp : internalValue;
@@ -125,9 +123,7 @@ const DatePicker = ({
     value || null,
   );
 
-  const [calendarView, setCalendarView] = React.useState<
-    'date' | 'month' | 'year'
-  >('date');
+  const [calendarView, setCalendarView] = React.useState<PickerType>(picker);
   const [displayedDate, setDisplayedDate] = React.useState(value ?? new Date());
   const yearRange = getYearRange(displayedDate.getFullYear());
 
@@ -189,12 +185,9 @@ const DatePicker = ({
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
-    reset: () => {
-      setInternalValue(defaultValue || null);
-    },
+    focus: () => elementRef.current?.focus(),
+    reset: () => setInternalValue(initialValue),
+    disabled,
   }));
 
   React.useEffect(() => {
@@ -219,13 +212,19 @@ const DatePicker = ({
 
   const handleFocus = () => {
     if (disabled) return;
-    handleChangeView('date');
+    handleChangeView(picker);
     setFocused(true);
     setDropdownOpen(true);
   };
 
   const handleBlur = (event?: React.FocusEvent<HTMLDivElement>) => {
-    const relatedTarget = event?.relatedTarget as Node | null;
+    if (!event) {
+      setFocused(false);
+      setDropdownOpen(false);
+      return;
+    }
+
+    const relatedTarget = event?.relatedTarget;
 
     const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
     const selectElementContainsTarget =
@@ -278,18 +277,26 @@ const DatePicker = ({
     dateMatrix.push(dateRow);
   }
 
-  const handleChangeView = (view: 'date' | 'month' | 'year') => {
+  const handleChangeView = (view: PickerType) => {
     setCalendarView(view);
   };
 
   const handleJumpMonth = (month: number) => {
-    setDisplayedDate(new Date(displayedDate.getFullYear(), month));
-    handleChangeView('date');
+    if (picker === 'month') {
+      handleSelectDate(new Date(displayedDate.getFullYear(), month));
+    } else {
+      setDisplayedDate(new Date(displayedDate.getFullYear(), month));
+      handleChangeView('date');
+    }
   };
 
   const handleJumpYear = (year: number) => {
-    setDisplayedDate(new Date(year, displayedDate.getMonth()));
-    setCalendarView('month');
+    if (picker === 'year') {
+      handleSelectDate(new Date(year, 0)); // january 1, <YEAR>
+    } else {
+      setDisplayedDate(new Date(year, displayedDate.getMonth()));
+      setCalendarView('month');
+    }
   };
 
   const handlePrevMonth = () => {
@@ -396,9 +403,7 @@ const DatePicker = ({
     );
   };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleClearValue = () => {
     handleChange(null);
     setTimeValue({
       hours: null,
@@ -432,7 +437,7 @@ const DatePicker = ({
                     name="chevron-left"
                     size={20}
                     strokeWidth={2}
-                    onClick={() => handlePrevMonth}
+                    onClick={handlePrevMonth}
                     className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
                   />
                 </div>
@@ -493,12 +498,6 @@ const DatePicker = ({
                               areDatesEqual(date, tempValue)
                             : false;
 
-                          const handleChooseDate = (date: InputDateValue) => {
-                            if (isDateDisabled || !date) return;
-
-                            handleSelectDate(date);
-                          };
-
                           return (
                             <td
                               key={dateIdx}
@@ -508,27 +507,30 @@ const DatePicker = ({
                               className="px-0"
                             >
                               <div className="flex justify-center items-center">
-                                <button
-                                  type="button"
-                                  onClick={() => handleChooseDate(date)}
-                                  className={cx(
-                                    'rounded-md text-14px mt-0.5 transition-colors duration-200 ease-in w-7 h-7 flex items-center justify-center',
-                                    {
-                                      'cursor-default text-neutral-30 dark:text-neutral-30-dark':
-                                        isDateDisabled,
-                                      'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
-                                        !isDateDisabled,
-                                      'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                                        !isDateDisabled && !isDateSelected,
-                                      'border border-primary-main':
-                                        isToday(date) && !isDateSelected,
-                                      'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark':
-                                        isDateSelected,
-                                    },
-                                  )}
-                                >
-                                  {date?.getDate()}
-                                </button>
+                                {date && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSelectDate(date)}
+                                    className={cx(
+                                      'rounded-md text-14px mt-0.5 transition-colors duration-200 ease-in w-7 h-7 flex items-center justify-center',
+                                      {
+                                        'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                                          isDateDisabled,
+                                        'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                                          !isDateDisabled,
+                                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
+                                          !isDateDisabled && !isDateSelected,
+                                        'border border-primary-main':
+                                          isToday(date) && !isDateSelected,
+                                        'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark':
+                                          isDateSelected,
+                                      },
+                                    )}
+                                    disabled={isDateDisabled}
+                                  >
+                                    {date?.getDate()}
+                                  </button>
+                                )}
                               </div>
                             </td>
                           );
@@ -601,7 +603,7 @@ const DatePicker = ({
             </div>
           ) : (
             <button
-              className="border-t border-neutral-40 dark:border-neutral-40-dark flex justify-center p-2.5 text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark"
+              className="border-t border-neutral-40 dark:border-neutral-40-dark flex justify-center p-2.5 text-14px text-primary-main dark:text-primary-main-dark hover:text-primary-hover dark:hover:text-primary-hover-dark w-full"
               type="button"
               onClick={handleToday}
             >
@@ -665,9 +667,11 @@ const DatePicker = ({
               );
             })}
           </div>
-          <div className="flex justify-end gap-3 px-2">
-            <CancelButton onClick={() => handleChangeView('date')} />
-          </div>
+          {picker === 'date' && (
+            <div className="flex justify-end gap-3 px-2">
+              <CancelButton onClick={() => handleChangeView(picker)} />
+            </div>
+          )}
         </>
       )}
       {calendarView === 'year' && (
@@ -718,13 +722,17 @@ const DatePicker = ({
               );
             })}
           </div>
-          <div className="flex justify-end gap-3 px-2">
-            <CancelButton onClick={() => handleChangeView('date')} />
-          </div>
+          {(picker === 'date' || picker === 'month') && (
+            <div className="flex justify-end gap-3 px-2">
+              <CancelButton onClick={() => handleChangeView(picker)} />
+            </div>
+          )}
         </>
       )}
     </div>
   );
+
+  const inputId = `datepicker-${id || name}-${React.useId()}`;
 
   return (
     <div
@@ -738,13 +746,13 @@ const DatePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
@@ -759,6 +767,8 @@ const DatePicker = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
         ref={elementRef}
@@ -767,14 +777,14 @@ const DatePicker = ({
         <input
           {...props}
           tabIndex={!disabled ? 0 : -1}
-          id={id}
-          value={value ? formatDate(value, showTime) : ''}
+          id={inputId}
+          value={value ? dayjs(value).format(format) : ''}
           placeholder={focused ? '' : placeholder}
           className={cx(
             'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
             {
-              'text-14px py-1.5': size === 'default',
-              'text-18px py-3': size === 'large',
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
             },
           )}
           disabled={disabled}
@@ -789,7 +799,6 @@ const DatePicker = ({
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
           clearable={clearable && focused && !!value}
           onClear={handleClearValue}
         >
@@ -798,6 +807,7 @@ const DatePicker = ({
             (clearable && focused && !value)) && (
             <Icon
               name="calendar"
+              size={20}
               strokeWidth={2}
               onClick={disabled ? undefined : handleDropdown}
               className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
@@ -817,5 +827,7 @@ const DatePicker = ({
     </div>
   );
 };
+
+DatePicker.isFormInput = true;
 
 export default DatePicker;

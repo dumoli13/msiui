@@ -7,4 +7,5 @@ export declare enum TimeUnit {
     minutes = "minutes",
     seconds = "seconds"
 }
+export type PickerType = 'date' | 'month' | 'year';
 //# sourceMappingURL=datePicker.d.ts.map

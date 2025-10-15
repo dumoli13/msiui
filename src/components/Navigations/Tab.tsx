@@ -4,7 +4,7 @@ import Icon from '../Icon';
 
 export interface TabItem {
   key: string | number;
-  label: string;
+  label: React.ReactNode;
   disabled?: boolean;
   children: React.ReactNode;
 }
@@ -18,6 +18,9 @@ export interface TabProps {
   onTabClose?: (key: string | number) => void;
 }
 
+/**
+ * Tabs make it easy to explore and switch between different views.
+ */
 const Tab = ({
   items,
   defaultActiveKey,
@@ -82,7 +85,7 @@ const Tab = ({
                   onClick={(e) => handleClose(tab.key, e)}
                   aria-label={`Close ${tab.label}`}
                   className="text-neutral-60 dark:text-neutral-60-dark"
-                  strokeWidth={3}
+                  strokeWidth={1}
                 />
               )}
             </div>
@@ -92,9 +95,9 @@ const Tab = ({
               role="none"
               className={cx(
                 'text-14px font-bold flex items-center gap-2 border rounded-md px-4 py-2 cursor-pointer',
-                'bg-primary-15 dark:bg-primary-15-dark border-neutral-40 dark:border-neutral-40-dark',
+                'bg-neutral-15 dark:bg-neutral-20-dark border-neutral-40 dark:border-neutral-40-dark',
                 {
-                  'text-neutral-100 dark:text-neutral-100-dark hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-10 dark:hover:text-neutral-10-dark':
+                  'text-neutral-90 dark:text-neutral-100-dark hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-10 dark:hover:text-neutral-10-dark':
                     !tab.disabled,
                   'text-neutral-40 dark:text-neutral-40-dark ': tab.disabled,
                 },
@@ -109,7 +112,7 @@ const Tab = ({
                   onClick={(e) => handleClose(tab.key, e)}
                   aria-label={`Close ${tab.label}`}
                   className="text-neutral-60 dark:text-neutral-60-dark"
-                  strokeWidth={3}
+                  strokeWidth={1}
                 />
               )}
             </div>

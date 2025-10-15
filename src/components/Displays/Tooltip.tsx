@@ -14,6 +14,9 @@ export interface TooltipProps {
   disabled?: boolean;
 }
 
+/**
+ * Tooltips display informative text when users hover over an element
+ */
 const Tooltip = ({
   children,
   verticalAlign = 'bottom',
@@ -115,7 +118,7 @@ const Tooltip = ({
         onMouseLeave={handleMouseLeave}
         role="button"
         tabIndex={-1}
-        className={cx('inline-block', {
+        className={cx({
           'cursor-not-allowed': disabled,
         })}
       >
@@ -136,7 +139,7 @@ const Tooltip = ({
               transformOrigin: 'center center',
               transition: 'opacity 0.15s ease-out',
             }}
-            className="absolute z-[100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px"
+            className="absolute z-[2100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px"
           >
             {arrow && (
               <div

@@ -1,11 +1,11 @@
 export { default as Accordion } from './Accordion';
 export type { AccordionProps, AccordionItem } from './Accordion';
 
-export { default as PdfThumbnail } from './PdfThumbnail';
-export type { PdfThumbnailProps } from './PdfThumbnail';
+// export { default as PdfThumbnail } from './PdfThumbnail';
+// export type { PdfThumbnailProps } from './PdfThumbnail';
 
-export { default as PdfViewer } from './PdfViewer';
-export type { PdfViewerProps } from './PdfViewer';
+// export { default as PdfViewer } from './PdfViewer';
+// export type { PdfViewerProps } from './PdfViewer';
 
 export { default as Popover } from './Popover';
 export type { PopoverProps } from './Popover';

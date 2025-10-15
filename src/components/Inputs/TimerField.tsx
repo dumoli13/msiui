@@ -12,15 +12,16 @@ export interface TimerFieldRef {
   value: number | null;
   focus: () => void;
   reset: () => void;
+  disabled: boolean;
 }
 export interface TimerFieldProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
+    'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked'
   > {
-  id?: string;
   value?: number | null;
   defaultValue?: number | null;
+  initialValue?: number | null;
   clearable?: boolean;
   label?: string;
   labelPosition?: 'top' | 'left';
@@ -41,37 +42,18 @@ export interface TimerFieldProps
   success?: boolean;
   loading?: boolean;
   width?: number;
+  required?: boolean;
 }
 
 /**
- *
- * @property {number | null} [value] - The current value of the input, passed from the parent component.
- * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
- * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
- * @property {RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>} [inputRef] - A ref that provides access to the input element.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should hide when the user starts typing.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {string} [placeholder='hh:mm:ss'] - Placeholder text displayed inside the input field when it is empty.
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
- * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
- * @property {number} [width] - Optional custom width for the input field.
- * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- *
+ * The Timer Field component is used for collecting time value from users
  */
-
 const TimerField = ({
   id,
+  name,
   value: valueProp,
-  defaultValue = valueProp,
+  defaultValue,
+  initialValue = null,
   label,
   labelPosition = 'top',
   autoHideLabel = false,
@@ -90,6 +72,7 @@ const TimerField = ({
   success: successProp,
   loading = false,
   width,
+  required,
   ...props
 }: TimerFieldProps) => {
   const elementRef = React.useRef<HTMLInputElement>(null);
@@ -100,7 +83,7 @@ const TimerField = ({
   >(null);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState<number | null>(
-    defaultValue !== undefined ? defaultValue : null,
+    defaultValue !== undefined ? defaultValue : initialValue,
   );
 
   const isControlled = valueProp !== undefined;
@@ -133,12 +116,9 @@ const TimerField = ({
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      valueRef.current?.focus();
-    },
-    reset: () => {
-      setInternalValue(defaultValue !== undefined ? defaultValue : null);
-    },
+    focus: () => valueRef.current?.focus(),
+    reset: () => setInternalValue(initialValue),
+    disabled,
   }));
 
   const handleSelectTime = (category: TimeUnit, selected: number) => {
@@ -149,11 +129,6 @@ const TimerField = ({
       [category]: selected,
     };
     setTimeValue(selectedTime);
-    setInternalValue(
-      selectedTime.hours * 3600 +
-        selectedTime.minutes * 60 +
-        selectedTime.seconds,
-    );
   };
 
   const handleFocus = (component: 'hour' | 'minute' | 'second' = 'hour') => {
@@ -167,16 +142,27 @@ const TimerField = ({
     setDropdownOpen(false);
   };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-
-    if (onChange) {
-      onChange(null);
-    }
+  const handleClearValue = () => {
+    onChange?.(null);
     if (!isControlled) {
       setInternalValue(null);
     }
+  };
+
+  const handleConfirmTime = () => {
+    const newDuration = timeValue
+      ? (timeValue.hours ?? 0) * 3600 +
+        (timeValue.minutes ?? 0) * 60 +
+        (timeValue.seconds ?? 0)
+      : null;
+
+    onChange?.(newDuration);
+
+    if (!isControlled) {
+      setInternalValue(newDuration);
+    }
+
+    handleBlur();
   };
 
   const handleDropdown = () => {
@@ -232,6 +218,16 @@ const TimerField = ({
     }, 50); // Small delay for rendering
   }, [dropdownOpen, timeValue]);
 
+  React.useEffect(() => {
+    if (dropdownOpen) {
+      setTimeValue({
+        hours: value ? Math.floor(value / 3600) : null,
+        minutes: value ? Math.floor((value % 3600) / 60) : null,
+        seconds: value ? value % 60 : null,
+      });
+    }
+  }, [dropdownOpen]);
+
   const dropdownContent = (
     <div className="border-l border-neutral-40 dark:border-neutral-40-dark text-14px">
       <div className="flex">
@@ -269,7 +265,7 @@ const TimerField = ({
       <div className="border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-end py-2 px-3">
         <button
           type="button"
-          onClick={handleBlur}
+          onClick={handleConfirmTime}
           className={cx(
             'text-14px py-0.5 px-2 rounded disabled:border',
             'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed',
@@ -283,6 +279,8 @@ const TimerField = ({
     </div>
   );
 
+  const inputId = `timerfield-${id || name}-${React.useId()}`;
+
   return (
     <div
       className={cx(
@@ -295,20 +293,20 @@ const TimerField = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
               isError,
             'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp && !disabled,
             'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
@@ -316,6 +314,8 @@ const TimerField = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
         style={width ? { width } : undefined}
@@ -327,37 +327,30 @@ const TimerField = ({
         )}
         <div
           className={cx('flex items-center w-full', {
-            'text-14px': size === 'default',
-            'text-18px': size === 'large',
+            'text-14px py-0.5': size === 'default',
+            'text-18px py-0.5': size === 'large',
           })}
         >
           <input
             {...props}
             tabIndex={!disabled ? 0 : -1}
-            id={id}
+            id={inputId}
             value={
               displayValue
                 ? `${Math.floor(displayValue / 3600)
                     .toLocaleString('en-US')
                     .padStart(2, '0')}:${Math.floor((displayValue % 3600) / 60)
                     .toLocaleString('en-US')
-                    .padStart(
-                      2,
-                      '0',
-                    )}:${(displayValue % 60).toLocaleString('en-US').padStart(2, '0')}`
+                    .padStart(2, '0')}:${(displayValue % 60)
+                    .toLocaleString('en-US')
+                    .padStart(2, '0')}`
                 : ''
             }
             placeholder={focused ? '' : placeholder}
             onFocus={() => handleFocus('hour')}
             onChange={() => {}}
             ref={elementRef}
-            className={cx(
-              'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
-              {
-                'py-1.5': size === 'default',
-                'py-3': size === 'large',
-              },
-            )}
+            className="w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
             disabled={disabled}
             autoComplete="off"
           />
@@ -366,7 +359,6 @@ const TimerField = ({
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
           clearable={clearable && !!focused && !!value}
           onClear={handleClearValue}
           endIcon={endIcon}
@@ -376,6 +368,7 @@ const TimerField = ({
             (clearable && focused && !value)) && (
             <Icon
               name="clock"
+              size={20}
               strokeWidth={2}
               onClick={handleDropdown}
               disabled={disabled}
@@ -396,5 +389,7 @@ const TimerField = ({
     </div>
   );
 };
+
+TimerField.isFormInput = true;
 
 export default TimerField;

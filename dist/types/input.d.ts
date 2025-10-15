@@ -12,8 +12,15 @@ export interface InputProps<T> {
     fullWidth?: boolean;
     value?: T;
     defaultValue?: T;
+    initialValue?: T;
     onChange?: (value: T) => void;
     children?: React.ReactNode;
     inputRef?: React.RefObject<InputPropsRefType> | React.RefCallback<InputPropsRefType>;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
+export type SelectValue<T, D = undefined> = {
+    value: T;
+    label: string;
+    detail?: D;
+};
 //# sourceMappingURL=input.d.ts.map

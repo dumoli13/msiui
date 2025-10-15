@@ -4,7 +4,7 @@
  * @param showTime boolean to show time or not
  * @returns if showTime is true, returns "D/M/YYYY HH:mm:ss", otherwise returns "D/M/YYYY"
  */
-export function formatDate(value, showTime = false) {
+export function formatDate(value, showTime = false, picker = 'date') {
     const date = new Date(value);
     const day = date.getDate();
     const month = date.getMonth() + 1; // Months are 0-indexed
@@ -12,11 +12,21 @@ export function formatDate(value, showTime = false) {
     const hours = date.getHours().toString().padStart(2, '0');
     const mins = date.getMinutes().toString().padStart(2, '0');
     const secs = date.getSeconds().toString().padStart(2, '0');
-    if (showTime) {
-        return `${day}/${month}/${year} ${hours}:${mins}:${secs}`;
+    let formattedDate;
+    if (picker === 'date') {
+        formattedDate = `${day}/${month}/${year}`;
+    }
+    else if (picker === 'month') {
+        formattedDate = `${month}/${year}`;
     }
     else {
-        return `${day}/${month}/${year}`;
+        formattedDate = `${year}`;
+    }
+    if (showTime) {
+        return `${formattedDate} ${hours}:${mins}:${secs}`;
+    }
+    else {
+        return formattedDate;
     }
 }
 export function isValidDate(value) {

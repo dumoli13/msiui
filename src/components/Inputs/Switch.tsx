@@ -9,6 +9,7 @@ export interface SwitchRef {
   value: boolean;
   focus: () => void;
   reset: () => void;
+  disabled: boolean;
 }
 
 export interface SwitchProps
@@ -17,6 +18,7 @@ export interface SwitchProps
     'defaultChecked' | 'onChange' | 'size' | 'required'
   > {
   defaultChecked?: boolean;
+  initialChecked?: boolean;
   label?: string;
   labelPosition?: 'top' | 'left';
   autoHideLabel?: boolean;
@@ -32,32 +34,17 @@ export interface SwitchProps
   falseLabel?: string;
   width?: number;
   loading?: boolean;
+  required?: boolean;
 }
 
 /**
- *
- * @property {boolean} [checked] - The current state of the switch when controlled by a parent component.
- * @property {boolean} [defaultChecked=false] - The initial value of the input for uncontrolled usage.
- * @property {(checked: boolean) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<SwitchRef> | React.RefCallback<SwitchRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {string} [trueLabel='Yes'] - The label to display when the switch is in the "on" or "checked" state.
- * @property {string} [falseLabel='No'] - The label to display when the switch is in the "off" or "unchecked" state.
- *
+ * The Switch component is used for toggling between two states. Most commonly used for setting on or off.
  */
 const Switch = ({
   id,
+  name,
   defaultChecked,
+  initialChecked = false,
   checked: checkedProp,
   label,
   labelPosition = 'top',
@@ -73,11 +60,12 @@ const Switch = ({
   falseLabel = 'No',
   width,
   loading = false,
+  required,
   ...props
 }: SwitchProps) => {
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [internalChecked, setInternalChecked] = React.useState(
-    defaultChecked || false,
+    defaultChecked || initialChecked,
   );
   const isControlled = checkedProp !== undefined;
   const value = isControlled ? checkedProp : internalChecked;
@@ -85,12 +73,9 @@ const Switch = ({
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
-    reset: () => {
-      setInternalChecked(defaultChecked || false);
-    },
+    focus: () => elementRef.current?.focus(),
+    reset: () => setInternalChecked(initialChecked),
+    disabled,
   }));
 
   const helperMessage = errorProp ?? helperText;
@@ -104,6 +89,8 @@ const Switch = ({
       setInternalChecked(newChecked);
     }
   };
+
+  const inputId = `switch-${id || name}-${React.useId()}`;
 
   return (
     <div
@@ -126,7 +113,7 @@ const Switch = ({
         )}
       >
         {label && (
-          <InputLabel id={id} size={size}>
+          <InputLabel id={inputId} size={size} required={required}>
             {label}
           </InputLabel>
         )}
@@ -140,13 +127,12 @@ const Switch = ({
                 loading || disabled,
               'cursor-default': loading,
               'cursor-not-allowed': disabled,
-              'p-2': size === 'default',
-              'p-3': size === 'large',
+              'p-[7px]': size === 'default',
+              'p-[11px]': size === 'large',
               'border-neutral-40 dark:border-neutral-40-dark focus:ring-primary-focus dark:focus:ring-primary-focus-dark bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark':
                 !isError && !loading && !disabled,
               'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
                 isError,
-              '': !isError,
             },
           )}
           onMouseDown={!loading && !disabled ? handleChange : undefined}
@@ -160,7 +146,7 @@ const Switch = ({
           <input
             {...props}
             tabIndex={!disabled ? 0 : -1}
-            id={id}
+            id={inputId}
             type="checkbox"
             className="sr-only"
             checked={value}
@@ -224,5 +210,7 @@ const Switch = ({
     </div>
   );
 };
+
+Switch.isFormInput = true;
 
 export default Switch;

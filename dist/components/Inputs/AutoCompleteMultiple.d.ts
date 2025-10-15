@@ -1,19 +1,20 @@
 import React from 'react';
-import { SelectValue } from './Select';
+import { SelectValue } from '../../types/input';
 export interface AutoCompleteMultipleRef<T, D = undefined> {
     element: HTMLDivElement | null;
     value: SelectValue<T, D>[];
     focus: () => void;
     reset: () => void;
+    disabled: boolean;
 }
-export interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required'> {
+interface BaseAutoCompleteMultipleProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked'> {
     value?: SelectValue<T, D>[];
     defaultValue?: T[];
+    initialValue?: SelectValue<T, D>[];
     label?: string;
     labelPosition?: 'top' | 'left';
     autoHideLabel?: boolean;
     placeholder?: string;
-    options: SelectValue<T, D>[];
     onChange?: (value: SelectValue<T, D>[]) => void;
     helperText?: React.ReactNode;
     disabled?: boolean;
@@ -24,35 +25,38 @@ export interface AutoCompleteMultipleProps<T, D = undefined> extends Omit<React.
     size?: 'default' | 'large';
     error?: boolean | string;
     success?: boolean;
-    loading?: boolean;
     clearable?: boolean;
     width?: number;
+    required?: boolean;
+    renderOption?: (option: Array<SelectValue<T, D>>, onClick: (value: SelectValue<T, D>) => void, selected: Array<SelectValue<T, D>>) => React.ReactNode;
 }
+interface WithoutAppendProps<T, D = undefined> extends BaseAutoCompleteMultipleProps<T, D> {
+    appendIfNotFound?: false;
+    onAppend?: (input: SelectValue<T, D>) => never;
+}
+interface WithAppendProps<T, D = undefined> extends BaseAutoCompleteMultipleProps<T, D> {
+    appendIfNotFound: true;
+    onAppend: (input: SelectValue<T>) => void;
+}
+interface AsyncProps<T, D> {
+    async: true;
+    fetchOptions: (keyword: string, page: number, limit: number) => Promise<SelectValue<T, D>[]>;
+    options?: never;
+    loading?: never;
+}
+interface NonAsyncProps<T, D> {
+    async?: false;
+    fetchOptions?: never;
+    options: SelectValue<T, D>[];
+    loading?: boolean;
+}
+export type AutoCompleteMultipleProps<T, D = undefined> = (WithoutAppendProps<T, D> & AsyncProps<T, D>) | (WithoutAppendProps<T, D> & NonAsyncProps<T, D>) | (WithAppendProps<T, D> & AsyncProps<T, D>) | (WithAppendProps<T, D> & NonAsyncProps<T, D>);
 /**
- *
- * @property {SelectValue<T, D>[]} [value] - The controlled value of the multi-select input. An array of selected options.
- * @property {T[]} [defaultValue=[]] - The initial selected values in an uncontrolled state (defaults to empty array).
- * @property {(value: SelectValue<T, D>[]) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<AutoCompleteMultipleRef<T>>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
- * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {boolean} [clearable=false] - A flag that show clear button of input field if set to true.
- * @property {SelectValue<T, D>[]} options - An array of option objects, each containing a value and a label.
- *
+ * An autocomplete where multiple options can be selected
  */
-declare const AutoCompleteMultiple: <T, D = undefined>({ id, value: valueProp, defaultValue, label, labelPosition, autoHideLabel, placeholder, options, onChange, className, helperText, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, clearable, width, ...props }: AutoCompleteMultipleProps<T, D>) => import("react/jsx-runtime").JSX.Element;
+declare const AutoCompleteMultiple: {
+    <T, D = undefined>({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, placeholder, options: optionsProp, onChange, className, helperText, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, clearable, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, ...props }: AutoCompleteMultipleProps<T, D>): import("react/jsx-runtime").JSX.Element;
+    isFormInput: boolean;
+};
 export default AutoCompleteMultiple;
 //# sourceMappingURL=AutoCompleteMultiple.d.ts.map

@@ -8,6 +8,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     startIcon?: React.ReactNode;
     endIcon?: React.ReactNode;
 }
+/**
+ * Buttons allow users to take actions, and make choices, with a single tap.
+ */
 declare const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;
 export default Button;
 //# sourceMappingURL=Button.d.ts.map
