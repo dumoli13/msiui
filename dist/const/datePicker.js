@@ -1,4 +1,11 @@
-export const MONTH_LIST = [
+export var TimeUnit;
+(function (TimeUnit) {
+    TimeUnit["hours"] = "hours";
+    TimeUnit["minutes"] = "minutes";
+    TimeUnit["seconds"] = "seconds";
+})(TimeUnit || (TimeUnit = {}));
+export const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const MONTH_OF_YEAR = [
     { value: 0, label: 'Jan' },
     { value: 1, label: 'Feb' },
     { value: 2, label: 'Mar' },
@@ -12,9 +19,3 @@ export const MONTH_LIST = [
     { value: 10, label: 'Nov' },
     { value: 11, label: 'Dec' },
 ];
-export var TimeUnit;
-(function (TimeUnit) {
-    TimeUnit["hours"] = "hours";
-    TimeUnit["minutes"] = "minutes";
-    TimeUnit["seconds"] = "seconds";
-})(TimeUnit || (TimeUnit = {}));

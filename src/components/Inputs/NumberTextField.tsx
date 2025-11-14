@@ -1,5 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
+import { NumberTextFieldProps } from '../../types/inputs';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
@@ -16,77 +17,23 @@ const formatValue = (value: string | number | null | undefined) => {
   return numberValue.toLocaleString('en-US');
 };
 
-export interface NumberTextfieldRef {
-  element: HTMLInputElement | null;
-  value: number | null;
-  focus: () => void;
-  reset: () => void;
-}
-
-export interface NumberTextFieldProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
-  > {
-  id?: string;
-  value?: number | null;
-  defaultValue?: number | null;
-  label?: string;
-  labelPosition?: 'top' | 'left';
-  autoHideLabel?: boolean;
-  onChange?: (value: number | null) => void;
-  className?: string;
-  helperText?: React.ReactNode;
-  placeholder?: string;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  startIcon?: React.ReactNode;
-  endIcon?: React.ReactNode;
-  clearable?: boolean;
-  inputRef?:
-    | React.RefObject<NumberTextfieldRef | null>
-    | React.RefCallback<NumberTextfieldRef | null>;
-  size?: 'default' | 'large';
-  error?: boolean | string;
-  success?: boolean;
-  loading?: boolean;
-  width?: number;
-}
-
 /**
- *
- * @property {number | null} [value] - The current value of the number field, passed from the parent component.
- * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
- * @property {(value: number | null) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<NumberTextfieldRef> | React.RefCallback<NumberTextfieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
- * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {boolean} [clearable=false] - A flag that show clear button of input field if set to true.
- *
+ * The Number Text Field component is used for collecting numeric data from users. This component will format thousand separator on blur.
  */
-
 const NumberTextField = ({
   id,
+  name,
   value: valueProp,
-  defaultValue = valueProp,
+  defaultValue,
+  initialValue = null,
+  max,
+  min,
   label,
-
   labelPosition = 'top',
   autoHideLabel = false,
   onChange,
+  onFocus,
+  onBlur,
   className,
   helperText,
   placeholder = '',
@@ -101,15 +48,33 @@ const NumberTextField = ({
   success: successProp,
   loading = false,
   width,
+  required,
   ...props
 }: NumberTextFieldProps) => {
+  const parentRef = React.useRef<HTMLDivElement>(null);
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState(false);
   const [internalValue, setInternalValue] = React.useState<number | null>(
-    defaultValue !== undefined ? defaultValue : null,
+    () => {
+      let initialVal = defaultValue ?? initialValue;
+
+      // Apply min/max constraints to initial value
+      if (initialVal !== null) {
+        if (min !== undefined && initialVal < min) {
+          initialVal = min;
+        } else if (max !== undefined && initialVal > max) {
+          initialVal = max;
+        }
+      }
+
+      return initialVal;
+    },
   );
   const [internalStringValue, setInternalStringValue] = React.useState<string>(
-    defaultValue?.toString() ?? '',
+    internalValue?.toString() ?? '',
+  );
+  const [internalError, setInternalError] = React.useState<string | undefined>(
+    '',
   );
 
   const isControlled = valueProp !== undefined;
@@ -128,28 +93,72 @@ const NumberTextField = ({
       ? value || ''
       : formatValue(internalStringValue);
 
-  const helperMessage = errorProp ?? helperText;
-  const isError = !!errorProp;
+  const helperMessage = (errorProp || internalError) ?? helperText;
+  const isError = !!(errorProp || internalError);
   const disabled = loading || disabledProp;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
+    focus: () => elementRef.current?.focus(),
     reset: () => {
-      setInternalValue(defaultValue !== undefined ? defaultValue : null);
-      setInternalStringValue(defaultValue?.toString() ?? '');
-      onChange?.(defaultValue !== undefined ? defaultValue : null);
+      setInternalValue(initialValue);
+      setInternalStringValue(initialValue?.toString() ?? '');
     },
+    disabled,
   }));
 
-  const handleFocus = () => {
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const selectElementContainsTarget = elementRef.current?.contains(target);
+
+      if (selectElementContainsTarget) {
+        elementRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    onFocus?.(event);
     if (isControlled) {
       setInternalStringValue(valueProp?.toString() ?? '');
     }
     setFocused(true);
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (!isControlled) {
+      let constrainedValue = internalValue;
+
+      if (internalValue !== null && typeof internalValue === 'number') {
+        if (min !== undefined && internalValue < min) {
+          constrainedValue = min;
+          setInternalStringValue(min.toString());
+        } else if (max !== undefined && internalValue > max) {
+          constrainedValue = max;
+          setInternalStringValue(max.toString());
+        }
+      }
+      setInternalValue(constrainedValue);
+    }
+
+    onBlur?.(event);
+    const relatedTarget = event.relatedTarget;
+
+    const selectElementContainsTarget =
+      parentRef.current?.contains(relatedTarget);
+
+    if (selectElementContainsTarget) {
+      return;
+    }
+
+    setFocused(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,24 +174,35 @@ const NumberTextField = ({
           ? null
           : Number(inputValue);
 
-      onChange?.(newValue);
+      let constrainedValue = newValue;
 
-      if (!isControlled) {
-        setInternalValue(newValue);
+      if (newValue !== null && typeof newValue === 'number') {
+        if (min !== undefined && newValue < min) {
+          constrainedValue = min;
+          setInternalError(`Must be at least ${min}`);
+        } else if (max !== undefined && newValue > max) {
+          constrainedValue = max;
+          setInternalError(`Must be no more than ${max}`);
+        } else if (internalError) {
+          setInternalError('');
+        }
       }
+
+      setInternalStringValue(newValue?.toString() ?? '');
+      if (!isControlled) setInternalValue(newValue);
+      onChange?.(constrainedValue);
     }
   };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-
+  const handleClearValue = () => {
     onChange?.(null);
     if (!isControlled) {
       setInternalValue(null);
     }
     setInternalStringValue('');
   };
+
+  const inputId = `numbertextfield-${id || name}-${React.useId()}`;
 
   return (
     <div
@@ -196,20 +216,20 @@ const NumberTextField = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
               isError,
             'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp && !disabled,
             'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
@@ -217,9 +237,12 @@ const NumberTextField = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
         style={width ? { width } : undefined}
+        ref={parentRef}
       >
         {!!startIcon && (
           <div className="text-neutral-70 dark:text-neutral-70-dark">
@@ -228,29 +251,29 @@ const NumberTextField = ({
         )}
         <input
           {...props}
-          tabIndex={!disabled ? 0 : -1}
-          id={id}
+          tabIndex={disabled ? -1 : 0}
+          id={inputId}
+          name={name}
           value={displayValue}
           onChange={handleChange}
           placeholder={focused ? '' : placeholder}
           onFocus={handleFocus}
-          onBlur={() => setFocused(false)}
-          ref={elementRef}
+          onBlur={handleBlur}
           className={cx(
             'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
             {
-              'text-14px py-1.5': size === 'default',
-              'text-18px py-3': size === 'large',
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
             },
           )}
           disabled={disabled}
           autoComplete="off"
+          ref={elementRef}
         />
         <InputEndIconWrapper
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
           clearable={clearable && focused && !!value}
           onClear={handleClearValue}
           endIcon={endIcon}
@@ -260,5 +283,7 @@ const NumberTextField = ({
     </div>
   );
 };
+
+NumberTextField.isFormInput = true;
 
 export default NumberTextField;

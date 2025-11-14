@@ -1,25 +1,22 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import PaginationButton from './PaginationButton';
-export const DEFAULT_PAGE_SIZE = 10;
-export const DEFAULT_ITEMS_PER_PAGE = [5, 10, 20, 30, 40, 50, 100];
+import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE_SIZE } from '../../const';
+import Icon from '../Icon';
+const navButtonStyle = cx('text-14px text-neutral-100 dark:text-neutral-100-dark px-2 shadow-box-1 rounded-md border border-neutral-40 dark:border-neutral-40-dark bg-neutral-10 dark:bg-neutral-10-dark h-8 flex items-center gap-2', 'disabled:bg-neutral-40 dark:disabled:bg-neutral-30-dark disabled:text-neutral-60 dark:disabled:text-neutral-60-dark', 'hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-10 dark:hover:text-neutral-10-dark');
+const pageButtonStyle = cx('text-16px text-neutral-100 dark:text-neutral-100-dark px-2 shadow-box-1 rounded-md border border-neutral-40 dark:border-neutral-40-dark bg-neutral-10 dark:bg-neutral-10-dark h-8 min-w-8', 'disabled:bg-primary-surface dark:disabled:bg-primary-surface-dark disabled:text-primary-main dark:disabled:text-primary-main-dark disabled:border-primary-surface dark:disabled:border-primary-surface-dark disabled:cursor-default', 'hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-10 dark:hover:text-neutral-10-dark');
+const PrevButton = ({ onClick, disabled }) => {
+    return (_jsxs("button", { type: "button", className: navButtonStyle, onClick: onClick, disabled: disabled, children: [_jsx(Icon, { name: "chevron-left", size: 16, strokeWidth: 2 }), _jsx("span", { className: "hidden md:block", children: "Prev" })] }, "prev"));
+};
+const NextButton = ({ onClick, disabled }) => {
+    return (_jsxs("button", { type: "button", className: navButtonStyle, onClick: onClick, disabled: disabled, children: [_jsx("span", { className: "hidden md:block", children: "Next" }), _jsx(Icon, { name: "chevron-right", size: 16, strokeWidth: 2 })] }));
+};
 /**
- *
- * This component provides a pagination UI to navigate through paginated data. It allows users to select a page, change the number of items per page, and navigate between pages using next and previous buttons.
- *
- * @interface PaginationProps
- * @property {number} total - The total number of items to paginate through.
- * @property {number} currentPage - The current page being viewed.
- * @property {number} [pageSize] - The initial number of items to display per page.
- * @property {Array<number>} [itemPerPage] - An array of options for the number of items per page (e.g., [10, 20, 50]).
- * @property {(data: PaginationDataType) => void} [onPageChange] - A callback function to handle page change with `page` and `limit` data.
- *
+ * The Pagination component enables the user to select a specific page from a range of pages.
  */
-const pageButtonStyle = cx('text-neutral-100 dark:text-neutral-100-dark text-16px h-8 min-w-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark bg-neutral-10 dark:bg-neutral-10-dark', 'disabled:bg-primary-surface dark:disabled:bg-primary-surface-dark disabled:text-primary-main dark:disabled:text-primary-main-dark disabled:border-primary-surface dark:disabled:border-primary-surface-dark disabled:cursor-default disabled:font-semibold', 'hover:bg-primary-hover hover:text-neutral-10');
-const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, pageSize, onPageChange, }) => {
-    const [itemsPerPage, setItemsPerPage] = React.useState(pageSize !== null && pageSize !== void 0 ? pageSize : itemPerPage[0]);
-    const totalPages = Math.ceil(total / itemsPerPage);
+const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, pageSize = DEFAULT_PAGE_SIZE, onPageChange, paginationRef, }) => {
+    const [itemsPerPage, setItemsPerPage] = React.useState(pageSize);
+    const totalPages = total ? Math.ceil(total / itemsPerPage) : -1;
     const handlePageChange = (page) => {
         onPageChange === null || onPageChange === void 0 ? void 0 : onPageChange({ page: page, limit: itemsPerPage });
     };
@@ -29,10 +26,12 @@ const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, 
         }
     };
     const handleNextPage = () => {
-        if (currentPage < totalPages) {
-            handlePageChange(currentPage + 1);
-        }
+        handlePageChange(currentPage + 1);
     };
+    React.useImperativeHandle(paginationRef, () => ({
+        next: handleNextPage,
+        prev: handlePrevPage,
+    }));
     const handleItemsPerPageChange = (e) => {
         const limit = Number(e.target.value);
         setItemsPerPage(limit);
@@ -73,6 +72,8 @@ const Pagination = ({ total, currentPage, itemPerPage = DEFAULT_ITEMS_PER_PAGE, 
         }
         return pages;
     };
-    return (_jsxs("div", { className: `flex gap-10 items-center justify-between ${totalPages > 1 ? 'flex-row' : 'flex-row-reverse'}`, children: [totalPages > 1 && (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PaginationButton.Prev, { onClick: handlePrevPage, disabled: currentPage === 1 }), renderPageNumbers(), _jsx(PaginationButton.Next, { onClick: handleNextPage, disabled: currentPage === totalPages })] })), _jsx("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: itemPerPage.map((option) => (_jsx("option", { value: option, className: "p-2", children: `${option}/page` }, option))) })] }));
+    return (_jsxs("div", { className: `flex gap-4 md:gap-10 items-start justify-between ${totalPages > 1 || totalPages < 0 ? 'flex-row' : 'flex-row-reverse'}`, children: [totalPages > 1 ? (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), renderPageNumbers(), _jsx(NextButton, { onClick: handleNextPage, disabled: currentPage === totalPages })] })) : (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), _jsx(NextButton, { onClick: handleNextPage, disabled: !hasNext })] })), _jsx("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: itemPerPage.map((option) => (_jsx("option", { value: option, className: "p-2", children: `${option}/page` }, option))) })] }));
 };
+Pagination.Prev = PrevButton;
+Pagination.Next = NextButton;
 export default Pagination;

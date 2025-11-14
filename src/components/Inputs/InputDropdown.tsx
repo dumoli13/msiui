@@ -1,16 +1,7 @@
-// TODO: Remove this file after implement mis-design
 import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
-
-export interface InputDropdownProps {
-  open: boolean;
-  children: React.ReactNode;
-  elementRef: React.RefObject<HTMLDivElement | null>;
-  dropdownRef: React.RefObject<HTMLDivElement | null>;
-  fullWidth?: boolean;
-  maxHeight?: number;
-}
+import { InputDropdownProps } from '../../types';
 
 /**
  *
@@ -25,7 +16,6 @@ export interface InputDropdownProps {
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
  *
  */
-
 const InputDropdown = ({
   open,
   children,
@@ -34,80 +24,77 @@ const InputDropdown = ({
   fullWidth,
   maxHeight = 300,
 }: InputDropdownProps) => {
-  const [dropdownStyles, setDropdownStyles] = React.useState<{
-    top?: number;
-    left?: number;
-    width?: number | undefined;
-    direction?: 'down' | 'up';
-    visibility?: 'hidden' | 'visible';
-  } | null>(null);
+  const [position, setPosition] = React.useState<{
+    top: number;
+    left: number;
+    width?: number;
+    direction: 'down' | 'up';
+  }>({ top: 0, left: 0, width: 0, direction: 'down' });
 
-  const calculateDropdownPosition = React.useCallback(() => {
+  const calculatePosition = React.useCallback(() => {
     if (!elementRef.current || !dropdownRef.current) return;
 
-    const rect = elementRef.current.getBoundingClientRect();
-    const dropdown = dropdownRef.current;
+    const anchorRect = elementRef.current.getBoundingClientRect();
+    const popperRect = dropdownRef.current.getBoundingClientRect();
+    const dropdownHeight = popperRect.height;
+    const dropdownWidth = popperRect.width;
 
-    // Calculate dimensions
-    const desiredWidth = fullWidth ? rect.width : dropdown.offsetWidth;
-    const dropdownHeight = dropdown.offsetHeight || 0;
+    const spaceBelow = window.innerHeight - anchorRect.bottom;
+    const spaceAbove = anchorRect.top;
+    const spaceRight = window.innerWidth - anchorRect.right;
+    const spaceLeft = anchorRect.left;
 
-    // Calculate available space
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
+    // Determine vertical placement
+    let top: number;
+    let direction: 'up' | 'down';
 
-    // Calculate initial positions
-    let newLeft = rect.left + window.scrollX;
-    const newTop =
-      spaceBelow >= dropdownHeight || spaceBelow > spaceAbove
-        ? rect.bottom + window.scrollY
-        : rect.top - dropdownHeight - 10 + window.scrollY;
-
-    // Prevent right overflow
-    const viewportRight = window.innerWidth;
-    const dropdownRightEdge = newLeft + desiredWidth;
-    if (dropdownRightEdge > viewportRight) {
-      // Shift left by the overflow amount
-      newLeft = Math.max(
-        viewportRight - desiredWidth, // Keep dropdown in viewport
-        window.scrollX, // Don't go beyond left edge
-      );
+    if (spaceBelow >= dropdownHeight || spaceBelow > spaceAbove) {
+      // Place below
+      top = anchorRect.bottom + window.scrollY;
+      direction = 'down';
+    } else {
+      // Place above
+      top = anchorRect.top - dropdownHeight - 10 + window.scrollY;
+      direction = 'up';
     }
 
-    // Prevent left overflow
-    if (newLeft < window.scrollX) {
-      newLeft = window.scrollX;
+    // Determine horizontal placement
+    let left: number;
+    let width: number | undefined;
+
+    if (fullWidth) {
+      left = anchorRect.left + window.scrollX;
+      width = anchorRect.width;
+    } else if (spaceRight >= dropdownWidth || spaceRight > spaceLeft) {
+      // Check if dropdown fits to the right
+      left = anchorRect.left + window.scrollX;
+    } else {
+      // Place to the left
+      left = anchorRect.right - dropdownWidth + window.scrollX;
     }
 
-    setDropdownStyles({
-      top: newTop,
-      left: newLeft,
-      width: fullWidth ? rect.width : undefined,
-      direction:
-        spaceBelow >= dropdownHeight || spaceBelow > spaceAbove ? 'down' : 'up',
-      visibility: 'visible',
+    setPosition({
+      top,
+      left,
+      width,
+      direction,
     });
   }, [elementRef, dropdownRef, fullWidth]);
 
   React.useEffect(() => {
-    if (open) {
-      setDropdownStyles((prev) => ({ ...prev, visibility: 'hidden' })); // Hide before calculation
-      setTimeout(() => calculateDropdownPosition(), 10); // Delay execution until the DOM is updated
-
-      const handleScrollOrResize = () => calculateDropdownPosition();
-      window.addEventListener('scroll', handleScrollOrResize);
-      window.addEventListener('resize', handleScrollOrResize);
-
-      return () => {
-        window.removeEventListener('scroll', handleScrollOrResize);
-        window.removeEventListener('resize', handleScrollOrResize);
-      };
-    } else {
-      setDropdownStyles(null);
-    }
-  }, [open, calculateDropdownPosition]);
-
-  if (!open) return null;
+    calculatePosition();
+    const handleScrollOrResize = () => {
+      if (open) {
+        calculatePosition();
+      }
+    };
+    window.addEventListener('scroll', handleScrollOrResize);
+    window.addEventListener('resize', handleScrollOrResize);
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [open, children, calculatePosition]);
 
   return createPortal(
     <div
@@ -116,17 +103,18 @@ const InputDropdown = ({
       onMouseDown={(e) => e.stopPropagation()}
       ref={dropdownRef}
       style={{
-        position: 'absolute',
-        top: dropdownStyles?.top,
-        left: dropdownStyles?.left,
-        width: dropdownStyles?.width,
+        top: 0,
+        left: 0,
+        transform: `translate(${position.left}px, ${position.top}px)`,
+        width: position.width,
         maxHeight,
       }}
       className={cx(
-        'bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg py-1.5 text-neutral-80 dark:text-neutral-80-dark overflow-y-auto z-[1999] cursor-default',
+        'absolute z-[2300] bg-neutral-10 dark:bg-neutral-10-dark shadow-box-2 rounded-lg py-1.5 text-neutral-100 dark:text-neutral-100-dark overflow-y-auto cursor-default',
         {
-          'mt-1': dropdownStyles?.direction === 'down',
-          'mb-1': dropdownStyles?.direction === 'up',
+          'mt-1': position.direction === 'down',
+          'mb-1': position.direction === 'up',
+          invisible: !open,
         },
       )}
       onKeyDown={(e) => {
@@ -135,7 +123,7 @@ const InputDropdown = ({
         }
       }}
     >
-      {children}
+      {open ? children : null}
     </div>,
     document.body,
   );

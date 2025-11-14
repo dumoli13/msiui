@@ -1,12 +1,16 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import icon from '../assets/icon.svg';
+import iconFilled from '../assets/icon-filled.svg';
+import iconOutline from '../assets/icon-outline.svg';
+/**
+ * ready-to-use icons from the MisDesign icon library
+ */
 const Icon = React.forwardRef((props, ref) => {
-    const { name, color = 'currentColor', size = '1em', strokeWidth = 1, className, onClick, disabled = false, animation, } = props;
+    const { name, color = 'currentColor', fillColor = color, size = '1em', variant = 'outline', strokeWidth = variant === 'outline' ? 1 : 0, className, onClick, disabled = false, animation, } = props;
     const animationStyle = React.useMemo(() => {
         const baseStyle = {
-            display: 'inline-block',
+            display: 'block',
             verticalAlign: 'middle',
         };
         switch (animation) {
@@ -22,10 +26,9 @@ const Icon = React.forwardRef((props, ref) => {
                 return baseStyle;
         }
     }, [animation]);
-    return (_jsxs("span", Object.assign({ ref: ref, "aria-label": name, className: cx('leading-none aspect-square', className, {
+    return (_jsxs("span", Object.assign({ ref: ref, "aria-label": name, className: cx('flex items-center justify-center', className, {
             'cursor-pointer': !!onClick && !disabled,
-        }) }, (onClick && !disabled && { onClick, role: 'button', tabIndex: 0 }), { children: [_jsx("svg", { viewBox: "0 0 24 24" // Maintain aspect ratio
-                , width: size, height: size, stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle, children: _jsx("use", { xlinkHref: `${icon}#${name}` }) }), _jsx("style", { children: `
+        }) }, (onClick && !disabled && { onClick, role: 'button', tabIndex: 0 }), { children: [_jsx("svg", { width: size, height: size, stroke: color, fill: variant === 'solid' ? fillColor : 'none', strokeWidth: variant === 'outline' && strokeWidth === 0 ? 1 : strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle, "aria-hidden": "true", children: _jsx("use", { xlinkHref: `${variant === 'outline' ? iconOutline : iconFilled}#${name}` }) }), _jsx("style", { children: `
           @keyframes spin {
             to { transform: rotate(360deg); }
           }

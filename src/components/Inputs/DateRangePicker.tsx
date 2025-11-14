@@ -1,16 +1,22 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useMemo } from 'react';
 import cx from 'classnames';
-import { MONTH_LIST, TimeUnit } from '../../const/datePicker';
+import dayjs from 'dayjs';
+import { useDebouncedCallback } from 'use-debounce';
+import { DAYS_OF_WEEK, MONTH_OF_YEAR, TimeUnit } from '../../const/datePicker';
 import {
-  SUNDAY_DATE,
   areDatesEqual,
   getYearRange,
   isDateABeforeDateB,
   isDateBetween,
   isToday,
 } from '../../libs';
-import { formatDate, isValidDate } from '../../libs/inputDate';
+import {
+  DateRangePickerProps,
+  DateRangeValue,
+  DateValue,
+  PickerType,
+} from '../../types';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
 import InputDropdown from './InputDropdown';
@@ -18,75 +24,22 @@ import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 
-export type InputDateRangeValue = [Date, Date] | null;
-export interface InputDateRangePickerRef {
-  element: HTMLDivElement | null;
-  value: InputDateRangeValue;
-  focus: () => void;
-  reset: () => void;
-}
-
-export interface DateRangePickerProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
-  > {
-  value?: InputDateRangeValue;
-  defaultValue?: InputDateRangeValue;
-  clearable?: boolean;
-  label?: string;
-  labelPosition?: 'top' | 'left';
-  autoHideLabel?: boolean;
-  onChange?: (value: InputDateRangeValue) => void;
-  helperText?: React.ReactNode;
-  placeholder?: string;
-  fullWidth?: boolean;
-  inputRef?:
-    | React.RefObject<InputDateRangePickerRef | null>
-    | React.RefCallback<InputDateRangePickerRef | null>;
-  size?: 'default' | 'large';
-  error?: boolean | string;
-  success?: boolean;
-  loading?: boolean;
-  disabledDate?: (date: Date, firstSelectedDate: Date | null) => boolean;
-  width?: number;
-  showTime?: boolean;
-}
-
 /**
- *
- * @property {InputDateRangeValue} [value] - The selected date range. If provided, the component will be controlled.
- * @property {InputDateRangeValue} [defaultValue] - The initial date range for uncontrolled usage.
- * @property {(value: InputDateRangeValue) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<InputDateRangePickerRef> | React.RefCallback<InputDateRangePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.*
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {boolean} [showTime=false] - Whether time selection should be enabled in the date range picker.
- * @property {(date: Date, firstSelectedDate: Date | null) => boolean} [disabledDate] - A function to disable specific dates based on custom logic.
- *
+ * The Date Range Picker lets the user select a range of dates.
  */
 const DateRangePicker = ({
   id,
+  name,
   value: valueProp,
   defaultValue,
+  initialValue,
   label,
-
   labelPosition = 'top',
   autoHideLabel = false,
   onChange,
   className,
   helperText,
-  placeholder = 'Input date',
+  placeholder,
   disabled: disabledProp = false,
   fullWidth,
   inputRef,
@@ -98,48 +51,53 @@ const DateRangePicker = ({
   disabledDate = () => false,
   width,
   showTime = false,
+  format: formatProps,
+  picker = 'date',
+  required,
+  onKeyDown,
   ...props
 }: DateRangePickerProps) => {
   const elementRef = React.useRef<HTMLDivElement>(null);
+  const valueStartRef = React.useRef<HTMLInputElement>(null);
+  const valueEndRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [focused, setFocused] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [pointer, setPointer] = React.useState<0 | 1>(0);
 
+  let format = formatProps;
+  if (!format) {
+    if (picker === 'year') format = 'YYYY';
+    else if (picker === 'month') format = 'M/YYYY';
+    else format = 'D/M/YYYY';
+    if (showTime) format = `${format} HH:mm:ss`;
+  }
+
   const [internalValue, setInternalValue] = React.useState(
-    defaultValue || null,
+    defaultValue || initialValue || null,
   );
-  const isControlled = typeof valueProp !== 'undefined';
+  const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
+  const [inputValue, setInputValue] = React.useState<[string, string]>(
+    value
+      ? [dayjs(value[0]).format(format), dayjs(value[1]).format(format)]
+      : ['', ''],
+  );
   const [tempValue, setTempValue] = React.useState<[Date | null, Date | null]>(
     value || [null, null],
   );
   const [timeValue, setTimeValue] = React.useState({
-    hours: (tempValue[0] ? value?.[1] : value?.[0])?.getHours() ?? null, // if
+    hours: (tempValue[0] ? value?.[1] : value?.[0])?.getHours() ?? null,
     minutes: (tempValue[0] ? value?.[1] : value?.[0])?.getMinutes() ?? null,
     seconds: (tempValue[0] ? value?.[1] : value?.[0])?.getSeconds() ?? null,
   });
 
-  const [calendarView, setCalendarView] = React.useState<
-    'date' | 'month' | 'year'
-  >('date');
+  const [calendarView, setCalendarView] = React.useState<PickerType>(picker);
   const [displayedDate, setDisplayedDate] = React.useState(
     value === null ? new Date() : value[0],
   );
   const yearRange = getYearRange(displayedDate.getFullYear());
 
-  const firstDate = new Date(
-    displayedDate.getFullYear(),
-    displayedDate.getMonth(),
-    1,
-  );
-  const lastDate = new Date(
-    displayedDate.getFullYear(),
-    displayedDate.getMonth() + 1,
-    0,
-  );
-
-  const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
   const helperMessage = errorProp ?? helperText;
@@ -163,37 +121,36 @@ const DateRangePicker = ({
 
     // Delay to ensure dropdown is fully rendered before scrolling
     setTimeout(() => {
-      (Object.keys(timeValue) as Array<keyof typeof timeValue>).forEach(
-        (unit) => {
-          const value = timeValue[unit];
-          const container = scrollRefs[unit]?.current;
-          const item = value !== null ? itemRefs[unit].current[value] : null;
+      for (const unit of Object.keys(timeValue) as Array<
+        keyof typeof timeValue
+      >) {
+        const value = timeValue[unit];
+        const container = scrollRefs[unit]?.current;
+        const item = value === null ? null : itemRefs[unit].current[value];
 
-          if (container && item) {
-            const containerTop = container.getBoundingClientRect().top;
-            const itemTop = item.getBoundingClientRect().top;
-            const offset = itemTop - containerTop - 8; // Adjust for 8px padding
+        if (container && item) {
+          const containerTop = container.getBoundingClientRect().top;
+          const itemTop = item.getBoundingClientRect().top;
+          const offset = itemTop - containerTop - 8; // Adjust for 8px padding
 
-            container.scrollTo({
-              top: container.scrollTop + offset,
-              behavior: 'smooth',
-            });
-          }
-        },
-      );
+          container.scrollTo({
+            top: container.scrollTop + offset,
+            behavior: 'smooth',
+          });
+        }
+      }
     }, 50); // Small delay for rendering
   }, [dropdownOpen, timeValue.hours, timeValue.minutes, timeValue.seconds]);
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
+    focus: () => valueStartRef.current?.focus(),
     reset: () => {
       setTempValue([null, null]);
-      setInternalValue(defaultValue || null);
+      setInternalValue(null);
     },
+    disabled,
   }));
 
   React.useEffect(() => {
@@ -218,7 +175,7 @@ const DateRangePicker = ({
 
   const handleFocus = (target: 0 | 1) => {
     if (disabled) return;
-    handleChangeView('date');
+    handleChangeView(picker);
     setFocused(true);
     setDropdownOpen(true);
     setPointer(target);
@@ -234,60 +191,59 @@ const DateRangePicker = ({
     if (dropdownContainsTarget || selectElementContainsTarget) {
       return;
     }
+
     setFocused(false);
     setDropdownOpen(false);
   };
 
-  const days: Array<string> = Array.from({ length: 7 }).map((_, idx) =>
-    dayFormatter.format(
-      new Date(
-        SUNDAY_DATE.getFullYear(),
-        SUNDAY_DATE.getMonth(),
-        SUNDAY_DATE.getDate() + idx,
-      ),
-    ),
-  );
+  const dateMatrix = useMemo(() => {
+    const year = displayedDate.getFullYear();
+    const month = displayedDate.getMonth();
 
-  const dates = Array.from({ length: lastDate.getDate() }).map(
-    (_, idx) =>
-      new Date(
-        firstDate.getFullYear(),
-        firstDate.getMonth(),
-        firstDate.getDate() + idx,
-      ),
-  );
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
 
-  const dateMatrix: Array<Array<Date | null>> = Array(days.length).fill([]);
+    const matrix: DateValue[][] = [];
+    let currentDay = 1 - firstDayIndex;
 
-  while (dates.length > 0) {
-    const dateRow = days.map((_, idx) => {
-      if (dates.length > 0 && dates[0].getDay() === idx) {
-        const currentDate = dates.shift();
-        return currentDate ?? null;
+    for (let week = 0; week < 6; week++) {
+      const weekRow: DateValue[] = [];
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(year, month, currentDay);
+
+        if (currentDay < 1 || currentDay > totalDays) {
+          weekRow.push(null);
+        } else {
+          weekRow.push(date);
+        }
+        currentDay++;
       }
-      return null;
-    });
-    dateMatrix.push(dateRow);
-  }
+      matrix.push(weekRow);
+    }
+
+    return matrix;
+  }, [displayedDate]);
 
   const handleChangeView = (view: 'date' | 'month' | 'year') => {
     setCalendarView(view);
   };
 
   const handleJumpMonth = (month: number) => {
-    if (tempValue[0] !== null && tempValue[1] !== null) {
-      setTempValue([null, null]);
+    if (picker === 'month') {
+      handleSelectDate(new Date(displayedDate.getFullYear(), month));
+    } else {
+      setDisplayedDate(new Date(displayedDate.getFullYear(), month));
+      handleChangeView('date');
     }
-    setDisplayedDate(new Date(displayedDate.getFullYear(), month));
-    handleChangeView('date');
   };
 
   const handleJumpYear = (year: number) => {
-    if (tempValue[0] !== null && tempValue[1] !== null) {
-      setTempValue([null, null]);
+    if (picker === 'year') {
+      handleSelectDate(new Date(year, 0)); // january 1, <YEAR>
+    } else {
+      setDisplayedDate(new Date(year, displayedDate.getMonth()));
+      setCalendarView('month');
     }
-    setDisplayedDate(new Date(year, displayedDate.getMonth()));
-    setCalendarView('month');
   };
 
   const handlePrevMonth = () => {
@@ -314,6 +270,52 @@ const DateRangePicker = ({
     setDisplayedDate(
       new Date(displayedDate.getFullYear() + jump, displayedDate.getMonth()),
     );
+  };
+
+  const debounceTextToDate = useDebouncedCallback(
+    (input: [string, string], position: 0 | 1) => {
+      const parsed = dayjs(input[position], format, true);
+
+      if (parsed.isValid()) {
+        const newDate = parsed.toDate();
+
+        if (showTime) {
+          setTimeValue({
+            hours: newDate.getHours(),
+            minutes: newDate.getMinutes(),
+            seconds: newDate.getSeconds(),
+          });
+
+          setTempValue((prev) =>
+            prev[position] === newDate
+              ? prev
+              : (prev.map((v, i) => (i === position ? newDate : v)) as [
+                  Date | null,
+                  Date | null,
+                ]),
+          );
+        } else {
+          handleSelectDate(newDate, position);
+        }
+      } else {
+        setTempValue((prev) => {
+          const newInput: [Date | null, Date | null] = [...prev];
+          newInput[position] = null;
+          return newInput;
+        });
+      }
+    },
+    500,
+  );
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputValue((prev) => {
+      const newInput: [string, string] = [...prev];
+      newInput[pointer] = newValue;
+      debounceTextToDate(newInput, pointer);
+      return newInput;
+    });
   };
 
   /**
@@ -347,7 +349,6 @@ const DateRangePicker = ({
         const endDate = new Date(end);
         endDate.setHours(23, 59, 59, 999);
         newDate = [startDate, endDate];
-        if (pointer === 1) handleBlur();
       } else {
         /**
          * if end < start, swap start and end.
@@ -361,7 +362,7 @@ const DateRangePicker = ({
         endDate.setHours(23, 59, 59, 999);
         newDate = [startDate, endDate];
       }
-      handleChange(newDate as [Date, Date]);
+      handleChangeValue(newDate as [Date, Date]);
     }
     setTempValue(newDate);
   };
@@ -382,12 +383,13 @@ const DateRangePicker = ({
         newDate[0] = end;
         newDate[1] = start;
       }
-      handleChange(newDate as [Date, Date]);
+      handleChangeValue(newDate as [Date, Date]);
     }
     setTempValue(newDate);
   };
 
-  const handleSelectDate = (date: Date) => {
+  const handleSelectDate = (date: Date, position?: 0 | 1) => {
+    const currentPosition = position ?? pointer;
     if (showTime) {
       const selectedTime = {
         hours: timeValue.hours ?? 0,
@@ -406,21 +408,20 @@ const DateRangePicker = ({
       );
 
       setTempValue((prev) =>
-        prev[pointer] === newDate
+        prev[currentPosition] === newDate
           ? prev
           : (prev.map((v, i) => (i === pointer ? newDate : v)) as [
               Date | null,
               Date | null,
             ]),
       );
-    } else {
-      if (pointer === 0) {
-        convertDateOnly(date, tempValue[1]);
-        setPointer(1);
-      } else if (pointer === 1) {
-        // Do not close dropdown in here in case end value < start value
-        convertDateOnly(tempValue[0], date);
-      }
+    } else if (currentPosition === 0) {
+      convertDateOnly(date, tempValue[1]);
+      setPointer(1);
+      valueEndRef.current?.focus();
+    } else if (currentPosition === 1) {
+      // Do not close dropdown in here in case end value < start value
+      convertDateOnly(tempValue[0], date);
     }
   };
 
@@ -461,7 +462,7 @@ const DateRangePicker = ({
     }
   };
 
-  const handleChange = (newValue: InputDateRangeValue) => {
+  const handleChangeValue = (newValue: DateRangeValue) => {
     onChange?.(newValue);
     if (!isControlled) {
       setInternalValue(newValue);
@@ -469,16 +470,40 @@ const DateRangePicker = ({
   };
 
   const handleClearValue = () => {
-    handleChange(null);
+    handleChangeValue(null);
     handleBlur();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!e.shiftKey && e.key === 'Tab' && pointer === 0) {
+      e.preventDefault();
+      setPointer(1);
+      valueEndRef.current?.focus();
+    } else if (e.shiftKey && e.key === 'Tab' && pointer === 1) {
+      e.preventDefault();
+      setPointer(0);
+      valueStartRef.current?.focus();
+    } else if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
+      e.preventDefault();
+      if (!dropdownOpen) {
+        handleFocus(0);
+      }
+    } else {
+      onKeyDown?.(e);
+    }
   };
 
   React.useEffect(() => {
     if (value === null) {
       setTempValue([null, null]);
+      setInputValue(['', '']);
       setDisplayedDate(new Date());
     } else {
       setTempValue(value);
+      setInputValue([
+        dayjs(value[0]).format(format),
+        dayjs(value[1]).format(format),
+      ]);
       setDisplayedDate(value[0] || new Date());
     }
   }, [value, dropdownOpen]);
@@ -503,7 +528,7 @@ const DateRangePicker = ({
                   Start Date
                 </div>
                 <div>
-                  {tempValue[0] ? formatDate(tempValue[0], showTime) : '-'}
+                  {tempValue[0] ? dayjs(tempValue[0]).format(format) : '-'}
                 </div>
               </button>
               <button
@@ -520,7 +545,7 @@ const DateRangePicker = ({
                   End Date
                 </div>
                 <div>
-                  {tempValue[1] ? formatDate(tempValue[1], showTime) : '-'}
+                  {tempValue[1] ? dayjs(tempValue[1]).format(format) : '-'}
                 </div>
               </button>
             </div>
@@ -581,7 +606,7 @@ const DateRangePicker = ({
                 <table className="w-full">
                   <thead>
                     <tr>
-                      {days.map((day) => (
+                      {DAYS_OF_WEEK.map((day) => (
                         <th key={day}>
                           <div className="text-center p-1 font-normal w-8">
                             {day}
@@ -615,11 +640,6 @@ const DateRangePicker = ({
                               endDate: tempValue[1],
                             });
 
-                          const handleChooseDate = (date: Date | null) => {
-                            if (!date || isDateDisabled) return;
-                            handleSelectDate(date);
-                          };
-
                           return (
                             <td
                               key={dateIdx}
@@ -628,35 +648,42 @@ const DateRangePicker = ({
                               }
                               className="px-0"
                             >
-                              <button
-                                type="button"
-                                onClick={() => handleChooseDate(date)}
-                                className={cx(
-                                  'w-full text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center',
-                                  {
-                                    'cursor-default text-neutral-30 dark:text-neutral-30-dark':
-                                      isDateDisabled,
-                                    'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
-                                      !isDateDisabled,
-                                    'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                                      !isDateDisabled &&
-                                      !(isStartSelected || isEndSelected),
-                                    'border border-primary-main dark:border-primary-main-dark':
-                                      isToday(date) &&
-                                      !(isStartSelected || isEndSelected),
-                                    'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark':
-                                      isStartSelected || isEndSelected,
-                                    'rounded-tl-md rounded-bl-md':
-                                      isStartSelected,
-                                    'rounded-tr-md rounded-br-md':
-                                      isEndSelected,
-                                    'bg-primary-surface dark:bg-primary-surface-dark':
-                                      isBetween,
-                                  },
-                                )}
-                              >
-                                {date?.getDate()}
-                              </button>
+                              {date && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSelectDate(date)}
+                                  className={cx(
+                                    'w-full text-14px mt-0.5 h-7 transition-colors duration-200 ease-in flex items-center justify-center',
+                                    {
+                                      'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                                        isDateDisabled,
+                                      'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                                        !isDateDisabled,
+                                      'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
+                                        !isDateDisabled &&
+                                        !(isStartSelected || isEndSelected),
+                                      'border border-primary-main dark:border-primary-main-dark rounded-md':
+                                        isToday(date) &&
+                                        !(
+                                          isStartSelected ||
+                                          isEndSelected ||
+                                          isBetween
+                                        ),
+                                      'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark':
+                                        isStartSelected || isEndSelected,
+                                      'rounded-tl-md rounded-bl-md':
+                                        isStartSelected,
+                                      'rounded-tr-md rounded-br-md':
+                                        isEndSelected,
+                                      'bg-primary-surface dark:bg-primary-surface-dark':
+                                        isBetween,
+                                    },
+                                  )}
+                                  disabled={isDateDisabled}
+                                >
+                                  {date?.getDate()}
+                                </button>
+                              )}
                             </td>
                           );
                         })}
@@ -668,7 +695,7 @@ const DateRangePicker = ({
             </div>
             {showTime && (
               <div className="border-l border-neutral-40 dark:border-neutral-40-dark text-14px">
-                <div className="h-[49px] border-b border-neutral-40 dark:border-neutral-40-dark" />
+                <div className="h-[45px] border-b border-neutral-40 dark:border-neutral-40-dark" />
                 <div className="flex">
                   {Object.keys(TimeUnit).map((key) => {
                     const unit = key as TimeUnit;
@@ -724,6 +751,50 @@ const DateRangePicker = ({
       )}
       {calendarView === 'month' && (
         <>
+          {picker === 'month' && (
+            <div className="px-4 flex flex-col gap-4 border-b border-neutral-40 dark:border-neutral-40-dark">
+              <div className="shrink-0 flex items-center gap-10 text-neutral-100 dark:text-neutral-100-dark font-medium mb-1">
+                <button
+                  type="button"
+                  className={cx('shrink-0 flex-1 border-b-2', {
+                    ' border-primary-main dark:border-primary-main-dark':
+                      pointer === 0,
+                    'border-transparent': pointer !== 0,
+                  })}
+                  onClick={() => handleFocus(0)}
+                  disabled={pointer === 0} // disable if alreay focus at pointer 0
+                >
+                  <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
+                    Start Month
+                  </div>
+                  <div className="shrink-0">
+                    {tempValue[0]
+                      ? dayjs(tempValue[0]).format('MMM YYYY')
+                      : '-'}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  className={cx('shrink-0 flex-1 border-b-2', {
+                    'border-primary-main dark:border-primary-main-dark':
+                      pointer === 1,
+                    'border-transparent': pointer !== 1,
+                  })}
+                  onClick={() => handleFocus(1)}
+                  disabled={pointer === 1 || tempValue[0] === null} // disable if already focus at pointer 1 or start date is not selected
+                >
+                  <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
+                    End Month
+                  </div>
+                  <div className="shrink-0">
+                    {tempValue[1]
+                      ? dayjs(tempValue[1]).format('MMM YYYY')
+                      : '-'}
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
             <Icon
               name="chevron-double-left"
@@ -748,12 +819,18 @@ const DateRangePicker = ({
             />
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
-            {MONTH_LIST.map((item) => {
+            {MONTH_OF_YEAR.map((item) => {
               const currentMonth =
                 displayedDate.getFullYear() * 100 + item.value;
+              const isDateDisabled =
+                picker === 'month' &&
+                disabledDate(
+                  new Date(displayedDate.getFullYear(), item.value),
+                  tempValue[0],
+                );
               const [start, end] = tempValue?.map((v) =>
                 v ? v.getFullYear() * 100 + v.getMonth() : null,
-              ) || [null, null];
+              ) ?? [null, null];
 
               const isStartSelected = start !== null && currentMonth === start;
               const isEndSelected = end !== null && currentMonth === end;
@@ -774,8 +851,13 @@ const DateRangePicker = ({
                     className={cx(
                       'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center',
                       {
+                        'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                          isDateDisabled,
+                        'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                          !isDateDisabled,
                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                          !isStartSelected,
+                          !isDateDisabled &&
+                          !(isStartSelected || isEndSelected),
                         'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark':
                           isStartSelected || isEndSelected,
                         'rounded-tl-md rounded-bl-md': isStartSelected,
@@ -784,6 +866,7 @@ const DateRangePicker = ({
                           isBetween,
                       },
                     )}
+                    disabled={isDateDisabled}
                   >
                     {item.label}
                   </button>
@@ -798,6 +881,46 @@ const DateRangePicker = ({
       )}
       {calendarView === 'year' && (
         <>
+          {picker === 'year' && (
+            <div className="px-4 flex flex-col gap-4 border-b border-neutral-40 dark:border-neutral-40-dark">
+              <div className="shrink-0 flex items-center gap-10 text-neutral-100 dark:text-neutral-100-dark font-medium mb-1">
+                <button
+                  type="button"
+                  className={cx('shrink-0 flex-1 border-b-2', {
+                    ' border-primary-main dark:border-primary-main-dark':
+                      pointer === 0,
+                    'border-transparent': pointer !== 0,
+                  })}
+                  onClick={() => handleFocus(0)}
+                  disabled={pointer === 0} // disable if alreay focus at pointer 0
+                >
+                  <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
+                    Start Year
+                  </div>
+                  <div className="shrink-0">
+                    {tempValue[0] ? dayjs(tempValue[0]).format('YYYY') : '-'}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  className={cx('shrink-0 flex-1 border-b-2', {
+                    'border-primary-main dark:border-primary-main-dark':
+                      pointer === 1,
+                    'border-transparent': pointer !== 1,
+                  })}
+                  onClick={() => handleFocus(1)}
+                  disabled={pointer === 1 || tempValue[0] === null} // disable if already focus at pointer 1 or start date is not selected
+                >
+                  <div className="text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark">
+                    End Year
+                  </div>
+                  <div className="shrink-0">
+                    {tempValue[1] ? dayjs(tempValue[1]).format('YYYY') : '-'}
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
             <Icon
               name="chevron-double-left"
@@ -819,7 +942,12 @@ const DateRangePicker = ({
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
             {yearRange.map((item) => {
-              const isDateSelected = displayedDate.getMonth() === item;
+              const isDateDisabled =
+                picker === 'year' &&
+                disabledDate(
+                  new Date(item, displayedDate.getMonth()),
+                  tempValue[0],
+                );
               const [start, end] = tempValue?.map(
                 (v) => v?.getFullYear() ?? null,
               ) ?? [null, null];
@@ -838,10 +966,15 @@ const DateRangePicker = ({
                     type="button"
                     onClick={() => handleJumpYear(item)}
                     className={cx(
-                      'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md',
+                      'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center',
                       {
+                        'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                          isDateDisabled,
+                        'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                          !isDateDisabled,
                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                          !isDateSelected,
+                          !isDateDisabled &&
+                          !(isStartSelected || isEndSelected),
                         'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark':
                           isStartSelected || isEndSelected,
                         'rounded-tl-md rounded-bl-md': isStartSelected,
@@ -850,6 +983,7 @@ const DateRangePicker = ({
                           isBetween,
                       },
                     )}
+                    disabled={isDateDisabled}
                   >
                     {item}
                   </button>
@@ -865,6 +999,8 @@ const DateRangePicker = ({
     </div>
   );
 
+  const inputId = `daterangepicker-${id || name}-${React.useId()}`;
+
   return (
     <div
       className={cx(
@@ -877,13 +1013,13 @@ const DateRangePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
@@ -898,81 +1034,77 @@ const DateRangePicker = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
-        ref={elementRef}
         style={width ? { width } : undefined}
+        ref={elementRef}
       >
         <div
           className={cx(
             'flex gap-2 items-center truncate flex-1 text-neutral-90 dark:text-neutral-90-dark',
             {
-              'text-14px py-1.5': size === 'default',
-              'text-18px py-3': size === 'large',
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
             },
           )}
         >
-          {value ? (
+          <input
+            {...props}
+            tabIndex={disabled ? -1 : 0}
+            id={inputId}
+            name={name}
+            value={inputValue[0]}
+            placeholder={focused ? '' : placeholder || format}
+            className={cx(
+              'w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
+              {
+                'text-primary-main dark:text-primary-main-dark font-medium':
+                  focused && pointer === 0,
+              },
+            )}
+            disabled={disabled}
+            aria-label={label}
+            autoComplete="off"
+            onBlur={handleBlur}
+            onFocus={() => handleFocus(0)}
+            onChange={handleChangeInput}
+            ref={valueStartRef}
+            onKeyDown={handleKeyDown}
+          />
+          {inputValue[0] && (
             <>
-              <input
-                {...props}
-                tabIndex={!disabled ? 0 : -1}
-                id={id}
-                value={
-                  isValidDate(value[0]) ? formatDate(value[0], showTime) : ''
-                }
-                placeholder={focused ? '' : placeholder}
-                className="truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
-                disabled={disabled}
-                aria-label={label}
-                autoComplete="off"
-                onBlur={handleBlur}
-                onFocus={() => handleFocus(0)}
-                onClick={() => handleFocus(0)}
-                onChange={() => {}}
-              />
               <div>-</div>
               <input
                 {...props}
-                tabIndex={!disabled ? 0 : -1}
-                id={id}
-                value={
-                  isValidDate(value[1]) ? formatDate(value[1], showTime) : ''
-                }
-                placeholder={focused ? '' : placeholder}
-                className="truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
+                tabIndex={disabled ? -1 : 0}
+                name={name}
+                value={inputValue[1]}
+                placeholder={focused ? '' : placeholder || format}
+                className={cx(
+                  'w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
+                  {
+                    'text-primary-main dark:text-primary-main-dark font-medium':
+                      focused && pointer === 1,
+                  },
+                )}
                 disabled={disabled}
                 aria-label={label}
                 autoComplete="off"
                 onBlur={handleBlur}
                 onFocus={() => handleFocus(1)}
-                onClick={() => handleFocus(1)}
-                onChange={() => {}}
+                onChange={handleChangeInput}
+                onKeyDown={handleKeyDown}
+                ref={valueEndRef}
               />
             </>
-          ) : (
-            <input
-              {...props}
-              value={''}
-              tabIndex={!disabled ? 0 : -1}
-              id={id}
-              placeholder={focused ? '' : placeholder}
-              className="flex-1 truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed"
-              disabled={disabled}
-              aria-label={label}
-              autoComplete="off"
-              onBlur={handleBlur}
-              onFocus={() => handleFocus(0)}
-              onClick={() => handleFocus(0)}
-              onChange={() => {}}
-            />
           )}
         </div>
         <InputEndIconWrapper
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
           clearable={clearable && focused && !!value}
           onClear={handleClearValue}
         >
@@ -981,6 +1113,7 @@ const DateRangePicker = ({
             (clearable && focused && !value)) && (
             <Icon
               name="calendar"
+              size={20}
               strokeWidth={2}
               onClick={disabled ? undefined : () => handleFocus(0)}
               className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
@@ -1000,5 +1133,7 @@ const DateRangePicker = ({
     </div>
   );
 };
+
+DateRangePicker.isFormInput = true;
 
 export default DateRangePicker;

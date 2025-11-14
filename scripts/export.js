@@ -1,12 +1,9 @@
 #!/usr/bin/env node
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-console */
-const { execSync } = require('child_process');
-const readline = require('readline');
+import { execSync } from 'node:child_process';
+import { createInterface } from 'node:readline';
 
 const askQuestion = (question) => {
-  const rl = readline.createInterface({
+  const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
   });

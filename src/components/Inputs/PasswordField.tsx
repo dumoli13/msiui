@@ -1,74 +1,22 @@
 import React from 'react';
 import cx from 'classnames';
+import { PasswordFieldProps } from '../../types/inputs';
 import Icon from '../Icon';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 
-export interface PasswordFieldRef {
-  element: HTMLInputElement | null;
-  value: string;
-  focus: () => void;
-  reset: () => void;
-}
-
-export interface PasswordFieldProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'size' | 'required'
-  > {
-  value?: string;
-  defaultValue?: string;
-  label?: string;
-  labelPosition?: 'top' | 'left';
-  autoHideLabel?: boolean;
-  onChange?: (value: string) => void;
-  helperText?: React.ReactNode;
-  placeholder?: string;
-  disabled?: boolean;
-  fullWidth?: boolean;
-  startIcon?: React.ReactNode;
-  endIcon?: React.ReactNode;
-  inputRef?:
-    | React.RefObject<PasswordFieldRef | null>
-    | React.RefCallback<PasswordFieldRef | null>;
-  size?: 'default' | 'large';
-  error?: boolean | string;
-  success?: boolean;
-  loading?: boolean;
-  width?: number;
-}
-
 /**
- *
- * @property {string} [value] - The current value of the password field, passed from the parent component.
- * @property {string} [defaultValue] - The initial value of the password field when the component is uncontrolled.
- * @property {(value: string) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<PasswordFieldRef> | React.RefCallback<PasswordFieldRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {string} [placeholder] - Placeholder text displayed inside the input field when it is empty.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
- * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- *
+ * The Password Field component is used for collecting sensitive data from users.
+ * This component will hide the password input. User can toggle the visibility of the password.
  */
-
 const PasswordField = ({
   id,
+  name,
   value: valueProp,
   defaultValue,
+  initialValue = '',
   label,
-
   labelPosition = 'top',
   autoHideLabel = false,
   onChange,
@@ -81,16 +29,21 @@ const PasswordField = ({
   endIcon,
   inputRef,
   size = 'default',
+  clearable = false,
   type,
   error: errorProp,
   success: successProp,
   loading = false,
   width,
+  required,
   ...props
 }: PasswordFieldProps) => {
+  const parentRef = React.useRef<HTMLDivElement>(null);
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState(false);
-  const [internalValue, setInternalValue] = React.useState(defaultValue ?? '');
+  const [internalValue, setInternalValue] = React.useState(
+    defaultValue || initialValue,
+  );
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
@@ -103,13 +56,28 @@ const PasswordField = ({
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
-    reset: () => {
-      setInternalValue(defaultValue ?? '');
-    },
+    focus: () => elementRef.current?.focus(),
+    reset: () => setInternalValue(initialValue),
+    disabled,
   }));
+
+  const handleFocus = () => {
+    if (disabled) return;
+    setFocused(true);
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const relatedTarget = event.relatedTarget;
+
+    const selectElementContainsTarget =
+      parentRef.current?.contains(relatedTarget);
+
+    if (selectElementContainsTarget) {
+      return;
+    }
+
+    setFocused(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -118,6 +86,15 @@ const PasswordField = ({
       setInternalValue(newValue);
     }
   };
+
+  const handleClearValue = () => {
+    onChange?.('');
+    if (!isControlled) {
+      setInternalValue('');
+    }
+  };
+
+  const inputId = `passwordfield-${id || name}-${React.useId()}`;
 
   return (
     <div
@@ -131,20 +108,20 @@ const PasswordField = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-4 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-4 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
               isError,
             'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
               !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
+            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
               !isError && !successProp && !disabled,
             'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
               disabled,
@@ -152,9 +129,12 @@ const PasswordField = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
         style={width ? { width } : undefined}
+        ref={parentRef}
       >
         {!!startIcon && (
           <div className="text-neutral-70 dark:text-neutral-70-dark">
@@ -163,34 +143,37 @@ const PasswordField = ({
         )}
         <input
           {...props}
-          tabIndex={!disabled ? 0 : -1}
-          id={id}
+          tabIndex={disabled ? -1 : 0}
+          id={inputId}
+          name={name}
           value={value}
           onChange={handleChange}
           placeholder={focused ? '' : placeholder}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          ref={elementRef}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           className={cx(
             'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
             {
-              'text-14px py-1.5': size === 'default',
-              'text-18px py-3': size === 'large',
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
             },
           )}
           disabled={disabled}
           aria-label={label}
           type={showPassword ? type : 'password'}
+          ref={elementRef}
         />
         <InputEndIconWrapper
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
+          clearable={clearable && focused && !!value}
+          onClear={handleClearValue}
           endIcon={endIcon}
         >
           <Icon
             name={showPassword ? 'eye' : 'eye-slash'}
+            size={20}
             strokeWidth={2}
             onClick={() => setShowPassword(!showPassword)}
             className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
@@ -201,5 +184,7 @@ const PasswordField = ({
     </div>
   );
 };
+
+PasswordField.isFormInput = true;
 
 export default PasswordField;

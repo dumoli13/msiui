@@ -1,18 +1,11 @@
 import React from 'react';
 import cx from 'classnames';
+import { ButtonProps } from '../../types';
 import Icon from '../Icon';
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'contained' | 'secondary' | 'outlined' | 'text';
-  color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
-  size?: 'small' | 'default' | 'large';
-  fullWidth?: boolean;
-  loading?: boolean;
-  startIcon?: React.ReactNode;
-  endIcon?: React.ReactNode;
-}
-
+/**
+ * Buttons allow users to take actions, and make choices, with a single tap.
+ */
 const Button = React.forwardRef(
   (
     {
@@ -28,12 +21,13 @@ const Button = React.forwardRef(
       endIcon,
       onClick,
       type = 'button',
-      ...rest
+      ...props
     }: ButtonProps,
     ref: React.Ref<HTMLButtonElement>,
   ) => {
     return (
       <button
+        {...props}
         ref={ref}
         disabled={disabled || loading}
         type={type}
@@ -103,7 +97,6 @@ const Button = React.forwardRef(
           className,
         )}
         tabIndex={disabled ? -1 : 0}
-        {...rest}
       >
         <span
           className={cx('flex justify-center items-center gap-1.5', {

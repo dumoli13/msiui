@@ -1,0 +1,53 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { ConfirmModalProps } from '../../types';
+import Icon from '../Icon';
+import ModalConfirmContainer from './ModalConfirmContainer';
+
+const ConfirmModal = ({
+  icon = (
+    <Icon
+      name="alert-triangle"
+      size={24}
+      strokeWidth={2}
+      className="text-neutral-90 dark:text-neutral-90-dark"
+    />
+  ),
+  content,
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  onConfirm,
+  onCancel,
+  ...props
+}: ConfirmModalProps) => {
+  const container = document.createElement('div');
+  const root = createRoot(container);
+  document.body.appendChild(container);
+
+  const handleClose = () => {
+    root.unmount();
+    document.body.removeChild(container);
+  };
+
+  root.render(
+    <ModalConfirmContainer
+      {...props}
+      open
+      icon={icon}
+      onClose={() => {
+        onCancel?.();
+        handleClose();
+      }}
+      onConfirm={() => {
+        onConfirm?.();
+        handleClose();
+      }}
+      confirmText={confirmText}
+      cancelText={cancelText}
+    >
+      {content}
+    </ModalConfirmContainer>,
+  );
+};
+
+export default ConfirmModal;

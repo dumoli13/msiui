@@ -1,26 +1,18 @@
 import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React from 'react';
 import cx from 'classnames';
 import Tooltip from '../Displays/Tooltip';
 import Icon from '../Icon';
 /**
- * @property {'contained' | 'secondary' | 'outlined' | 'text'} props.variant - The variant of the button.
- * @property {'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral'} props.color - The color theme for the button.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {ReactNode} [icon] - Icon to be displayed inside the button.
- * @property {IconButtonProps} props - The properties for the IconButton component.
- * @property {string} [className] - Additional class names to apply to the button.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {() => void} [onClick] - Callback function to handle click events.
- * @property {string} [ariaLabel] - Aria-label for accessibility.
- * @property {'small' | 'default' | 'large'} [size='default'] - The size of the button.
- * @property {string} title - The title text for the button.
- * @property {'top' | 'bottom'} [titleVerticalAlign] - Vertical alignment for the title.
- * @property {'left' | 'center' | 'right'} [titleHoridzontalAlign] - Horizontal alignment for the title.
+ *  Icon buttons are commonly found in app bars and toolbars.
+ *
+ * Icons are also appropriate for toggle buttons that allow a single choice to be selected or deselected,
+ * such as adding or removing a star to an item.
  */
-const IconButton = (_a) => {
+const IconButton = React.forwardRef((_a, ref) => {
     var { variant = 'contained', color = 'primary', className, disabled = false, loading = false, icon, size = 'default', onClick, title, titleVerticalAlign = 'bottom', titleHorizontalAlign = 'center' } = _a, props = __rest(_a, ["variant", "color", "className", "disabled", "loading", "icon", "size", "onClick", "title", "titleVerticalAlign", "titleHorizontalAlign"]);
-    return (_jsx(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled, children: _jsxs("button", Object.assign({}, props, { disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square', {
+    return (_jsx(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled, children: _jsxs("button", Object.assign({}, props, { ref: ref, disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square', {
                 'w-[44px] h-[44px] text-28px': size === 'large',
                 'w-[32px] h-[32px] text-20px': size === 'default',
                 'w-[28px] h-[28px] text-16px': size === 'small',
@@ -60,5 +52,6 @@ const IconButton = (_a) => {
                         'text-16px': size !== 'large',
                         'text-20px': size === 'large',
                     }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] })) }));
-};
+});
+IconButton.displayName = 'IconButton';
 export default IconButton;

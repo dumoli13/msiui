@@ -24,8 +24,8 @@ export const theme = {
   fontSize: {
     '12px': ['12px', '16px'],
     '14px': ['14px', '20px'],
-    '16px': ['16px', '20px'],
-    '18px': ['18px', '20px'],
+    '16px': ['16px', '24px'],
+    '18px': ['18px', '26px'],
     '20px': ['20px', '28px'],
     '24px': ['24px', '32px'],
     '28px': ['28px', '34px'],
