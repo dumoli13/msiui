@@ -22,14 +22,13 @@ import Icon from '../Icon';
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-const NotificationContainer = ({ open, title, description, icon, color = 'primary', onClose, }) => {
+const NotificationContainer = ({ open, title, description, icon, color = 'primary', duration = 5000, onClose, }) => {
     const [visible, setVisible] = React.useState(open);
     const [progressWidth, setProgressWidth] = React.useState(100);
     const timerRef = React.useRef(null);
     const intervalRef = React.useRef(null);
-    const animationDuration = 5000;
     const decrementInterval = 10;
-    const decrementRate = 100 / (animationDuration / decrementInterval);
+    const decrementRate = 100 / (duration / decrementInterval);
     React.useEffect(() => {
         setVisible(open);
         if (open) {
@@ -37,7 +36,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
             startProgress();
             timerRef.current = setTimeout(() => {
                 handleClose();
-            }, animationDuration);
+            }, duration);
         }
         return () => {
             clearTimeout(timerRef.current);
@@ -63,7 +62,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
         startProgress();
         timerRef.current = setTimeout(() => {
             handleClose();
-        }, animationDuration * (progressWidth / 100));
+        }, duration * (progressWidth / 100));
     };
     const handleClose = () => {
         if (visible) {
@@ -73,7 +72,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     };
     if (!visible)
         return null;
-    return (_jsx("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, children: _jsxs("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden", children: [_jsx("div", { className: "shrink-0", children: icon }), _jsxs("div", { children: [_jsx("div", { className: "text-24px mb-2 break-words", children: title }), _jsx("p", { className: "text-20px break-words", children: description })] }), _jsx(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color", onClick: handleClose }), _jsx("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark", children: _jsx("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
+    return (_jsx("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, children: _jsxs("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden", children: [_jsx("div", { className: "shrink-0", children: icon }), _jsxs("div", { children: [_jsx("div", { className: "min-h-[28px] text-24px mb-2 break-words", children: title }), _jsx("p", { className: "text-20px break-words", children: description })] }), _jsx("div", { className: "absolute right-4 top-4", children: _jsx(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "p-1 shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color", onClick: handleClose }) }), _jsx("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark", children: _jsx("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
                             'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
                             'bg-success-main dark:bg-success-main-dark': color === 'success',
                             'bg-danger-main dark:bg-danger-main-dark': color === 'danger',

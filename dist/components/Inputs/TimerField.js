@@ -2,53 +2,45 @@ import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
+import { useDebouncedCallback } from 'use-debounce';
 import { TimeUnit } from '../../const/datePicker';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+const convertTime = (time) => {
+    if (!time)
+        return '';
+    const hours = Math.floor(time / 3600)
+        .toLocaleString('en-US')
+        .padStart(2, '0');
+    const minutes = Math.floor((time % 3600) / 60)
+        .toLocaleString('en-US')
+        .padStart(2, '0');
+    const seconds = (time % 60).toLocaleString('en-US').padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+};
 /**
- *
- * @property {number | null} [value] - The current value of the input, passed from the parent component.
- * @property {number | null} [defaultValue] - The initial value of the number field when the component is uncontrolled.
- * @property {(value: number | null) => void} [onChange] - Callback function when the number value changes.
- * @property {RefObject<TimerFieldRef> | React.RefCallback<TimerFieldRef>} [inputRef] - A ref that provides access to the input element.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - Whether the label should hide when the user starts typing.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field, often used for validation
- * @property {boolean} [disabled=false] - Disables the input field if true.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {string} [placeholder='hh:mm:ss'] - Placeholder text displayed inside the input field when it is empty.
- * @property {string} [error] - Error message to display when the input has an error.
- * @property {boolean} [success=false] - Whether the input field is in a success state.
- * @property {boolean} [loading=false] - Whether the input is in a loading state.
- * @property {ReactNode} [startIcon] - An optional icon to display at the start of the input field.
- * @property {ReactNode} [endIcon] - An optional icon to display at the end of the input field.
- * @property {'default' | 'large'} [size='default'] - The size of the input field (default or large).
- * @property {boolean} [fullWidth=false] - Whether the input should take up the full width of its container.
- * @property {number} [width] - Optional custom width for the input field.
- * @property {boolean} [clearable=false] - If `true`, a clear button will appear when the field is focused and has a value.
- *
+ * The Timer Field component is used for collecting time value from users
  */
 const TimerField = (_a) => {
-    var { id, value: valueProp, defaultValue = valueProp, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'hh:mm:ss', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width } = _a, props = __rest(_a, ["id", "value", "defaultValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "loading", "width"]);
+    var { id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'hh:mm:ss', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width, required } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "loading", "width", "required"]);
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [focused, setFocused] = React.useState(null);
     const [dropdownOpen, setDropdownOpen] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState(defaultValue !== undefined ? defaultValue : null);
+    const [internalValue, setInternalValue] = React.useState(defaultValue || initialValue);
     const isControlled = valueProp !== undefined;
     // Sync `internalStringValue` with `valueProp` when `valueProp` changes
     const value = isControlled ? valueProp : internalValue;
+    const [inputValue, setInputValue] = React.useState(convertTime(value));
     const [timeValue, setTimeValue] = React.useState({
         hours: value ? Math.floor(value / 3600) : null,
         minutes: value ? Math.floor((value % 3600) / 60) : null,
         seconds: value ? value % 60 : null,
     });
-    const displayValue = dropdownOpen || !isControlled ? internalValue : value;
     const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
@@ -65,13 +57,9 @@ const TimerField = (_a) => {
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => {
-            var _a;
-            (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus();
-        },
-        reset: () => {
-            setInternalValue(defaultValue !== undefined ? defaultValue : null);
-        },
+        focus: () => { var _a; return (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        reset: () => setInternalValue(initialValue),
+        disabled,
     }));
     const handleSelectTime = (category, selected) => {
         var _a, _b, _c;
@@ -82,9 +70,6 @@ const TimerField = (_a) => {
             [category]: selected,
         };
         setTimeValue(selectedTime);
-        setInternalValue(selectedTime.hours * 3600 +
-            selectedTime.minutes * 60 +
-            selectedTime.seconds);
     };
     const handleFocus = (component = 'hour') => {
         if (disabled)
@@ -96,15 +81,50 @@ const TimerField = (_a) => {
         setFocused(null);
         setDropdownOpen(false);
     };
-    const handleClearValue = (e) => {
-        e === null || e === void 0 ? void 0 : e.preventDefault();
-        e === null || e === void 0 ? void 0 : e.stopPropagation();
-        if (onChange) {
-            onChange(null);
-        }
+    const handleClearValue = () => {
+        onChange === null || onChange === void 0 ? void 0 : onChange(null);
         if (!isControlled) {
             setInternalValue(null);
         }
+    };
+    const debounceTextToValue = useDebouncedCallback((input) => {
+        if (clearable && input.length === 0) {
+            setTimeValue({ hours: 0, minutes: 0, seconds: 0 });
+            onChange === null || onChange === void 0 ? void 0 : onChange(null);
+            if (!isControlled)
+                setInternalValue(null);
+            return;
+        }
+        const isValid = /^([0-1]?\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(input);
+        if (isValid) {
+            const inputArr = input.split(':');
+            const hours = Number(inputArr[0]);
+            const minutes = Number(inputArr[1]);
+            const seconds = Number(inputArr[2]);
+            setTimeValue({ hours, minutes, seconds });
+            const newDuration = hours * 3600 + minutes * 60 + seconds;
+            onChange === null || onChange === void 0 ? void 0 : onChange(newDuration);
+            if (!isControlled)
+                setInternalValue(newDuration);
+            handleBlur();
+        }
+    }, 500);
+    const handleChangeInput = (e) => {
+        setInputValue(e.target.value);
+        debounceTextToValue(e.target.value);
+    };
+    const handleConfirmTime = () => {
+        var _a, _b, _c;
+        const newDuration = timeValue
+            ? ((_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0) * 3600 +
+                ((_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0) * 60 +
+                ((_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0)
+            : null;
+        onChange === null || onChange === void 0 ? void 0 : onChange(newDuration);
+        if (!isControlled) {
+            setInternalValue(newDuration);
+        }
+        handleBlur();
     };
     const handleDropdown = () => {
         if (disabled)
@@ -136,11 +156,11 @@ const TimerField = (_a) => {
             return;
         // Delay to ensure dropdown is fully rendered before scrolling
         setTimeout(() => {
-            Object.keys(timeValue).forEach((unit) => {
-                var _a;
+            var _a;
+            for (const unit of Object.keys(timeValue)) {
                 const value = timeValue[unit];
                 const container = (_a = scrollRefs[unit]) === null || _a === void 0 ? void 0 : _a.current;
-                const item = value !== null ? itemRefs[unit].current[value] : null;
+                const item = value === null ? null : itemRefs[unit].current[value];
                 if (container && item) {
                     const containerTop = container.getBoundingClientRect().top;
                     const itemTop = item.getBoundingClientRect().top;
@@ -150,9 +170,18 @@ const TimerField = (_a) => {
                         behavior: 'smooth',
                     });
                 }
-            });
+            }
         }, 50); // Small delay for rendering
     }, [dropdownOpen, timeValue]);
+    React.useEffect(() => {
+        if (dropdownOpen) {
+            const hours = value ? Math.floor(value / 3600) : null;
+            const minutes = value ? Math.floor((value % 3600) / 60) : null;
+            const seconds = value ? value % 60 : null;
+            setTimeValue({ hours, minutes, seconds });
+            setInputValue(convertTime(value));
+        }
+    }, [value, dropdownOpen]);
     const dropdownContent = (_jsxs("div", { className: "border-l border-neutral-40 dark:border-neutral-40-dark text-14px", children: [_jsx("div", { className: "flex", children: Object.keys(timeValue).map((key) => {
                     const unit = key;
                     const length = unit === TimeUnit.hours ? 24 : 60;
@@ -162,32 +191,27 @@ const TimerField = (_a) => {
                                 'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark cursor-default': idx === timeValue[unit],
                                 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': idx !== timeValue[unit],
                             }), onClick: () => handleSelectTime(unit, idx), children: idx.toString().padStart(2, '0') }, idx))) }, unit));
-                }) }), _jsx("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-end py-2 px-3", children: _jsx("button", { type: "button", onClick: handleBlur, className: cx('text-14px py-0.5 px-2 rounded disabled:border', 'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed', 'dark:text-neutral-10-dark dark:disabled:border-neutral-40-dark dark:disabled:text-neutral-60-dark dark:disabled:bg-neutral-30-dark dark:bg-primary-main-dark dark:hover:bg-primary-hover-dark dark:active:bg-primary-pressed-dark'), disabled: disabled, children: "OK" }) })] }));
+                }) }), _jsx("div", { className: "border-t border-neutral-40 dark:border-neutral-40-dark flex items-center justify-end py-2 px-3", children: _jsx("button", { type: "button", onClick: handleConfirmTime, className: cx('text-14px py-0.5 px-2 rounded disabled:border', 'text-neutral-10 disabled:border-neutral-40 disabled:text-neutral-60 disabled:bg-neutral-30 bg-primary-main hover:bg-primary-hover active:bg-primary-pressed', 'dark:text-neutral-10-dark dark:disabled:border-neutral-40-dark dark:disabled:text-neutral-60-dark dark:disabled:bg-neutral-30-dark dark:bg-primary-main-dark dark:hover:bg-primary-hover-dark dark:active:bg-primary-pressed-dark'), disabled: disabled, children: "OK" }) })] }));
+    const inputId = `timerfield-${id || name}-${React.useId()}`;
     return (_jsxs("div", { className: cx('relative', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: id, size: size, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md py-1 flex gap-2 items-center', {
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md flex gap-2 items-center', {
                     'w-full': fullWidth,
                     'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
                     'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
-                    'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
+                    'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
                     'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
                     'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main': !disabled,
                     'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
+                    'py-[3px]': size === 'default',
+                    'py-[9px]': size === 'large',
                 }), style: width ? { width } : undefined, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("div", { className: cx('flex items-center w-full', {
-                            'text-14px': size === 'default',
-                            'text-18px': size === 'large',
-                        }), children: _jsx("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, value: displayValue
-                                ? `${Math.floor(displayValue / 3600)
-                                    .toLocaleString('en-US')
-                                    .padStart(2, '0')}:${Math.floor((displayValue % 3600) / 60)
-                                    .toLocaleString('en-US')
-                                    .padStart(2, '0')}:${(displayValue % 60).toLocaleString('en-US').padStart(2, '0')}`
-                                : '', placeholder: focused ? '' : placeholder, onFocus: () => handleFocus('hour'), onChange: () => { }, ref: elementRef, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
-                                'py-1.5': size === 'default',
-                                'py-3': size === 'large',
-                            }), disabled: disabled, autoComplete: "off" })) }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, size: size, clearable: clearable && !!focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: (!clearable ||
+                            'text-14px py-0.5': size === 'default',
+                            'text-18px py-0.5': size === 'large',
+                        }), children: _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder, onFocus: () => handleFocus('hour'), onChange: handleChangeInput, ref: elementRef, className: "w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, autoComplete: "off" })) }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && !!focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: (!clearable ||
                             (clearable && !focused) ||
-                            (clearable && focused && !value)) && (_jsx(Icon, { name: "clock", strokeWidth: 2, onClick: handleDropdown, disabled: disabled, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
+                            (clearable && focused && !value)) && (_jsx(Icon, { name: "clock", size: 20, strokeWidth: 2, onClick: handleDropdown, disabled: disabled, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
 };
+TimerField.isFormInput = true;
 export default TimerField;

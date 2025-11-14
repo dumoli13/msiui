@@ -1,53 +1,26 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import Modal from '../Modal';
-import { useNotification } from '../Notification';
-
-export type BreadcrumbItem = {
-  label: React.ReactNode;
-  href?: string; // Optional URL to link the breadcrumb item
-};
-
-export interface BreadcrumbProps {
-  items: BreadcrumbItem[];
-  maxDisplay?: number; // Maximum number of breadcrumb items to display, defaults to 4
-  isFormEdited?: boolean;
-}
+import { Link } from 'react-router-dom';
+import { Modal } from '..';
+import { BreadcrumbProps } from '../../types';
+import { BreadcrumbLinkProps } from '../../types/navigations/breadcrumb';
 
 const BreadcrumbLink = ({
   item,
   isLast = false,
   isFormEdited,
-}: {
-  item: BreadcrumbItem;
-  isLast?: boolean;
-  isFormEdited: boolean;
-}) => {
-  const notify = useNotification();
-  const navigate = useNavigate();
-
+  onNavigate,
+}: BreadcrumbLinkProps) => {
   const handleRoute = (href: string) => {
-    if (!navigate) {
-      notify({
-        color: 'danger',
-        title: 'Error',
-        description: 'Breadcrumb navigation is not supported in this browser.',
-      });
+    if (!onNavigate) return;
 
-      return;
-    }
-    if (isFormEdited) {
-      Modal.danger({
-        title: 'Unsaved Changes',
-        content: 'You have unsaved changes. Going back now will discard them.',
-        confirmText: 'Discard',
-        onConfirm: () => {
-          navigate(href);
-        },
-      });
-    } else {
-      navigate(href);
-    }
+    Modal.danger({
+      title: 'Unsaved Changes',
+      content: 'You have unsaved changes. Going back now will discard them.',
+      confirmText: 'Discard',
+      onConfirm: () => {
+        onNavigate(href);
+      },
+    });
   };
 
   return isLast ? (
@@ -56,7 +29,7 @@ const BreadcrumbLink = ({
     </div>
   ) : (
     <>
-      {item.href ? (
+      {item.href && isFormEdited && (
         <div
           role="link"
           tabIndex={0}
@@ -65,29 +38,19 @@ const BreadcrumbLink = ({
         >
           {item.label}
         </div>
-      ) : (
-        <div>{item.label}</div>
       )}
+      {item.href && !isFormEdited && <Link to={item.href}>{item.label}</Link>}
+      {!item.href && <div>{item.label}</div>}
       <div>/</div>
     </>
   );
 };
 
 /**
- *
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
  * If more than `maxDisplay` items are provided, it will show the first few, followed by an ellipsis, and then the last few.
- *
- * @property {BreadcrumbItem[]} items - Array of breadcrumb items.
- * @property {number} [maxDisplay=4] - The maximum number of breadcrumb items to display before truncation.
- *
  */
-
-const Breadcrumb = ({
-  items,
-  maxDisplay = 4,
-  isFormEdited = false,
-}: BreadcrumbProps) => {
+const Breadcrumb = ({ items, maxDisplay = 4, ...props }: BreadcrumbProps) => {
   const parsedItem = items.map((item, index) => ({
     key: index,
     label: item.label,
@@ -103,7 +66,7 @@ const Breadcrumb = ({
           item={item}
           key={item.key}
           isLast={index === parsedItem.length - 1}
-          isFormEdited={isFormEdited}
+          {...props}
         />
       ));
     }
@@ -116,15 +79,10 @@ const Breadcrumb = ({
 
     return [
       ...firstItems.map((item) => (
-        <BreadcrumbLink
-          item={item}
-          key={item.key}
-          isLast={false}
-          isFormEdited={isFormEdited}
-        />
+        <BreadcrumbLink item={item} key={item.key} isLast={false} {...props} />
       )),
       <React.Fragment key="ellipsis">
-        <span className="mx-2">...</span>
+        <span className="mx-2.5">...</span>
         <span>/</span>
       </React.Fragment>,
       ...lastItems.map((item, index) => (
@@ -132,7 +90,7 @@ const Breadcrumb = ({
           item={item}
           key={item.key}
           isLast={index === lastItems.length - 1}
-          isFormEdited={isFormEdited}
+          {...props}
         />
       )),
     ];
@@ -141,7 +99,7 @@ const Breadcrumb = ({
   return (
     <nav
       aria-label="breadcrumb"
-      className="flex items-center gap-2.5 font-medium text-neutral-60 dark:text-neutral-60-dark text-24px"
+      className="flex items-center gap-2.5 font-medium text-neutral-90 dark:text-neutral-90-dark text-14px"
     >
       {renderItems()}
     </nav>

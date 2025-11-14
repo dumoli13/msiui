@@ -1,9 +1,16 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useMemo } from 'react';
 import cx from 'classnames';
-import { MONTH_LIST } from '../../const/datePicker';
-import { SUNDAY_DATE, areDatesEqual, getYearRange, isToday } from '../../libs';
-import { formatDate } from '../../libs/inputDate';
+import dayjs from 'dayjs';
+import { useDebouncedCallback } from 'use-debounce';
+import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
+import { areDatesEqual, getYearRange, isToday } from '../../libs';
+import {
+  DateValue,
+  MultipleDatePickerProps,
+  MultipleDateValue,
+  PickerType,
+} from '../../types/inputs';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
@@ -12,68 +19,18 @@ import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 
-export type InputMultipleDateValue = Date[];
-export interface InputMultipleDatePickerRef {
-  element: HTMLDivElement | null;
-  value: InputMultipleDateValue;
-  focus: () => void;
-  reset: () => void;
-}
-export interface MultipleDatePickerProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
-  > {
-  value?: InputMultipleDateValue;
-  defaultValue?: InputMultipleDateValue;
-  label?: string;
-  labelPosition?: 'top' | 'left';
-  autoHideLabel?: boolean;
-  onChange?: (value: InputMultipleDateValue) => void;
-  helperText?: React.ReactNode;
-  placeholder?: string;
-  fullWidth?: boolean;
-  inputRef?:
-    | React.RefObject<InputMultipleDatePickerRef | null>
-    | React.RefCallback<InputMultipleDatePickerRef | null>;
-  size?: 'default' | 'large';
-  error?: boolean | string;
-  success?: boolean;
-  loading?: boolean;
-  disabledDate?: (
-    date: Date,
-    firstSelectedDate: InputMultipleDateValue,
-  ) => boolean;
-  width?: number;
-}
-
 /**
- *
- * @property {InputDateValue} value - The currently selected date. If provided, the component behaves as a controlled component.
- * @property {InputDateValue} [defaultValue=null] - The default date to display if no value is provided (used in uncontrolled mode).
- * @property {function} [onChange] - Callback function to handle input changes.
- * @property {RefObject<InputMultipleDatePickerRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {string} [placeholder='Input date'] - Placeholder text displayed inside the input field when it is empty.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [success] - A flag to display success of input field if set to true.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px). *
- * @property {function} [disabledDate] - A function to determine if a specific date is disabled (not selectable).
+ * The Multiple Date Picker component lets users select multiple date.
+ * This component is similar to the Date Picker component but can not set a time of the date.
  *
  */
 const MultipleDatePicker = ({
   id,
+  name,
   value: valueProp,
   defaultValue,
+  initialValue = [],
   label,
-
   labelPosition = 'top',
   autoHideLabel = false,
   onChange,
@@ -84,42 +41,38 @@ const MultipleDatePicker = ({
   fullWidth,
   inputRef,
   size = 'default',
+  clearable,
   error: errorProp,
   success: successProp,
   loading = false,
   disabledDate = () => false,
   width,
+  format = 'D/M/YYYY',
+  picker = 'date',
+  required,
+  onKeyDown,
+  ...props
 }: MultipleDatePickerProps) => {
   const elementRef = React.useRef<HTMLDivElement>(null);
+  const valueRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const [focused, setFocused] = React.useState(false);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-  const [internalValue, setInternalValue] = React.useState(defaultValue || []);
-  const isControlled = typeof valueProp !== 'undefined';
+  const [internalValue, setInternalValue] = React.useState(
+    defaultValue || initialValue,
+  );
+  const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
-  const [tempValue, setTempValue] = React.useState<InputMultipleDateValue>([]);
+  const [inputValue, setInputValue] = React.useState('');
+  const [tempValue, setTempValue] = React.useState<MultipleDateValue>([]);
 
-  const [calendarView, setCalendarView] = React.useState<
-    'date' | 'month' | 'year'
-  >('date');
+  const [calendarView, setCalendarView] = React.useState<PickerType>(picker);
   const [displayedDate, setDisplayedDate] = React.useState(
     value.length === 0 ? new Date() : value[0],
   );
   const yearRange = getYearRange(displayedDate.getFullYear());
 
-  const firstDate = new Date(
-    displayedDate.getFullYear(),
-    displayedDate.getMonth(),
-    1,
-  );
-  const lastDate = new Date(
-    displayedDate.getFullYear(),
-    displayedDate.getMonth() + 1,
-    0,
-  );
-
-  const dayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' });
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
   const helperMessage = errorProp ?? helperText;
@@ -129,12 +82,9 @@ const MultipleDatePicker = ({
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
-    focus: () => {
-      elementRef.current?.focus();
-    },
-    reset: () => {
-      setInternalValue(defaultValue || []);
-    },
+    focus: () => valueRef.current?.focus(),
+    reset: () => setInternalValue(initialValue),
+    disabled,
   }));
 
   React.useEffect(() => {
@@ -159,7 +109,7 @@ const MultipleDatePicker = ({
 
   const handleFocus = () => {
     if (disabled) return;
-    handleChangeView('date');
+    handleChangeView(picker);
     setFocused(true);
     setDropdownOpen(true);
   };
@@ -186,50 +136,54 @@ const MultipleDatePicker = ({
     });
   };
 
-  const days: Array<string> = Array.from({ length: 7 }).map((_, idx) =>
-    dayFormatter.format(
-      new Date(
-        SUNDAY_DATE.getFullYear(),
-        SUNDAY_DATE.getMonth(),
-        SUNDAY_DATE.getDate() + idx,
-      ),
-    ),
-  );
+  const dateMatrix = useMemo(() => {
+    const year = displayedDate.getFullYear();
+    const month = displayedDate.getMonth();
 
-  const dates = Array.from({ length: lastDate.getDate() }).map(
-    (_, idx) =>
-      new Date(
-        firstDate.getFullYear(),
-        firstDate.getMonth(),
-        firstDate.getDate() + idx,
-      ),
-  );
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
 
-  const dateMatrix: Array<Array<Date | null>> = Array(days.length).fill([]);
+    const matrix: DateValue[][] = [];
+    let currentDay = 1 - firstDayIndex;
 
-  while (dates.length > 0) {
-    const dateRow = days.map((_, idx) => {
-      if (dates.length > 0 && dates[0].getDay() === idx) {
-        const currentDate = dates.shift();
-        return currentDate ?? null;
+    for (let week = 0; week < 6; week++) {
+      const weekRow: DateValue[] = [];
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(year, month, currentDay);
+
+        if (currentDay < 1 || currentDay > totalDays) {
+          weekRow.push(null);
+        } else {
+          weekRow.push(date);
+        }
+        currentDay++;
       }
-      return null;
-    });
-    dateMatrix.push(dateRow);
-  }
+      matrix.push(weekRow);
+    }
+
+    return matrix;
+  }, [displayedDate]);
 
   const handleChangeView = (view: 'date' | 'month' | 'year') => {
     setCalendarView(view);
   };
 
   const handleJumpMonth = (month: number) => {
-    setDisplayedDate(new Date(displayedDate.getFullYear(), month));
-    handleChangeView('date');
+    if (picker === 'month') {
+      handleSelectDate(new Date(displayedDate.getFullYear(), month));
+    } else {
+      setDisplayedDate(new Date(displayedDate.getFullYear(), month));
+      handleChangeView('date');
+    }
   };
 
   const handleJumpYear = (year: number) => {
-    setDisplayedDate(new Date(year, displayedDate.getMonth()));
-    setCalendarView('month');
+    if (picker === 'year') {
+      handleSelectDate(new Date(year, 0)); // january 1, <YEAR>
+    } else {
+      setDisplayedDate(new Date(year, displayedDate.getMonth()));
+      setCalendarView('month');
+    }
   };
 
   const handlePrevMonth = () => {
@@ -258,25 +212,57 @@ const MultipleDatePicker = ({
     );
   };
 
-  const handleChange = (newValue: InputMultipleDateValue) => {
+  const handleChange = (newValue: MultipleDateValue) => {
     onChange?.(newValue);
     if (!isControlled) {
       setInternalValue(newValue);
     }
-
-    setDisplayedDate(newValue[newValue.length - 1] || new Date());
   };
 
-  const handleClearValue = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSelectDate = (selectedDate: Date) => {
+    const timestamp = selectedDate.getTime();
+    const isDateSelected = value.some((date) => date.getTime() === timestamp);
+    const newValue = isDateSelected
+      ? value.filter((date) => date.getTime() !== timestamp)
+      : [...value, selectedDate];
+
+    handleChange(newValue);
+  };
+
+  const handleClearValue = () => {
     handleChange([]);
+  };
+
+  const debounceTextToDate = useDebouncedCallback((input: string) => {
+    const parsed = dayjs(input, format, true);
+
+    if (parsed.isValid()) {
+      const newDate = parsed.toDate();
+      handleSelectDate(newDate);
+      setInputValue('');
+    }
+  }, 500);
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    debounceTextToDate(e.target.value);
   };
 
   React.useEffect(() => {
     setTempValue(value);
-    setDisplayedDate(value[0] || new Date());
+    setDisplayedDate(value[value.length - 1] || new Date());
   }, [value, dropdownOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
+      e.preventDefault();
+      if (!dropdownOpen) {
+        handleDropdown();
+      }
+    } else {
+      onKeyDown?.(e);
+    }
+  };
 
   const dropdownContent = (
     <div className="min-w-60">
@@ -336,7 +322,7 @@ const MultipleDatePicker = ({
             <table className="w-full">
               <thead>
                 <tr>
-                  {days.map((day) => (
+                  {DAYS_OF_WEEK.map((day) => (
                     <th key={day}>
                       <div className="text-center p-1 font-normal w-8">
                         {day}
@@ -355,23 +341,6 @@ const MultipleDatePicker = ({
                         ? tempValue !== null && areDatesEqual(date, tempValue)
                         : false;
 
-                      const handleChooseDate = (date: Date) => {
-                        if (isDateDisabled) return;
-
-                        const newValue = [...value];
-
-                        if (isDateSelected) {
-                          handleChange(
-                            newValue.filter(
-                              (item) => item.getTime() !== date.getTime(),
-                            ),
-                          );
-                        } else {
-                          newValue.push(date);
-                          handleChange(newValue);
-                        }
-                      };
-
                       return (
                         <td
                           key={dateIdx}
@@ -384,11 +353,11 @@ const MultipleDatePicker = ({
                             {date && (
                               <button
                                 type="button"
-                                onClick={() => handleChooseDate(date)}
+                                onClick={() => handleSelectDate(date)}
                                 className={cx(
                                   'rounded-md text-14px mt-0.5 transition-colors duration-200 ease-in w-7 h-7 flex items-center justify-center',
                                   {
-                                    'cursor-default text-neutral-30 dark:text-neutral-30-dark':
+                                    'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
                                       isDateDisabled,
                                     'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
                                       !isDateDisabled,
@@ -400,6 +369,7 @@ const MultipleDatePicker = ({
                                       isDateSelected,
                                   },
                                 )}
+                                disabled={isDateDisabled}
                               >
                                 {date.getDate()}
                               </button>
@@ -446,8 +416,14 @@ const MultipleDatePicker = ({
               />
             </button>
           </div>
-          <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
-            {MONTH_LIST.map((item) => {
+          <div className="grid grid-cols-3 p-2 gap-1 text-14px">
+            {MONTH_OF_YEAR.map((item) => {
+              const isDateDisabled =
+                picker === 'month' &&
+                disabledDate(
+                  new Date(displayedDate.getFullYear(), item.value),
+                  tempValue,
+                );
               const isDateSelected = value.some(
                 (dateItem) =>
                   dateItem.getFullYear() === displayedDate.getFullYear() &&
@@ -465,12 +441,17 @@ const MultipleDatePicker = ({
                     className={cx(
                       'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md',
                       {
+                        'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                          isDateDisabled,
+                        'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                          !isDateDisabled,
                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                          !isDateSelected,
+                          !isDateDisabled && !isDateSelected,
                         'bg-primary-main text-neutral-10 rounded-md':
                           isDateSelected,
                       },
                     )}
+                    disabled={isDateDisabled}
                   >
                     {item.label}
                   </button>
@@ -478,9 +459,11 @@ const MultipleDatePicker = ({
               );
             })}
           </div>
-          <div className="flex justify-end gap-3 px-2">
-            <CancelButton onClick={() => handleChangeView('date')} />
-          </div>
+          {picker === 'date' && (
+            <div className="flex justify-end gap-3 px-2">
+              <CancelButton onClick={() => handleChangeView('date')} />
+            </div>
+          )}
         </>
       )}
       {calendarView === 'year' && (
@@ -504,8 +487,15 @@ const MultipleDatePicker = ({
               className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
             />
           </div>
-          <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
+          <div className="grid grid-cols-3 p-2 gap-1 text-14px">
             {yearRange.map((item) => {
+              const isDateDisabled =
+                picker === 'year' &&
+                disabledDate(
+                  new Date(item, displayedDate.getMonth()),
+                  tempValue,
+                );
+
               const dateList = value.map((v) => v.getFullYear());
               const isDateSelected = dateList.includes(item);
 
@@ -520,12 +510,17 @@ const MultipleDatePicker = ({
                     className={cx(
                       'w-full h-8 transition-colors duration-200 ease-in px-3 py-0.5 flex items-center justify-center rounded-md',
                       {
+                        'cursor-not-allowed text-neutral-50 dark:text-neutral-50-dark':
+                          isDateDisabled,
+                        'cursor-pointer text-neutral-100 dark:text-neutral-100-dark':
+                          !isDateDisabled,
                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                          !isDateSelected,
+                          !isDateDisabled && !isDateSelected,
                         'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark':
                           isDateSelected,
                       },
                     )}
+                    disabled={isDateDisabled}
                   >
                     {item}
                   </button>
@@ -533,13 +528,17 @@ const MultipleDatePicker = ({
               );
             })}
           </div>
-          <div className="flex justify-end gap-3 px-2">
-            <CancelButton onClick={() => handleChangeView('date')} />
-          </div>
+          {(picker === 'date' || picker === 'month') && (
+            <div className="flex justify-end gap-3 px-2">
+              <CancelButton onClick={() => handleChangeView('date')} />
+            </div>
+          )}
         </>
       )}
     </div>
   );
+
+  const inputId = `multipledatepicker-${id || name}-${React.useId()}`;
 
   return (
     <div
@@ -553,13 +552,13 @@ const MultipleDatePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={id} size={size}>
+        <InputLabel id={inputId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
       <div
         className={cx(
-          'relative px-3 border rounded-md py-1 flex gap-2 items-center',
+          'relative px-3 border rounded-md flex gap-2 items-center',
           {
             'w-full': fullWidth,
             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
@@ -574,6 +573,8 @@ const MultipleDatePicker = ({
               !disabled,
             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
               focused,
+            'py-[3px]': size === 'default',
+            'py-[9px]': size === 'large',
           },
         )}
         ref={elementRef}
@@ -581,7 +582,7 @@ const MultipleDatePicker = ({
       >
         <div
           role="button"
-          tabIndex={!disabled ? 0 : -1}
+          tabIndex={disabled ? -1 : 0}
           aria-pressed="true"
           className={cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
             'w-full': fullWidth,
@@ -593,15 +594,9 @@ const MultipleDatePicker = ({
           onClick={handleFocus}
         >
           {value?.map((selected, index) => {
-            const tagValue = formatDate(selected);
+            const tagValue = dayjs(selected).format(format);
             return (
-              <div
-                className={cx('flex items-center', {
-                  'h-[32px]': size === 'default',
-                  'h-[44px]': size === 'large',
-                })}
-                key={tagValue}
-              >
+              <div className="flex items-center py-[1px]" key={tagValue}>
                 {disabled ? (
                   <Tag color="neutral">{tagValue}</Tag>
                 ) : (
@@ -621,34 +616,45 @@ const MultipleDatePicker = ({
               </div>
             );
           })}
-          {value.length === 0 && (
-            <div
-              className={cx(
-                'w-full outline-none truncate text-neutral-70 dark:text-neutral-70-dark',
-                {
-                  'text-14px h-[32px]': size === 'default',
-                  'text-18px h-[44px]': size === 'large',
-                  'py-1.5': size === 'default',
-                  'py-3': size === 'large',
-                },
-              )}
-            >
-              {placeholder}
-            </div>
-          )}
+          <input
+            {...props}
+            tabIndex={disabled ? -1 : 0}
+            id={inputId}
+            name={name}
+            value={inputValue}
+            placeholder={focused ? '' : placeholder || format}
+            className={cx(
+              'outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
+              {
+                'text-14px py-0.5': size === 'default',
+                'text-18px py-0.5': size === 'large',
+              },
+            )}
+            disabled={disabled}
+            aria-label={label}
+            autoComplete="off"
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onClick={handleFocus}
+            onChange={handleChangeInput}
+            ref={valueRef}
+            onKeyDown={handleKeyDown}
+          />
         </div>
         <InputEndIconWrapper
           loading={loading}
           error={isError}
           success={successProp}
-          size={size}
-          clearable={focused && !!value}
+          clearable={clearable && focused && !!value}
           onClear={handleClearValue}
         >
-          {(!focused || !value) && (
+          {(!clearable ||
+            (clearable && !focused) ||
+            (clearable && focused && !value)) && (
             <Icon
               name="calendar"
               strokeWidth={2}
+              size={20}
               onClick={disabled ? undefined : handleDropdown}
               className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
             />
@@ -658,7 +664,7 @@ const MultipleDatePicker = ({
       <InputHelper message={helperMessage} error={isError} size={size} />
       <InputDropdown
         open={dropdownOpen}
-        elementRef={elementRef}
+        elementRef={valueRef}
         dropdownRef={dropdownRef}
         maxHeight={320}
       >
@@ -667,5 +673,7 @@ const MultipleDatePicker = ({
     </div>
   );
 };
+
+MultipleDatePicker.isFormInput = true;
 
 export default MultipleDatePicker;

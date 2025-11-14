@@ -1,15 +1,4 @@
-import React from 'react';
-export interface SkeletonProps {
-    width: number;
-    height: number;
-    type?: 'circle' | 'rounded' | 'rect';
-}
-export interface SkeletonInputProps {
-    size?: 'default' | 'large';
-}
-export interface SkeletonTableProps {
-    column: number;
-}
+import { SkeletonInputProps, SkeletonProps, SkeletonTableProps } from '../../types';
 /**
  *
  * A predefined skeleton loader for input fields, designed to simulate loading states for forms or inputs.
@@ -18,9 +7,12 @@ export interface SkeletonTableProps {
  */
 declare const Skeleton: {
     ({ width, height, type }: SkeletonProps): import("react/jsx-runtime").JSX.Element;
-    Input: React.FC<SkeletonInputProps>;
+    Input: {
+        ({ size, height }: SkeletonInputProps): import("react/jsx-runtime").JSX.Element;
+        displayName: string;
+    };
     Table: {
-        ({ column }: SkeletonTableProps): import("react/jsx-runtime").JSX.Element;
+        ({ column, row, size, }: SkeletonTableProps): import("react/jsx-runtime").JSX.Element;
         displayName: string;
     };
 };

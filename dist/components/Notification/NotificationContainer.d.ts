@@ -6,6 +6,7 @@ export interface NotificationContainerProps {
     open: boolean;
     color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
     onClose?: () => void;
+    duration?: number;
 }
 /**
  *
@@ -27,6 +28,6 @@ export interface NotificationContainerProps {
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-declare const NotificationContainer: ({ open, title, description, icon, color, onClose, }: NotificationContainerProps) => import("react/jsx-runtime").JSX.Element | null;
+declare const NotificationContainer: ({ open, title, description, icon, color, duration, onClose, }: NotificationContainerProps) => import("react/jsx-runtime").JSX.Element | null;
 export default NotificationContainer;
 //# sourceMappingURL=NotificationContainer.d.ts.map

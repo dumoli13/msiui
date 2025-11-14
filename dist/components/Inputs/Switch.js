@@ -6,46 +6,33 @@ import Icon from '../Icon';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 /**
- *
- * @property {boolean} [checked] - The current state of the switch when controlled by a parent component.
- * @property {boolean} [defaultChecked=false] - The initial value of the input for uncontrolled usage.
- * @property {(checked: boolean) => void} [onChange] - Callback function to handle input changes.
- * @property {RefObject<SwitchRef> | React.RefCallback<SwitchRef>} [inputRef] - A reference to access the input field and its value programmatically.
- * @property {string} [label] - The label text displayed above or beside the input field.
- * @property {'top' | 'left'} [labelPosition='top'] - The position of the label relative to the field ('top' or 'left').
- * @property {boolean} [autoHideLabel=false] - A flag to set if label should automatically hide when the input is focused.
- * @property {ReactNode} [helperText] - A helper message displayed below the input field.
- * @property {string} [className] - Additional class names to customize the component's style.
- * @property {boolean | string} [error] - A flag to display error of input field. If set to string, it will be displayed as error message.
- * @property {boolean} [loading=false] - A flag to display loading state if set to true.
- * @property {boolean} [disabled=false] - A flag that disables input field if set to true.
- * @property {'default' | 'large'} [size='default'] - The size of the input field.
- * @property {boolean} [fullWidth=false] - A flag that expand to full container width if set to true.
- * @property {number} [width] - Optional custom width for the input field (in px).
- * @property {string} [trueLabel='Yes'] - The label to display when the switch is in the "on" or "checked" state.
- * @property {string} [falseLabel='No'] - The label to display when the switch is in the "off" or "unchecked" state.
- *
+ * The Switch component is used for toggling between two states. Most commonly used for setting on or off.
  */
 const Switch = (_a) => {
-    var { id, defaultChecked, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false } = _a, props = __rest(_a, ["id", "defaultChecked", "checked", "label", "labelPosition", "onChange", "className", "helperText", "disabled", "inputRef", "size", "fullWidth", "error", "trueLabel", "falseLabel", "width", "loading"]);
+    var { id, name, defaultChecked, initialChecked = false, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false, required, onKeyDown } = _a, props = __rest(_a, ["id", "name", "defaultChecked", "initialChecked", "checked", "label", "labelPosition", "onChange", "className", "helperText", "disabled", "inputRef", "size", "fullWidth", "error", "trueLabel", "falseLabel", "width", "loading", "required", "onKeyDown"]);
     const elementRef = React.useRef(null);
-    const [internalChecked, setInternalChecked] = React.useState(defaultChecked || false);
+    const [internalChecked, setInternalChecked] = React.useState(defaultChecked || initialChecked);
     const isControlled = checkedProp !== undefined;
     const value = isControlled ? checkedProp : internalChecked;
+    const [focused, setFocused] = React.useState(false);
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => {
-            var _a;
-            (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus();
-        },
-        reset: () => {
-            setInternalChecked(defaultChecked || false);
-        },
+        focus: () => { var _a; return (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        reset: () => setInternalChecked(initialChecked),
+        disabled,
     }));
     const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
+    const handleFocus = () => {
+        if (disabled)
+            return;
+        setFocused(true);
+    };
+    const handleBlur = () => {
+        setFocused(false);
+    };
     const handleChange = () => {
         const newChecked = !value;
         onChange === null || onChange === void 0 ? void 0 : onChange(newChecked);
@@ -53,26 +40,31 @@ const Switch = (_a) => {
             setInternalChecked(newChecked);
         }
     };
+    const handleKeyDown = (e) => {
+        if (!loading && !disabled && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            handleChange();
+        }
+        else {
+            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+        }
+    };
+    const inputId = `switch-${id || name}-${React.useId()}`;
     return (_jsxs("div", { className: cx('relative', {
             'w-full': fullWidth,
         }, className), style: width ? { width } : undefined, children: [_jsxs("div", { className: cx('relative flex text-neutral-90 dark:text-neutral-90-dark', {
                     'flex-col gap-0.5': labelPosition === 'top',
                     'flex items-center gap-4': labelPosition === 'left',
-                }), children: [label && (_jsx(InputLabel, { id: id, size: size, children: label })), _jsxs("div", { role: "button", tabIndex: !disabled ? 0 : -1, className: cx('w-fit flex items-center gap-2.5 border rounded-md focus:ring-3', {
+                }), children: [label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { role: "button", tabIndex: disabled ? -1 : 0, className: cx('w-fit flex items-center gap-2.5 border rounded-md focus:ring-3', {
                             'bg-neutral-20 dark:bg-neutral-20-dark opacity-50': loading || disabled,
                             'cursor-default': loading,
                             'cursor-not-allowed': disabled,
-                            'p-2': size === 'default',
-                            'p-3': size === 'large',
+                            'p-[7px]': size === 'default',
+                            'p-[11px]': size === 'large',
                             'border-neutral-40 dark:border-neutral-40-dark focus:ring-primary-focus dark:focus:ring-primary-focus-dark bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark': !isError && !loading && !disabled,
                             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
-                            '': !isError,
-                        }), onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: (e) => {
-                            if (!loading && !disabled && (e.key === 'Enter' || e.key === ' ')) {
-                                e.preventDefault(); // Prevent default scroll on Space key
-                                handleChange();
-                            }
-                        }, children: [_jsx("input", Object.assign({}, props, { tabIndex: !disabled ? 0 : -1, id: id, type: "checkbox", className: "sr-only", checked: value, readOnly: true, ref: elementRef })), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
+                            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
+                        }), onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: handleKeyDown, onFocus: handleFocus, onBlur: handleBlur, children: [_jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, type: "checkbox", className: "sr-only", checked: value, readOnly: true, ref: elementRef })), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
                                     'w-7 h-4': size === 'default',
                                     'w-8 h-5': size === 'large',
                                 }), children: _jsx("div", { className: "absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10 dark:text-neutral-10-dark", children: _jsx(Icon, { name: "loader", size: size === 'default' ? 12 : 16, animation: "spin", strokeWidth: 4 }) }) })) : (_jsx("div", { className: cx('rounded-full transition-colors relative', {
@@ -90,4 +82,5 @@ const Switch = (_a) => {
                                     'text-16px': size === 'large',
                                 }), children: value ? trueLabel : falseLabel })] })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
 };
+Switch.isFormInput = true;
 export default Switch;

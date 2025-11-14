@@ -1,0 +1,1 @@
+{"version":3,"file":"ModalBody.d.ts","sourceRoot":"","sources":["../../../src/components/Modals/ModalBody.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,UAAU,cAAc;IACtB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B;AAED,QAAA,MAAM,SAAS,GAAI,cAAc,cAAc,4CAM9C,CAAC;AAEF,eAAe,SAAS,CAAC"}

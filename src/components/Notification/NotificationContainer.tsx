@@ -9,6 +9,7 @@ export interface NotificationContainerProps {
   open: boolean;
   color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
   onClose?: () => void;
+  duration?: number;
 }
 
 /**
@@ -31,22 +32,21 @@ export interface NotificationContainerProps {
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-
 const NotificationContainer = ({
   open,
   title,
   description,
   icon,
   color = 'primary',
+  duration = 5000,
   onClose,
 }: NotificationContainerProps) => {
   const [visible, setVisible] = React.useState(open);
   const [progressWidth, setProgressWidth] = React.useState(100);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
-  const animationDuration = 5000;
   const decrementInterval = 10;
-  const decrementRate = 100 / (animationDuration / decrementInterval);
+  const decrementRate = 100 / (duration / decrementInterval);
 
   React.useEffect(() => {
     setVisible(open);
@@ -57,7 +57,7 @@ const NotificationContainer = ({
 
       timerRef.current = setTimeout(() => {
         handleClose();
-      }, animationDuration);
+      }, duration);
     }
 
     return () => {
@@ -89,7 +89,7 @@ const NotificationContainer = ({
       () => {
         handleClose();
       },
-      animationDuration * (progressWidth / 100),
+      duration * (progressWidth / 100),
     );
   };
 
@@ -108,19 +108,21 @@ const NotificationContainer = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification max-w-[448px] overflow-hidden">
+      <div className="relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden">
         <div className="shrink-0">{icon}</div>
         <div>
-          <div className="text-24px mb-2 break-words">{title}</div>
+          <div className="min-h-[28px] text-24px mb-2 break-words">{title}</div>
           <p className="text-20px break-words">{description}</p>
         </div>
-        <Icon
-          name="x-mark"
-          size={16}
-          strokeWidth={2}
-          className="shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
-          onClick={handleClose}
-        />
+        <div className="absolute right-4 top-4">
+          <Icon
+            name="x-mark"
+            size={16}
+            strokeWidth={2}
+            className="p-1 shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color"
+            onClick={handleClose}
+          />
+        </div>
         <div className="absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark">
           <div
             className={cx('h-full transition-all ease-linear bg-primary-main', {

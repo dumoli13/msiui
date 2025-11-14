@@ -2,6 +2,9 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import { createPortal } from 'react-dom';
+/**
+ * Tooltips display informative text when users hover over an element
+ */
 const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center', arrow = true, mouseEnterDelay = 500, mouseLeaveDelay = 0, title, disabled = false, }) => {
     var _a, _b, _c;
     const elementRef = React.useRef(null);
@@ -81,7 +84,7 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
             clearTimeout(enterTimeout.current);
         leaveTimeout.current = setTimeout(() => setOpen(false), mouseLeaveDelay);
     };
-    return (_jsxs("div", { className: "relative", children: [_jsx("div", { ref: elementRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, role: "button", tabIndex: -1, className: cx('inline-block', {
+    return (_jsxs("div", { className: "relative", children: [_jsx("div", { ref: elementRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, role: "button", tabIndex: -1, className: cx({
                     'cursor-not-allowed': disabled,
                 }), children: disabled ? (_jsx("span", { className: "pointer-events-none", children: children })) : (children) }), open &&
                 createPortal(_jsxs("div", { ref: dropdownRef, style: {
@@ -90,7 +93,7 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
                         opacity: (_c = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.opacity) !== null && _c !== void 0 ? _c : 0,
                         transformOrigin: 'center center',
                         transition: 'opacity 0.15s ease-out',
-                    }, className: "absolute z-[100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px", children: [arrow && (_jsx("div", { className: "absolute bg-neutral-90 dark:bg-neutral-90-dark w-2 h-2 transform rotate-45", style: {
+                    }, className: "absolute z-[2100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px", children: [arrow && (_jsx("div", { className: "absolute bg-neutral-90 dark:bg-neutral-90-dark w-2 h-2 transform rotate-45", style: {
                                 top: verticalAlign === 'top'
                                     ? '100%'
                                     : verticalAlign === 'bottom'

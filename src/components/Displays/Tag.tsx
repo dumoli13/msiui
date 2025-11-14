@@ -1,34 +1,26 @@
 import React from 'react';
 import cx from 'classnames';
+import { TagProps } from '../../types';
 import Icon from '../Icon';
-
-export interface TagProps {
-  className?: string;
-  children: string;
-  color: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-  size?: 'small' | 'default' | 'large';
-  onRemove?: () => void;
-}
 
 /**
  *
- * @property {string} [props.className] - Additional class names to apply to the tag.
- * @property {string} props.children - The content to be displayed inside the tag.
- * @property {'primary' | 'success' | 'danger' | 'warning' | 'info'} props.color - The color theme for the tag
+ * Tag are compact elements that represent an input, attribute, or action.
  *
  */
-
 function Tag({
   className,
   children,
   color = 'primary',
   size = 'default',
+  startIcon,
+  endIcon,
   onRemove,
 }: Readonly<TagProps>) {
   return (
     <div
       className={cx(
-        'ring-[1.5px] border-box truncate flex items-center justify-center w-fit py-0.5 px-2 rounded-lg font-medium',
+        'ring-[1.5px] border-box truncate flex items-center justify-center w-fit h-fit py-0.5 px-2 rounded-lg font-medium gap-1',
         {
           'ring-primary-border dark:ring-primary-border-dark text-primary-main dark:text-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark':
             color === 'primary',
@@ -44,12 +36,14 @@ function Tag({
             color === 'neutral',
           'text-12px': size === 'small',
           'text-14px': size === 'default',
-          'text-16px': size === 'large',
+          'text-16px leading-5': size === 'large',
         },
         className,
       )}
     >
+      {startIcon}
       {children}
+      {endIcon}
       {onRemove && (
         <Icon
           name="x-mark"
