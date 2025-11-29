@@ -88,7 +88,7 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
         if (!rules)
             return [];
         for (const [fieldName, fieldRules] of Object.entries(rules(typedValues))) {
-            const value = typedValues[fieldName];
+            const values = typedValues[fieldName];
             const refs = inputRefsRef.current[fieldName];
             if (!refs)
                 continue;
@@ -155,17 +155,18 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                     else if (rule.validate && !rule.validate(val)) {
                         newErrors[fieldName] = getErrorMessage(rule, 'validate');
                     }
-                    setErrors(newErrors);
-                    return Object.keys(newErrors);
                 };
-                for (const v of value) {
-                    checkValue(v);
+                // Check each value for this field
+                for (const value of values) {
+                    checkValue(value);
+                    if (newErrors[fieldName])
+                        break; // Stop at first error
                 }
             }
         }
         setErrors(newErrors);
         return Object.keys(newErrors);
-    }, [rules]);
+    }, [rules, submitOnChange]);
     const handleFormKeyDown = (e, currentKey) => {
         if (e.key === 'Enter' || e.key === 'Tab') {
             e.preventDefault();
@@ -245,6 +246,8 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             onSubmit?.(result);
         }
     }, 2000);
+    // Separate ref tracking for cleanup functions
+    const cleanupRefs = React.useRef({});
     const enhanceChild = (child) => {
         if (!React.isValidElement(child))
             return child;
@@ -271,7 +274,6 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                     debounceSubmit();
                 }
             };
-            // Preserve existing ref and props
             return React.cloneElement(child, {
                 ...child.props,
                 defaultValue,
@@ -287,7 +289,16 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                     }
                 },
                 inputRef: (ref) => {
+                    // Generate unique key for this specific input instance
+                    const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
+                    // Run previous cleanup if it exists for this instance
+                    if (cleanupRefs.current[instanceKey]) {
+                        console.log('Running cleanup for:', name, instanceKey);
+                        cleanupRefs.current[instanceKey]();
+                        delete cleanupRefs.current[instanceKey];
+                    }
                     if (name && ref) {
+                        console.log('Setting ref for:', name, ref, instanceKey);
                         if (!inputRefsRef.current[name]) {
                             inputRefsRef.current[name] = [];
                         }
@@ -295,6 +306,19 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                         if (!refsArray.includes(ref)) {
                             refsArray.push(ref);
                         }
+                        // Create cleanup function
+                        const cleanup = () => {
+                            console.log('Cleanup called for:', name, instanceKey);
+                            if (inputRefsRef.current[name]) {
+                                inputRefsRef.current[name] = inputRefsRef.current[name].filter((r) => r !== ref);
+                                if (inputRefsRef.current[name].length === 0) {
+                                    delete inputRefsRef.current[name];
+                                }
+                            }
+                            delete cleanupRefs.current[instanceKey];
+                        };
+                        // Store cleanup function
+                        cleanupRefs.current[instanceKey] = cleanup;
                     }
                     // Call original ref if it exists
                     if (typeof originalInputRef === 'function') {
@@ -303,15 +327,6 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                     else if (originalInputRef?.current !== undefined) {
                         originalInputRef.current = ref;
                     }
-                    // Clean up on unmount
-                    return () => {
-                        if (inputRefsRef.current[name]) {
-                            inputRefsRef.current[name] = inputRefsRef.current[name].filter((r) => r !== ref);
-                            if (inputRefsRef.current[name].length === 0) {
-                                delete inputRefsRef.current[name];
-                            }
-                        }
-                    };
                 },
             });
         }
@@ -328,27 +343,42 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
         validate,
         getValue,
         getValues,
-        getErrors: () => errorsRef.current, // Use ref to avoid closure issues
+        getErrors: () => errorsRef.current,
         setErrors,
-    }), [handleSubmit, handleReset, validate, getValues, setErrors]);
+    }), [handleSubmit, handleReset, validate, getValue, getValues]);
     const renderTemplate = React.useCallback((template) => {
-        const registerInputRef = (name) => (ref) => {
-            if (!name || !ref)
-                return;
-            if (!inputRefsRef.current[name]) {
-                inputRefsRef.current[name] = [];
-            }
-            const refsArray = inputRefsRef.current[name];
-            if (!refsArray.includes(ref)) {
-                refsArray.push(ref);
-            }
-            return () => {
-                if (inputRefsRef.current[name]) {
-                    inputRefsRef.current[name] = inputRefsRef.current[name].filter((r) => r !== ref);
-                    if (inputRefsRef.current[name].length === 0) {
-                        delete inputRefsRef.current[name];
-                    }
+        // Track cleanup functions for template components
+        const templateCleanupRefs = React.useRef({});
+        const registerInputRef = (name) => {
+            return (ref) => {
+                if (!name || !ref)
+                    return;
+                const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
+                // Run previous cleanup if it exists
+                if (templateCleanupRefs.current[instanceKey]) {
+                    templateCleanupRefs.current[instanceKey]();
+                    delete templateCleanupRefs.current[instanceKey];
                 }
+                console.log('Template - Setting ref for:', name, ref, instanceKey);
+                if (!inputRefsRef.current[name]) {
+                    inputRefsRef.current[name] = [];
+                }
+                const refsArray = inputRefsRef.current[name];
+                if (!refsArray.includes(ref)) {
+                    refsArray.push(ref);
+                }
+                // Create cleanup function
+                const cleanup = () => {
+                    console.log('Template - Cleanup called for:', name, instanceKey);
+                    if (inputRefsRef.current[name]) {
+                        inputRefsRef.current[name] = inputRefsRef.current[name].filter((r) => r !== ref);
+                        if (inputRefsRef.current[name].length === 0) {
+                            delete inputRefsRef.current[name];
+                        }
+                    }
+                    delete templateCleanupRefs.current[instanceKey];
+                };
+                templateCleanupRefs.current[instanceKey] = cleanup;
             };
         };
         const renderItem = (item, index) => {
@@ -410,6 +440,14 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
         };
         return template.map((item, index) => renderItem(item, index));
     }, [errors, formDisabled, submitOnChange, debounceSubmit]);
+    // Cleanup all refs on unmount
+    React.useEffect(() => {
+        return () => {
+            // Cleanup all refs when form unmounts
+            Object.values(cleanupRefs.current).forEach((cleanup) => cleanup());
+            inputRefsRef.current = {};
+        };
+    }, []);
     return (_jsx("form", { className: className, onSubmit: (e) => {
             e.preventDefault();
             handleSubmit();

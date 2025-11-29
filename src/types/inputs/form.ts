@@ -123,5 +123,5 @@ interface BaseFormProps<T> {
 }
 
 export type FormProps<T> =
-  | (BaseFormProps<T> & { children: React.ReactNode; template: undefined })
-  | (BaseFormProps<T> & { template: FormTemplate[]; children: undefined });
+  | (BaseFormProps<T> & { children: React.ReactNode; template?: never })
+  | (BaseFormProps<T> & { template: FormTemplate[]; children?: never });

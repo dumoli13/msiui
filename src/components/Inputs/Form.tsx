@@ -129,7 +129,7 @@ const Form = <T,>({
     for (const [fieldName, fieldRules] of Object.entries(
       rules(typedValues as T),
     )) {
-      const value = typedValues[fieldName];
+      const values = typedValues[fieldName];
       const refs = inputRefsRef.current[fieldName];
       if (!refs) continue;
 
@@ -203,18 +203,18 @@ const Form = <T,>({
           } else if (rule.validate && !rule.validate(val)) {
             newErrors[fieldName] = getErrorMessage(rule, 'validate');
           }
-          setErrors(newErrors);
-          return Object.keys(newErrors);
         };
 
-        for (const v of value) {
-          checkValue(v);
+        // Check each value for this field
+        for (const value of values) {
+          checkValue(value);
+          if (newErrors[fieldName]) break; // Stop at first error
         }
       }
     }
     setErrors(newErrors);
     return Object.keys(newErrors);
-  }, [rules]);
+  }, [rules, submitOnChange]);
 
   const handleFormKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -304,6 +304,9 @@ const Form = <T,>({
     }
   }, 2000);
 
+  // Separate ref tracking for cleanup functions
+  const cleanupRefs = React.useRef<Record<string, () => void>>({});
+
   const enhanceChild = (child: React.ReactNode): React.ReactNode => {
     if (!React.isValidElement(child)) return child;
 
@@ -338,7 +341,6 @@ const Form = <T,>({
         }
       };
 
-      // Preserve existing ref and props
       return React.cloneElement(child, {
         ...child.props,
         defaultValue,
@@ -353,7 +355,18 @@ const Form = <T,>({
           }
         },
         inputRef: (ref: InputPropsRefType) => {
+          // Generate unique key for this specific input instance
+          const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
+
+          // Run previous cleanup if it exists for this instance
+          if (cleanupRefs.current[instanceKey]) {
+            console.log('Running cleanup for:', name, instanceKey);
+            cleanupRefs.current[instanceKey]();
+            delete cleanupRefs.current[instanceKey];
+          }
+
           if (name && ref) {
+            console.log('Setting ref for:', name, ref, instanceKey);
             if (!inputRefsRef.current[name]) {
               inputRefsRef.current[name] = [];
             }
@@ -361,6 +374,23 @@ const Form = <T,>({
             if (!refsArray.includes(ref)) {
               refsArray.push(ref);
             }
+
+            // Create cleanup function
+            const cleanup = () => {
+              console.log('Cleanup called for:', name, instanceKey);
+              if (inputRefsRef.current[name]) {
+                inputRefsRef.current[name] = inputRefsRef.current[name].filter(
+                  (r) => r !== ref,
+                );
+                if (inputRefsRef.current[name].length === 0) {
+                  delete inputRefsRef.current[name];
+                }
+              }
+              delete cleanupRefs.current[instanceKey];
+            };
+
+            // Store cleanup function
+            cleanupRefs.current[instanceKey] = cleanup;
           }
 
           // Call original ref if it exists
@@ -369,18 +399,6 @@ const Form = <T,>({
           } else if (originalInputRef?.current !== undefined) {
             originalInputRef.current = ref;
           }
-
-          // Clean up on unmount
-          return () => {
-            if (inputRefsRef.current[name]) {
-              inputRefsRef.current[name] = inputRefsRef.current[name].filter(
-                (r) => r !== ref,
-              );
-              if (inputRefsRef.current[name].length === 0) {
-                delete inputRefsRef.current[name];
-              }
-            }
-          };
         },
       });
     }
@@ -405,33 +423,53 @@ const Form = <T,>({
       validate,
       getValue,
       getValues,
-      getErrors: () => errorsRef.current, // Use ref to avoid closure issues
+      getErrors: () => errorsRef.current,
       setErrors,
     }),
-    [handleSubmit, handleReset, validate, getValues, setErrors],
+    [handleSubmit, handleReset, validate, getValue, getValues],
   );
 
   const renderTemplate = React.useCallback(
     (template: FormTemplate[]): React.ReactNode => {
-      const registerInputRef = (name?: string) => (ref: any) => {
-        if (!name || !ref) return;
-        if (!inputRefsRef.current[name]) {
-          inputRefsRef.current[name] = [];
-        }
-        const refsArray = inputRefsRef.current[name];
-        if (!refsArray.includes(ref)) {
-          refsArray.push(ref);
-        }
+      // Track cleanup functions for template components
+      const templateCleanupRefs = React.useRef<Record<string, () => void>>({});
 
-        return () => {
-          if (inputRefsRef.current[name]) {
-            inputRefsRef.current[name] = inputRefsRef.current[name].filter(
-              (r) => r !== ref,
-            );
-            if (inputRefsRef.current[name].length === 0) {
-              delete inputRefsRef.current[name];
-            }
+      const registerInputRef = (name?: string) => {
+        return (ref: any) => {
+          if (!name || !ref) return;
+
+          const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
+
+          // Run previous cleanup if it exists
+          if (templateCleanupRefs.current[instanceKey]) {
+            templateCleanupRefs.current[instanceKey]();
+            delete templateCleanupRefs.current[instanceKey];
           }
+
+          console.log('Template - Setting ref for:', name, ref, instanceKey);
+          if (!inputRefsRef.current[name]) {
+            inputRefsRef.current[name] = [];
+          }
+          const refsArray = inputRefsRef.current[name];
+          if (!refsArray.includes(ref)) {
+            refsArray.push(ref);
+          }
+
+          // Create cleanup function
+          const cleanup = () => {
+            console.log('Template - Cleanup called for:', name, instanceKey);
+            if (inputRefsRef.current[name]) {
+              inputRefsRef.current[name] = inputRefsRef.current[name].filter(
+                (r) => r !== ref,
+              );
+              if (inputRefsRef.current[name].length === 0) {
+                delete inputRefsRef.current[name];
+              }
+            }
+            delete templateCleanupRefs.current[instanceKey];
+          };
+
+          templateCleanupRefs.current[instanceKey] = cleanup;
         };
       };
 
@@ -600,6 +638,15 @@ const Form = <T,>({
     },
     [errors, formDisabled, submitOnChange, debounceSubmit],
   );
+
+  // Cleanup all refs on unmount
+  React.useEffect(() => {
+    return () => {
+      // Cleanup all refs when form unmounts
+      Object.values(cleanupRefs.current).forEach((cleanup) => cleanup());
+      inputRefsRef.current = {};
+    };
+  }, []);
 
   return (
     <form

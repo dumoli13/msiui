@@ -109,10 +109,10 @@ interface BaseFormProps<T> {
 }
 export type FormProps<T> = (BaseFormProps<T> & {
     children: React.ReactNode;
-    template: undefined;
+    template?: never;
 }) | (BaseFormProps<T> & {
     template: FormTemplate[];
-    children: undefined;
+    children?: never;
 });
 export {};
 //# sourceMappingURL=form.d.ts.map
