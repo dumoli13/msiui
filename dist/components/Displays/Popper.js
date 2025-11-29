@@ -5,9 +5,9 @@ import { createPortal } from 'react-dom';
 const Popper = ({ disabled = false, content, children, open: openProp, onOpen, placement = 'bottom-left', offset = 8, className, style, closeOnClickChild = false, onClickOutside, }) => {
     const elementRef = React.useRef(null);
     const popperRef = React.useRef(null);
-    const [open, setOpen] = React.useState(openProp !== null && openProp !== void 0 ? openProp : false);
+    const [open, setOpen] = React.useState(openProp ?? false);
     const [position, setPosition] = React.useState({ top: 0, left: 0 });
-    const isDropdownOpen = openProp !== null && openProp !== void 0 ? openProp : open;
+    const isDropdownOpen = openProp ?? open;
     const calculatePosition = React.useCallback(() => {
         if (!elementRef.current || !popperRef.current)
             return;
@@ -143,7 +143,7 @@ const Popper = ({ disabled = false, content, children, open: openProp, onOpen, p
         }
     }, [openProp]);
     React.useEffect(() => {
-        onOpen === null || onOpen === void 0 ? void 0 : onOpen(open);
+        onOpen?.(open);
     }, [open, onOpen]);
     const handleDropdownToggle = () => {
         if (!disabled) {
@@ -151,12 +151,11 @@ const Popper = ({ disabled = false, content, children, open: openProp, onOpen, p
         }
     };
     const handleClickOutside = (event) => {
-        var _a, _b;
         const target = event.target;
-        if (!((_a = popperRef.current) === null || _a === void 0 ? void 0 : _a.contains(target)) &&
-            !((_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target))) {
+        if (!popperRef.current?.contains(target) &&
+            !elementRef.current?.contains(target)) {
             setOpen(false);
-            onClickOutside === null || onClickOutside === void 0 ? void 0 : onClickOutside();
+            onClickOutside?.();
         }
     };
     const handleContentClick = (e) => {
@@ -204,7 +203,12 @@ const Popper = ({ disabled = false, content, children, open: openProp, onOpen, p
         return children;
     }
     return (_jsxs(_Fragment, { children: [anchorElement, open &&
-                createPortal(_jsx("div", { ref: popperRef, style: Object.assign({ top: 0, left: 0, transform: `translate(${position.left}px, ${position.top}px)` }, style), onClick: handleContentClick, className: cx('absolute z-[2200] bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg', className, {
+                createPortal(_jsx("div", { ref: popperRef, style: {
+                        top: 0,
+                        left: 0,
+                        transform: `translate(${position.left}px, ${position.top}px)`,
+                        ...style,
+                    }, onClick: handleContentClick, className: cx('absolute z-[2200] bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg', className, {
                         invisible: !open,
                     }), children: content }), document.body)] }));
 };

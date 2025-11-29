@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import { RadioGroupProps, SelectValue } from '../../types/inputs';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { RadioGroupProps, SelectValue } from '../../types/inputs';
 
 /**
  * RadioGroup components allow users to select one option from a set.

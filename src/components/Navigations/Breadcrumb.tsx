@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Modal } from '..';
-import { BreadcrumbProps } from '../../types';
 import { BreadcrumbLinkProps } from '../../types/navigations/breadcrumb';
+import { BreadcrumbProps } from '../../types/';
 
 const BreadcrumbLink = ({
   item,

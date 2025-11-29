@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -8,8 +7,7 @@ import InputLabel from './InputLabel';
 /**
  * The Switch component is used for toggling between two states. Most commonly used for setting on or off.
  */
-const Switch = (_a) => {
-    var { id, name, defaultChecked, initialChecked = false, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false, required, onKeyDown } = _a, props = __rest(_a, ["id", "name", "defaultChecked", "initialChecked", "checked", "label", "labelPosition", "onChange", "className", "helperText", "disabled", "inputRef", "size", "fullWidth", "error", "trueLabel", "falseLabel", "width", "loading", "required", "onKeyDown"]);
+const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false, required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const [internalChecked, setInternalChecked] = React.useState(defaultChecked || initialChecked);
     const isControlled = checkedProp !== undefined;
@@ -18,11 +16,11 @@ const Switch = (_a) => {
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => elementRef.current?.focus(),
         reset: () => setInternalChecked(initialChecked),
         disabled,
     }));
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     const handleFocus = () => {
@@ -35,7 +33,7 @@ const Switch = (_a) => {
     };
     const handleChange = () => {
         const newChecked = !value;
-        onChange === null || onChange === void 0 ? void 0 : onChange(newChecked);
+        onChange?.(newChecked);
         if (!isControlled) {
             setInternalChecked(newChecked);
         }
@@ -46,7 +44,7 @@ const Switch = (_a) => {
             handleChange();
         }
         else {
-            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+            onKeyDown?.(e);
         }
     };
     const inputId = `switch-${id || name}-${React.useId()}`;
@@ -64,7 +62,7 @@ const Switch = (_a) => {
                             'border-neutral-40 dark:border-neutral-40-dark focus:ring-primary-focus dark:focus:ring-primary-focus-dark bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark': !isError && !loading && !disabled,
                             'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
                             'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
-                        }), onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: handleKeyDown, onFocus: handleFocus, onBlur: handleBlur, children: [_jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, type: "checkbox", className: "sr-only", checked: value, readOnly: true, ref: elementRef })), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
+                        }), onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: handleKeyDown, onFocus: handleFocus, onBlur: handleBlur, children: [_jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, type: "checkbox", className: "sr-only", checked: value, readOnly: true, ref: elementRef }), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
                                     'w-7 h-4': size === 'default',
                                     'w-8 h-5': size === 'large',
                                 }), children: _jsx("div", { className: "absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10 dark:text-neutral-10-dark", children: _jsx(Icon, { name: "loader", size: size === 'default' ? 12 : 16, animation: "spin", strokeWidth: 4 }) }) })) : (_jsx("div", { className: cx('rounded-full transition-colors relative', {

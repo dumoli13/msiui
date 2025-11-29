@@ -1,4 +1,3 @@
-import { __awaiter, __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -14,8 +13,7 @@ import InputLabel from './InputLabel';
 /**
  * An autocomplete where multiple options can be selected
  */
-const AutoCompleteMultiple = (_a) => {
-    var { id, name, value: valueProp, defaultValue = [], initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown, onPaste } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "placeholder", "options", "onChange", "className", "helperText", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "clearable", "width", "appendIfNotFound", "onAppend", "required", "renderOption", "async", "fetchOptions", "onKeyDown", "onPaste"]);
+const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue = [], initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown, onPaste, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -45,23 +43,22 @@ const AutoCompleteMultiple = (_a) => {
         setInternalValue(options.filter((item) => defaultValue.map((v) => v).includes(item.value)) || []);
     }, [optionsProp]);
     const isControlled = valueProp !== undefined;
-    const value = valueProp !== null && valueProp !== void 0 ? valueProp : internalValue; // Default to internal state if undefined
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const value = valueProp ?? internalValue; // Default to internal state if undefined
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => valueRef.current?.focus(),
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
     React.useEffect(() => {
         const handleClickOutside = (event) => {
-            var _a, _b;
             const target = event.target;
-            const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(target);
-            const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target);
+            const dropdownContainsTarget = dropdownRef.current?.contains(target);
+            const selectElementContainsTarget = elementRef.current?.contains(target);
             if (!dropdownContainsTarget && !selectElementContainsTarget) {
                 setDropdownOpen(false);
                 setFocused(false); // Add this line to ensure 'focused' is set to false
@@ -73,34 +70,34 @@ const AutoCompleteMultiple = (_a) => {
         };
     }, []);
     React.useEffect(() => {
-        const getAsyncOptions = () => __awaiter(void 0, void 0, void 0, function* () {
+        const getAsyncOptions = async () => {
             setLoadingFetchOptions(true);
             const newPage = page + 1;
-            const response = yield fetchOptions(inputValue, newPage, FETCH_LIMIT);
+            const response = await fetchOptions(inputValue, newPage, FETCH_LIMIT);
             setPage(newPage);
             if (response.length < FETCH_LIMIT) {
                 setStopAsyncFetch(true);
             }
             setAsyncOptions((prev) => [...prev, ...response]);
             setLoadingFetchOptions(false);
-        });
+        };
         if (async && inView && !stopAsyncFetch)
             getAsyncOptions();
     }, [async, inView, dropdownOpen]);
-    const handleFetchOption = (keyword) => __awaiter(void 0, void 0, void 0, function* () {
+    const handleFetchOption = async (keyword) => {
         // Fetch new options and reset page
         setAsyncOptions([]);
         setStopAsyncFetch(false);
         setLoadingFetchOptions(true);
         const newPage = 1;
-        const response = yield fetchOptions(keyword, newPage, FETCH_LIMIT);
+        const response = await fetchOptions(keyword, newPage, FETCH_LIMIT);
         setPage(newPage);
         if (response.length < FETCH_LIMIT) {
             setStopAsyncFetch(true);
         }
         setAsyncOptions(response);
         setLoadingFetchOptions(false);
-    });
+    };
     const debouncedSearch = useDebouncedCallback((keyword) => handleFetchOption(keyword), 500);
     const handleFocus = () => {
         if (disabled)
@@ -109,10 +106,9 @@ const AutoCompleteMultiple = (_a) => {
         setDropdownOpen(true);
     };
     const handleBlur = (event) => {
-        var _a, _b;
         const relatedTarget = event.relatedTarget;
-        const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
-        const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(relatedTarget);
+        const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
+        const selectElementContainsTarget = elementRef.current?.contains(relatedTarget);
         if (dropdownContainsTarget || selectElementContainsTarget) {
             return;
         }
@@ -127,7 +123,7 @@ const AutoCompleteMultiple = (_a) => {
     };
     const handleClearValue = () => {
         setDropdownOpen(true);
-        onChange === null || onChange === void 0 ? void 0 : onChange([]); // Clear with an empty array
+        onChange?.([]); // Clear with an empty array
         if (!isControlled)
             setInternalValue([]); // Update internal state if uncontrolled
     };
@@ -167,7 +163,7 @@ const AutoCompleteMultiple = (_a) => {
                 }
             });
         }
-        onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
+        onChange?.(newValue);
     };
     const handleAppend = (value) => {
         if (value.length === 0 || !appendIfNotFound)
@@ -179,7 +175,7 @@ const AutoCompleteMultiple = (_a) => {
         setAppendOptions((prev) => [...prev, newValue]);
         handleSelectOption(newValue);
         setInputValue('');
-        onAppend === null || onAppend === void 0 ? void 0 : onAppend(newValue);
+        onAppend?.(newValue);
     };
     const isCreateNew = appendIfNotFound &&
         inputValue &&
@@ -222,7 +218,7 @@ const AutoCompleteMultiple = (_a) => {
             }
         }
         else {
-            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+            onKeyDown?.(e);
         }
     };
     const handleAppendPaste = (e) => {
@@ -240,7 +236,7 @@ const AutoCompleteMultiple = (_a) => {
             }
         }
         else {
-            onPaste === null || onPaste === void 0 ? void 0 : onPaste(e);
+            onPaste?.(e);
         }
     };
     const dropdownContent = (_jsxs(_Fragment, { children: [!!isCreateNew && (_jsxs("div", { role: "button", onClick: () => handleAppend(inputValue), "data-highlighted": highlightedIndex === 0, className: cx('w-full py-1.5 px-4 text-left break-words cursor-pointer hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark', {
@@ -250,7 +246,7 @@ const AutoCompleteMultiple = (_a) => {
                 }), children: ["Create ", _jsx("b", { children: inputValue }), "..."] })), renderOption
                 ? renderOption(filteredOptions, handleSelectOption, value, highlightedIndex)
                 : filteredOptions.map((option, index) => {
-                    const selected = value === null || value === void 0 ? void 0 : value.some((v) => v.value === option.value);
+                    const selected = value?.some((v) => v.value === option.value);
                     return (_jsxs("div", { role: "button", onClick: () => handleSelectOption(option), onMouseOver: () => setHighlightedIndex(index), "data-highlighted": highlightedIndex === index + isCreateNew, className: cx('cursor-pointer py-1.5 px-4 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-left break-words', {
                             'text-14px': size === 'default',
                             'text-18px': size === 'large',
@@ -289,10 +285,10 @@ const AutoCompleteMultiple = (_a) => {
                     'py-[9px]': size === 'large',
                 }), style: width ? { width } : undefined, ref: elementRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsxs("div", { className: cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
                             'w-full': fullWidth,
-                        }), children: [value === null || value === void 0 ? void 0 : value.map((selected) => (_jsx(Tag, { color: "info", children: selected.label }, String(selected.value)))), _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: focused ? inputValue : '', onChange: handleChangeInput, placeholder: focused ? '' : placeholder, className: cx('flex-grow outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
+                        }), children: [value?.map((selected) => (_jsx(Tag, { color: "info", children: selected.label }, String(selected.value)))), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: focused ? inputValue : '', onChange: handleChangeInput, placeholder: focused ? '' : placeholder, className: cx('flex-grow outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
                                     'text-14px py-0.5': size === 'default',
                                     'text-18px py-0.5': size === 'large',
-                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef, onKeyDown: handleKeyDown, onPaste: handleAppendPaste }))] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: disabled ? (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, className: "p-0.5 text-neutral-70 dark:text-neutral-70-dark" })) : (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color', {
+                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef, onKeyDown: handleKeyDown, onPaste: handleAppendPaste })] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: disabled ? (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, className: "p-0.5 text-neutral-70 dark:text-neutral-70-dark" })) : (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color', {
                                 'rotate-180': dropdownOpen,
                             }) })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true, children: dropdownContent })] }));
 };

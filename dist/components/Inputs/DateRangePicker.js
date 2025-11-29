@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /* eslint-disable react/no-array-index-key */
 import React, { useMemo } from 'react';
@@ -16,9 +15,7 @@ import InputLabel from './InputLabel';
 /**
  * The Date Range Picker lets the user select a range of dates.
  */
-const DateRangePicker = (_a) => {
-    var _b, _c, _d, _e, _f, _g;
-    var { id, name, value: valueProp, defaultValue, initialValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false, format: formatProps, picker = 'date', required, onKeyDown } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "clearable", "error", "success", "loading", "disabledDate", "width", "showTime", "format", "picker", "required", "onKeyDown"]);
+const DateRangePicker = ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false, format: formatProps, picker = 'date', required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const valueStartRef = React.useRef(null);
     const valueEndRef = React.useRef(null);
@@ -45,15 +42,15 @@ const DateRangePicker = (_a) => {
         : ['', '']);
     const [tempValue, setTempValue] = React.useState(value || [null, null]);
     const [timeValue, setTimeValue] = React.useState({
-        hours: (_c = (_b = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _b === void 0 ? void 0 : _b.getHours()) !== null && _c !== void 0 ? _c : null,
-        minutes: (_e = (_d = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _d === void 0 ? void 0 : _d.getMinutes()) !== null && _e !== void 0 ? _e : null,
-        seconds: (_g = (_f = (tempValue[0] ? value === null || value === void 0 ? void 0 : value[1] : value === null || value === void 0 ? void 0 : value[0])) === null || _f === void 0 ? void 0 : _f.getSeconds()) !== null && _g !== void 0 ? _g : null,
+        hours: (tempValue[0] ? value?.[1] : value?.[0])?.getHours() ?? null,
+        minutes: (tempValue[0] ? value?.[1] : value?.[0])?.getMinutes() ?? null,
+        seconds: (tempValue[0] ? value?.[1] : value?.[0])?.getSeconds() ?? null,
     });
     const [calendarView, setCalendarView] = React.useState(picker);
     const [displayedDate, setDisplayedDate] = React.useState(value === null ? new Date() : value[0]);
     const yearRange = getYearRange(displayedDate.getFullYear());
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     const scrollRefs = {
@@ -71,10 +68,9 @@ const DateRangePicker = (_a) => {
             return;
         // Delay to ensure dropdown is fully rendered before scrolling
         setTimeout(() => {
-            var _a;
             for (const unit of Object.keys(timeValue)) {
                 const value = timeValue[unit];
-                const container = (_a = scrollRefs[unit]) === null || _a === void 0 ? void 0 : _a.current;
+                const container = scrollRefs[unit]?.current;
                 const item = value === null ? null : itemRefs[unit].current[value];
                 if (container && item) {
                     const containerTop = container.getBoundingClientRect().top;
@@ -91,7 +87,7 @@ const DateRangePicker = (_a) => {
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = valueStartRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => valueStartRef.current?.focus(),
         reset: () => {
             setTempValue([null, null]);
             setInternalValue(null);
@@ -100,12 +96,11 @@ const DateRangePicker = (_a) => {
     }));
     React.useEffect(() => {
         const handleClickOutside = (event) => {
-            var _a, _b, _c;
             const target = event.target;
-            const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(target);
-            const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target);
+            const dropdownContainsTarget = dropdownRef.current?.contains(target);
+            const selectElementContainsTarget = elementRef.current?.contains(target);
             if (dropdownContainsTarget || selectElementContainsTarget) {
-                (_c = elementRef.current) === null || _c === void 0 ? void 0 : _c.focus();
+                elementRef.current?.focus();
                 return;
             }
             handleBlur();
@@ -124,10 +119,9 @@ const DateRangePicker = (_a) => {
         setPointer(target);
     };
     const handleBlur = (event) => {
-        var _a, _b;
-        const relatedTarget = event === null || event === void 0 ? void 0 : event.relatedTarget;
-        const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
-        const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(relatedTarget);
+        const relatedTarget = event?.relatedTarget;
+        const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
+        const selectElementContainsTarget = elementRef.current?.contains(relatedTarget);
         if (dropdownContainsTarget || selectElementContainsTarget) {
             return;
         }
@@ -296,13 +290,12 @@ const DateRangePicker = (_a) => {
         setTempValue(newDate);
     };
     const handleSelectDate = (date, position) => {
-        var _a, _b, _c, _d;
-        const currentPosition = position !== null && position !== void 0 ? position : pointer;
+        const currentPosition = position ?? pointer;
         if (showTime) {
             const selectedTime = {
-                hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
-                minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
-                seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
+                hours: timeValue.hours ?? 0,
+                minutes: timeValue.minutes ?? 0,
+                seconds: timeValue.seconds ?? 0,
             };
             setTimeValue(selectedTime);
             const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedTime.hours, selectedTime.minutes, selectedTime.seconds);
@@ -313,7 +306,7 @@ const DateRangePicker = (_a) => {
         else if (currentPosition === 0) {
             convertDateOnly(date, tempValue[1]);
             setPointer(1);
-            (_d = valueEndRef.current) === null || _d === void 0 ? void 0 : _d.focus();
+            valueEndRef.current?.focus();
         }
         else if (currentPosition === 1) {
             // Do not close dropdown in here in case end value < start value
@@ -321,12 +314,11 @@ const DateRangePicker = (_a) => {
         }
     };
     const handleSelectTime = (category, selected) => {
-        var _a, _b, _c;
-        const selectedDate = (tempValue === null || tempValue === void 0 ? void 0 : tempValue[pointer]) || new Date();
+        const selectedDate = tempValue?.[pointer] || new Date();
         const selectedTime = {
-            hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
-            minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
-            seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
+            hours: timeValue.hours ?? 0,
+            minutes: timeValue.minutes ?? 0,
+            seconds: timeValue.seconds ?? 0,
             [category]: selected,
         };
         setTimeValue(selectedTime);
@@ -345,7 +337,7 @@ const DateRangePicker = (_a) => {
         }
     };
     const handleChangeValue = (newValue) => {
-        onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
+        onChange?.(newValue);
         if (!isControlled) {
             setInternalValue(newValue);
         }
@@ -355,16 +347,15 @@ const DateRangePicker = (_a) => {
         handleBlur();
     };
     const handleKeyDown = (e) => {
-        var _a, _b;
         if (!e.shiftKey && e.key === 'Tab' && pointer === 0) {
             e.preventDefault();
             setPointer(1);
-            (_a = valueEndRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+            valueEndRef.current?.focus();
         }
         else if (e.shiftKey && e.key === 'Tab' && pointer === 1) {
             e.preventDefault();
             setPointer(0);
-            (_b = valueStartRef.current) === null || _b === void 0 ? void 0 : _b.focus();
+            valueStartRef.current?.focus();
         }
         else if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
             e.preventDefault();
@@ -373,7 +364,7 @@ const DateRangePicker = (_a) => {
             }
         }
         else {
-            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+            onKeyDown?.(e);
         }
     };
     React.useEffect(() => {
@@ -428,7 +419,7 @@ const DateRangePicker = (_a) => {
                                                                         'rounded-tl-md rounded-bl-md': isStartSelected,
                                                                         'rounded-tr-md rounded-br-md': isEndSelected,
                                                                         'bg-primary-surface dark:bg-primary-surface-dark': isBetween,
-                                                                    }), disabled: isDateDisabled, children: date === null || date === void 0 ? void 0 : date.getDate() })) }, dateIdx));
+                                                                    }), disabled: isDateDisabled, children: date?.getDate() })) }, dateIdx));
                                                         }) }, rowIdx))) })] }) })] }), showTime && (_jsxs("div", { className: "border-l border-neutral-40 dark:border-neutral-40-dark text-14px", children: [_jsx("div", { className: "h-[45px] border-b border-neutral-40 dark:border-neutral-40-dark" }), _jsx("div", { className: "flex", children: Object.keys(TimeUnit).map((key) => {
                                             const unit = key;
                                             const length = unit === TimeUnit.hours ? 24 : 60;
@@ -449,11 +440,10 @@ const DateRangePicker = (_a) => {
                                     }), onClick: () => handleFocus(1), disabled: pointer === 1 || tempValue[0] === null, children: [_jsx("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark", children: "End Month" }), _jsx("div", { className: "shrink-0", children: tempValue[1]
                                                 ? dayjs(tempValue[1]).format('MMM YYYY')
                                                 : '-' })] })] }) })), _jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("button", { type: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() }), _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px", children: MONTH_OF_YEAR.map((item) => {
-                            var _a;
                             const currentMonth = displayedDate.getFullYear() * 100 + item.value;
                             const isDateDisabled = picker === 'month' &&
                                 disabledDate(new Date(displayedDate.getFullYear(), item.value), tempValue[0]);
-                            const [start, end] = (_a = tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => v ? v.getFullYear() * 100 + v.getMonth() : null)) !== null && _a !== void 0 ? _a : [null, null];
+                            const [start, end] = tempValue?.map((v) => v ? v.getFullYear() * 100 + v.getMonth() : null) ?? [null, null];
                             const isStartSelected = start !== null && currentMonth === start;
                             const isEndSelected = end !== null && currentMonth === end;
                             const isBetween = start !== null &&
@@ -477,10 +467,9 @@ const DateRangePicker = (_a) => {
                                         'border-primary-main dark:border-primary-main-dark': pointer === 1,
                                         'border-transparent': pointer !== 1,
                                     }), onClick: () => handleFocus(1), disabled: pointer === 1 || tempValue[0] === null, children: [_jsx("div", { className: "text-12px font-semibold text-neutral-70 dark:text-neutral-70-dark", children: "End Year" }), _jsx("div", { className: "shrink-0", children: tempValue[1] ? dayjs(tempValue[1]).format('YYYY') : '-' })] })] }) })), _jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-12), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark", children: `${yearRange[0]} - ${yearRange[yearRange.length - 1]}` }), _jsx(Icon, { name: "chevron-double-right", size: 20, onClick: () => handleChangeYear(12), strokeWidth: 2, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-y-1 text-14px", children: yearRange.map((item) => {
-                            var _a;
                             const isDateDisabled = picker === 'year' &&
                                 disabledDate(new Date(item, displayedDate.getMonth()), tempValue[0]);
-                            const [start, end] = (_a = tempValue === null || tempValue === void 0 ? void 0 : tempValue.map((v) => { var _a; return (_a = v === null || v === void 0 ? void 0 : v.getFullYear()) !== null && _a !== void 0 ? _a : null; })) !== null && _a !== void 0 ? _a : [null, null];
+                            const [start, end] = tempValue?.map((v) => v?.getFullYear() ?? null) ?? [null, null];
                             const isStartSelected = start !== null && item === start;
                             const isEndSelected = end !== null && item === end;
                             const isBetween = start !== null && end !== null && item > start && item < end;
@@ -512,11 +501,11 @@ const DateRangePicker = (_a) => {
                 }), style: width ? { width } : undefined, ref: elementRef, children: [_jsxs("div", { className: cx('flex gap-2 items-center truncate flex-1 text-neutral-90 dark:text-neutral-90-dark', {
                             'text-14px py-0.5': size === 'default',
                             'text-18px py-0.5': size === 'large',
-                        }), children: [_jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue[0], placeholder: focused ? '' : placeholder || format, className: cx('w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
+                        }), children: [_jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue[0], placeholder: focused ? '' : placeholder || format, className: cx('w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
                                     'text-primary-main dark:text-primary-main-dark font-medium': focused && pointer === 0,
-                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onChange: handleChangeInput, ref: valueStartRef, onKeyDown: handleKeyDown })), inputValue[0] && (_jsxs(_Fragment, { children: [_jsx("div", { children: "-" }), _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, name: name, value: inputValue[1], placeholder: focused ? '' : placeholder || format, className: cx('w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
+                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(0), onChange: handleChangeInput, ref: valueStartRef, onKeyDown: handleKeyDown }), inputValue[0] && (_jsxs(_Fragment, { children: [_jsx("div", { children: "-" }), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, name: name, value: inputValue[1], placeholder: focused ? '' : placeholder || format, className: cx('w-full truncate outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
                                             'text-primary-main dark:text-primary-main-dark font-medium': focused && pointer === 1,
-                                        }), disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(1), onChange: handleChangeInput, onKeyDown: handleKeyDown, ref: valueEndRef }))] }))] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
+                                        }), disabled: disabled, "aria-label": label, autoComplete: "off", onBlur: handleBlur, onFocus: () => handleFocus(1), onChange: handleChangeInput, onKeyDown: handleKeyDown, ref: valueEndRef })] }))] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
                             (clearable && !focused) ||
                             (clearable && focused && !value)) && (_jsx(Icon, { name: "calendar", size: 20, strokeWidth: 2, onClick: disabled ? undefined : () => handleFocus(0), className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 400, children: dropdownContent })] }));
 };

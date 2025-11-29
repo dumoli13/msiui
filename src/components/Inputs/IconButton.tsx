@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import { IconButtonProps } from '../../types/inputs';
 import Tooltip from '../Displays/Tooltip';
 import Icon from '../Icon';
+import { IconButtonProps } from '../../types/inputs';
 
 /**
  *  Icon buttons are commonly found in app bars and toolbars.

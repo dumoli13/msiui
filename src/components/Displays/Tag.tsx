@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { TagProps } from '../../types';
 import Icon from '../Icon';
+import { TagProps } from '../../types';
 
 /**
  *

@@ -1,11 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
-import { AccordionProps } from '../../types';
 import Icon from '../Icon';
+import { AccordionProps } from '../../types';
 
 /**
  *
  * This component renders a collapsible accordion interface. You can configure the accordion to allow single or multiple panels to be open simultaneously and control the collapsible behavior via props.
+ *
  */
 const Accordion = ({
   items,

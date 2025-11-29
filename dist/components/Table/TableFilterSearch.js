@@ -9,7 +9,7 @@ const TableFilterSearch = ({ value, label, onChange, }) => {
     const inputRef = React.useRef(null);
     const [open, setOpen] = React.useState(false);
     const handleChange = (value) => {
-        onChange === null || onChange === void 0 ? void 0 : onChange(value);
+        onChange?.(value);
         if (value === '') {
             setOpen(false);
         }
@@ -17,8 +17,7 @@ const TableFilterSearch = ({ value, label, onChange, }) => {
     React.useEffect(() => {
         if (open) {
             const timer = setTimeout(() => {
-                var _a;
-                (_a = inputRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+                inputRef.current?.focus();
             }, 100);
             return () => clearTimeout(timer);
         }

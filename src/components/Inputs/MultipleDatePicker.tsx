@@ -2,15 +2,8 @@
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import { useDebouncedCallback } from 'use-debounce';
 import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
-import {
-  DateValue,
-  MultipleDatePickerProps,
-  MultipleDateValue,
-  PickerType,
-} from '../../types/inputs';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
 import { CancelButton } from './DatePicker';
@@ -18,6 +11,13 @@ import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import {
+  MultipleDateValue,
+  MultipleDatePickerProps,
+  PickerType,
+  DateValue,
+} from '../../types/inputs';
+import { useDebouncedCallback } from 'use-debounce';
 
 /**
  * The Multiple Date Picker component lets users select multiple date.
@@ -234,7 +234,7 @@ const MultipleDatePicker = ({
   };
 
   const debounceTextToDate = useDebouncedCallback((input: string) => {
-    const parsed = dayjs(input, format, true);
+    const parsed = dayjs(inputValue, format, true);
 
     if (parsed.isValid()) {
       const newDate = parsed.toDate();

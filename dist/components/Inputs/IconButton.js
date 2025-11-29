@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -10,9 +9,8 @@ import Icon from '../Icon';
  * Icons are also appropriate for toggle buttons that allow a single choice to be selected or deselected,
  * such as adding or removing a star to an item.
  */
-const IconButton = React.forwardRef((_a, ref) => {
-    var { variant = 'contained', color = 'primary', className, disabled = false, loading = false, icon, size = 'default', onClick, title, titleVerticalAlign = 'bottom', titleHorizontalAlign = 'center' } = _a, props = __rest(_a, ["variant", "color", "className", "disabled", "loading", "icon", "size", "onClick", "title", "titleVerticalAlign", "titleHorizontalAlign"]);
-    return (_jsx(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled, children: _jsxs("button", Object.assign({}, props, { ref: ref, disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square', {
+const IconButton = React.forwardRef(({ variant = 'contained', color = 'primary', className, disabled = false, loading = false, icon, size = 'default', onClick, title, titleVerticalAlign = 'bottom', titleHorizontalAlign = 'center', ...props }, ref) => {
+    return (_jsx(Tooltip, { title: title, verticalAlign: titleVerticalAlign, horizontalAlign: titleHorizontalAlign, disabled: disabled, children: _jsxs("button", { ...props, ref: ref, disabled: disabled || loading, type: "button", onClick: onClick, "aria-label": title, className: cx('relative rounded-md font-medium disabled:cursor-not-allowed shrink-0 leading-none aspect-square', {
                 'w-[44px] h-[44px] text-28px': size === 'large',
                 'w-[32px] h-[32px] text-20px': size === 'default',
                 'w-[28px] h-[28px] text-16px': size === 'small',
@@ -51,7 +49,7 @@ const IconButton = React.forwardRef((_a, ref) => {
                     }), children: icon }), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
                         'text-16px': size !== 'large',
                         'text-20px': size === 'large',
-                    }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] })) }));
+                    }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] }) }));
 });
 IconButton.displayName = 'IconButton';
 export default IconButton;

@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -6,9 +5,8 @@ import Icon from '../Icon';
 /**
  * Buttons allow users to take actions, and make choices, with a single tap.
  */
-const Button = React.forwardRef((_a, ref) => {
-    var { children, variant = 'contained', color = 'primary', size = 'default', className, disabled = false, fullWidth = false, loading = false, startIcon, endIcon, onClick, type = 'button' } = _a, props = __rest(_a, ["children", "variant", "color", "size", "className", "disabled", "fullWidth", "loading", "startIcon", "endIcon", "onClick", "type"]);
-    return (_jsxs("button", Object.assign({}, props, { ref: ref, disabled: disabled || loading, type: type, onClick: onClick, className: cx('relative rounded-md font-medium h-fit disabled:cursor-not-allowed', {
+const Button = React.forwardRef(({ children, variant = 'contained', color = 'primary', size = 'default', className, disabled = false, fullWidth = false, loading = false, startIcon, endIcon, onClick, type = 'button', ...props }, ref) => {
+    return (_jsxs("button", { ...props, ref: ref, disabled: disabled || loading, type: type, onClick: onClick, className: cx('relative rounded-md font-medium h-fit disabled:cursor-not-allowed', {
             'py-2 px-4 text-20px': size === 'large',
             'py-1.5 px-4 text-14px': size === 'default',
             'py-1.5 px-2 text-12px': size === 'small',
@@ -43,12 +41,12 @@ const Button = React.forwardRef((_a, ref) => {
             'text-danger-main dark:text-danger-main-dark hover:text-danger-hover dark:hover:text-danger-hover-dark active:text-danger-pressed dark:active:text-danger-pressed-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': color === 'danger' && variant === 'text',
             'text-warning-main dark:text-warning-main-dark hover:text-warning-hover dark:hover:text-warning-hover-dark active:text-warning-pressed dark:active:text-warning-pressed-dark focus:ring-warning-focus dark:focus:ring-warning-focus-dark': color === 'warning' && variant === 'text',
             'text-info-main dark:text-info-main-dark hover:text-info-hover dark:hover:text-info-hover-dark active:text-info-pressed dark:active:text-info-pressed-dark focus:ring-info-focus dark:focus:ring-info-focus-dark': color === 'info' && variant === 'text',
-        }, className), tabIndex: disabled ? -1 : 0, children: [_jsxs("span", { className: cx('flex justify-center items-center gap-1.5', {
+        }, className), tabIndex: disabled ? -1 : 0, children: [startIcon || endIcon ? (_jsxs("span", { className: cx('flex justify-between items-center gap-1.5', {
                     invisible: loading,
-                }), children: [startIcon, children, endIcon] }), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
+                }), children: [startIcon, children, endIcon] })) : (children), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
                     'text-16px': size !== 'large',
                     'text-20px': size === 'large',
-                }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] })));
+                }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] }));
 });
 Button.displayName = 'Button';
 export default Button;

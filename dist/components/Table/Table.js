@@ -1,4 +1,3 @@
-import { __awaiter } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect } from 'react';
@@ -20,7 +19,7 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
     const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
     const [loadingFetchData, setLoadingFetchData] = React.useState(false);
     const [internalData, setInternalData] = React.useState(async ? [] : dataProps);
-    const [pagination, setPagination] = React.useState(paginationProps !== null && paginationProps !== void 0 ? paginationProps : {
+    const [pagination, setPagination] = React.useState(paginationProps ?? {
         page: 1,
         limit: DEFAULT_ITEMS_PER_PAGE[1],
     });
@@ -38,10 +37,9 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
     const data = async ? internalData : dataProps;
     const handlePageChange = (data) => {
         setPagination(data);
-        onPageChange === null || onPageChange === void 0 ? void 0 : onPageChange(data);
+        onPageChange?.(data);
     };
     const handleKeyDown = (e) => {
-        var _a, _b;
         const maxIndex = data.length - 1;
         switch (e.key) {
             case 'ArrowDown':
@@ -58,15 +56,15 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
                 break;
             case 'ArrowLeft':
                 e.preventDefault();
-                (_a = paginationRef.current) === null || _a === void 0 ? void 0 : _a.prev();
+                paginationRef.current?.prev();
                 break;
             case 'ArrowRight':
                 e.preventDefault();
-                (_b = paginationRef.current) === null || _b === void 0 ? void 0 : _b.next();
+                paginationRef.current?.next();
                 break;
             case 'Enter':
                 e.preventDefault();
-                onRowClick === null || onRowClick === void 0 ? void 0 : onRowClick(data[highlightedIndex], highlightedIndex);
+                onRowClick?.(data[highlightedIndex], highlightedIndex);
                 break;
             case 'Escape':
                 if (!onRowClick)
@@ -84,7 +82,7 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
     const selectedRows = isControlled ? selectedRowsProp : internalSelectedRows;
     const handleFilter = (columnKey, value) => {
         setFilter((prev) => {
-            const next = Object.assign({}, prev);
+            const next = { ...prev };
             if (value === '') {
                 delete next[columnKey];
             }
@@ -118,13 +116,13 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
             newConfig = { key: columnKey, direction: 'asc' };
         }
         setOrdering(newConfig);
-        onSort === null || onSort === void 0 ? void 0 : onSort(newConfig);
+        onSort?.(newConfig);
     };
     const handleRowSelect = (row, isSelected) => {
         const newSelectedRows = isSelected
             ? [...selectedRows, row]
             : selectedRows.filter((selectedRow) => selectedRow !== row);
-        onRowSelect === null || onRowSelect === void 0 ? void 0 : onRowSelect(row, isSelected, newSelectedRows);
+        onRowSelect?.(row, isSelected, newSelectedRows);
         if (!isControlled) {
             setInternalSelectedRows(newSelectedRows);
         }
@@ -140,12 +138,12 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
             });
         }
     }, [highlightedIndex]);
-    const fetchDebounced = useDebouncedCallback(() => __awaiter(void 0, void 0, void 0, function* () {
+    const fetchDebounced = useDebouncedCallback(async () => {
         setLoadingFetchData(true);
-        const newData = yield fetchData(filter, pagination, ordering);
+        const newData = await fetchData(filter, pagination, ordering);
         setInternalData(newData);
         setLoadingFetchData(false);
-    }), 1000);
+    }, 1000);
     useEffect(() => {
         if (!async || !fetchData)
             return;
@@ -161,57 +159,53 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
                                             'px-4 py-3 text-18px': size === 'large',
                                             'px-4 py-3 text-14px': size === 'default',
                                             'px-4 py-2 text-14px': size === 'small',
-                                        }), children: _jsx("div", { className: "flex items-center justify-center", children: "Select" }) })), columns.map((col) => {
-                                        var _a;
-                                        return (_jsx("th", { className: cx('font-medium bg-neutral-20 dark:bg-neutral-20-dark border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
-                                                'px-4 py-3 text-18px': size === 'large',
-                                                'px-4 py-3 text-14px': size === 'default',
-                                                'px-4 py-2 text-14px': size === 'small',
-                                                'text-left': col.align === 'left',
-                                                'text-right': col.align === 'right',
-                                                'text-center': col.align === 'center',
-                                            }), style: {
-                                                width: col.width,
-                                                minWidth: (_a = col.width) !== null && _a !== void 0 ? _a : `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
+                                        }), children: _jsx("div", { className: "flex items-center justify-center", children: "Select" }) })), columns.map((col) => (_jsx("th", { className: cx('font-medium bg-neutral-20 dark:bg-neutral-20-dark border-r border-neutral-30 dark:border-neutral-30-dark last:border-none', {
+                                            'px-4 py-3 text-18px': size === 'large',
+                                            'px-4 py-3 text-14px': size === 'default',
+                                            'px-4 py-2 text-14px': size === 'small',
+                                            'text-left': col.align === 'left',
+                                            'text-right': col.align === 'right',
+                                            'text-center': col.align === 'center',
+                                        }), style: {
+                                            width: col.width,
+                                            minWidth: col.width ??
+                                                `${Math.max(typeof col.width === 'number' ? col.width : 0, col.minWidth
                                                     ? parseInt(col.minWidth.toString(), 10)
                                                     : 0, 150)}px`,
-                                            }, children: _jsxs("div", { className: cx('flex gap-4 items-center justify-between', {}), children: [col.sortable && (_jsxs("div", { role: "button", className: cx('flex gap-2.5 items-center w-full', {
-                                                            'justify-start': !col.align || col.align === 'left',
-                                                            'justify-end': col.align === 'right',
-                                                            'justify-center': col.align === 'center',
-                                                        }), onClick: () => handleSort(col.key), children: [col.subLabel ? (_jsxs("div", { className: cx('flex flex-col', {
-                                                                    'items-start': !col.align || col.align === 'left',
-                                                                    'items-end': col.align === 'right',
-                                                                    'items-center': col.align === 'center',
-                                                                }), children: [_jsx("div", { children: col.label }), _jsx("div", { children: col.subLabel })] })) : (col.label), _jsxs("div", { className: "flex flex-col gap-0.5", children: [_jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === ordering.key &&
-                                                                            ordering.direction === 'asc'
-                                                                            ? 'border-primary-main dark:border-primary-main-dark'
-                                                                            : 'border-neutral-60 dark:border-neutral-60-dark'}` }), _jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === ordering.key &&
-                                                                            ordering.direction === 'desc'
-                                                                            ? 'border-primary-main dark:border-primary-main-dark'
-                                                                            : 'border-neutral-60 dark:border-neutral-60-dark'}` })] })] })), !col.sortable && col.subLabel && (_jsxs("div", { className: cx('w-full flex flex-col', {
-                                                            'items-start': !col.align || col.align === 'left',
-                                                            'items-end': col.align === 'right',
-                                                            'items-center': col.align === 'center',
-                                                        }), children: [_jsx("div", { children: col.label }), _jsx("div", { children: col.subLabel })] })), !col.sortable && !col.subLabel && (_jsx("div", { className: cx('w-full', {
-                                                            'text-left': !col.align || col.align === 'left',
-                                                            'text-right': col.align === 'right',
-                                                            'text-center': col.align === 'center',
-                                                        }), children: col.label })), 'filter' in col &&
-                                                        col.filter !== undefined &&
-                                                        col.filter === 'textfield' && (_jsx(TableFilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => {
-                                                            var _a;
-                                                            handleFilter(col.key, value);
-                                                            (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value);
-                                                        } })), 'filter' in col &&
-                                                        (col.filter === 'select' ||
-                                                            col.filter === 'autocomplete') && (_jsx(TableFilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => {
-                                                            var _a;
-                                                            handleFilter(col.key, value === null || value === void 0 ? void 0 : value.value);
-                                                            (_a = col.onChange) === null || _a === void 0 ? void 0 : _a.call(col, value);
-                                                        } }))] }) }, col.key.toString()));
-                                    })] }) }), _jsx("tbody", { children: data.map((row, rowIndex) => {
-                                const isCustomRowClassName = rowClassName === null || rowClassName === void 0 ? void 0 : rowClassName(row);
+                                        }, children: _jsxs("div", { className: cx('flex gap-4 items-center justify-between', {}), children: [col.sortable && (_jsxs("div", { role: "button", className: cx('flex gap-2.5 items-center w-full', {
+                                                        'justify-start': !col.align || col.align === 'left',
+                                                        'justify-end': col.align === 'right',
+                                                        'justify-center': col.align === 'center',
+                                                    }), onClick: () => handleSort(col.key), children: [col.subLabel ? (_jsxs("div", { className: cx('flex flex-col', {
+                                                                'items-start': !col.align || col.align === 'left',
+                                                                'items-end': col.align === 'right',
+                                                                'items-center': col.align === 'center',
+                                                            }), children: [_jsx("div", { children: col.label }), _jsx("div", { children: col.subLabel })] })) : (col.label), _jsxs("div", { className: "flex flex-col gap-0.5", children: [_jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-b-8 transition-colors duration-300 ${col.key === ordering.key &&
+                                                                        ordering.direction === 'asc'
+                                                                        ? 'border-primary-main dark:border-primary-main-dark'
+                                                                        : 'border-neutral-60 dark:border-neutral-60-dark'}` }), _jsx("span", { className: `w-0 h-0 border-l-4 border-l-transparent dark:border-l-transparent border-r-4 border-r-transparent dark:border-r-transparent border-t-8 transition-colors duration-300 ${col.key === ordering.key &&
+                                                                        ordering.direction === 'desc'
+                                                                        ? 'border-primary-main dark:border-primary-main-dark'
+                                                                        : 'border-neutral-60 dark:border-neutral-60-dark'}` })] })] })), !col.sortable && col.subLabel && (_jsxs("div", { className: cx('w-full flex flex-col', {
+                                                        'items-start': !col.align || col.align === 'left',
+                                                        'items-end': col.align === 'right',
+                                                        'items-center': col.align === 'center',
+                                                    }), children: [_jsx("div", { children: col.label }), _jsx("div", { children: col.subLabel })] })), !col.sortable && !col.subLabel && (_jsx("div", { className: cx('w-full', {
+                                                        'text-left': !col.align || col.align === 'left',
+                                                        'text-right': col.align === 'right',
+                                                        'text-center': col.align === 'center',
+                                                    }), children: col.label })), 'filter' in col &&
+                                                    col.filter !== undefined &&
+                                                    col.filter === 'textfield' && (_jsx(TableFilterSearch, { label: col.label, value: col.filterValue, onChange: (value) => {
+                                                        handleFilter(col.key, value);
+                                                        col.onChange?.(value);
+                                                    } })), 'filter' in col &&
+                                                    (col.filter === 'select' ||
+                                                        col.filter === 'autocomplete') && (_jsx(TableFilterSelect, { type: col.filter, label: col.label, value: col.filterValue, option: col.option || [], onChange: (value) => {
+                                                        handleFilter(col.key, value?.value);
+                                                        col.onChange?.(value);
+                                                    } }))] }) }, col.key.toString())))] }) }), _jsx("tbody", { children: data.map((row, rowIndex) => {
+                                const isCustomRowClassName = rowClassName?.(row);
                                 const isSelected = showSelected && selectedRows.includes(rowIndex);
                                 return (_jsxs("tr", { "data-highlighted": rowIndex === highlightedIndex, className: cx('group border-b border-neutral-30 last:border-none', {
                                         'text-18px': size === 'large',
@@ -221,7 +215,7 @@ const Table = ({ columns, stickyHeader = false, maxHeight = 680, selectedRows: s
                                         'bg-neutral-10 dark:bg-neutral-10-dark': style === 'simple',
                                         '!bg-primary-surface !dark:bg-primary-surface-dark': rowIndex === highlightedIndex,
                                         'cursor-pointer': !!onRowClick,
-                                    }, isCustomRowClassName), style: rowStyle === null || rowStyle === void 0 ? void 0 : rowStyle(row), onClick: () => onRowClick === null || onRowClick === void 0 ? void 0 : onRowClick(row, rowIndex), children: [showSelected && (_jsx("td", { className: cx('py-1.5 text-center break-words', {
+                                    }, isCustomRowClassName), style: rowStyle?.(row), onClick: () => onRowClick?.(row, rowIndex), children: [showSelected && (_jsx("td", { className: cx('py-1.5 text-center break-words', {
                                                 'bg-primary-surface dark:bg-primary-surface-dark': isSelected,
                                             }), style: { verticalAlign }, children: _jsx("div", { className: cx({
                                                     'bg-primary-surface dark:bg-primary-surface-dark': isSelected,

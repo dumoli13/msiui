@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { TabProps } from '../../types';
 import Icon from '../Icon';
+import { TabProps } from '../../types';
 
 /**
  * Tabs make it easy to explore and switch between different views.

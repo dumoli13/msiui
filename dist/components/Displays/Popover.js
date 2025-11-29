@@ -90,7 +90,7 @@ const Popover = ({ children, className, open, elementRef, onClose, verticalAlign
     if (!open)
         return null;
     // Create the transform-origin string
-    return createPortal(_jsxs("div", { role: "none", className: "fixed z-[1300] inset-0", children: [_jsx("div", { "aria-hidden": "true", className: "z-[2000] fixed inset-0", onClick: () => onClose === null || onClose === void 0 ? void 0 : onClose() }), _jsx("div", { ref: popoverRef, style: {
+    return createPortal(_jsxs("div", { role: "none", className: "fixed z-[1300] inset-0", children: [_jsx("div", { "aria-hidden": "true", className: "z-[2000] fixed inset-0", onClick: () => onClose?.() }), _jsx("div", { ref: popoverRef, style: {
                     top: `${dropdownPosition.top}px`,
                     left: `${dropdownPosition.left}px`,
                 }, className: cx('text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[2100]', className), children: children })] }), document.body);

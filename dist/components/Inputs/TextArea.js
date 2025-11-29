@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -8,21 +7,20 @@ import InputLabel from './InputLabel';
 /**
  * The Text Area component is used for collecting large amounts of text from users.
  */
-const TextArea = (_a) => {
-    var { id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, lines: minLines = 2, required, width } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "lines", "required", "width"]);
+const TextArea = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, lines: minLines = 2, required, width, ...props }) => {
     const parentRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(defaultValue || initialValue);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp.toString() : internalValue;
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => elementRef.current?.focus(),
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
@@ -32,9 +30,8 @@ const TextArea = (_a) => {
         setFocused(true);
     };
     const handleBlur = (event) => {
-        var _a;
         const relatedTarget = event.relatedTarget;
-        const selectElementContainsTarget = (_a = parentRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
+        const selectElementContainsTarget = parentRef.current?.contains(relatedTarget);
         if (selectElementContainsTarget) {
             return;
         }
@@ -42,7 +39,7 @@ const TextArea = (_a) => {
     };
     const handleChange = (e) => {
         const newValue = e.target.value;
-        onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
+        onChange?.(newValue);
         if (!isControlled) {
             setInternalValue(newValue);
         }
@@ -60,12 +57,12 @@ const TextArea = (_a) => {
                     'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3': !disabled,
                     'py-[3px]': size === 'default',
                     'py-[9px]': size === 'large',
-                }), style: width ? { width } : undefined, ref: parentRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("textarea", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: value, onChange: handleChange, placeholder: focused ? '' : placeholder, onFocus: handleFocus, onBlur: handleBlur, className: cx('w-full outline-none resize-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
+                }), style: width ? { width } : undefined, ref: parentRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("textarea", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: value, onChange: handleChange, placeholder: focused ? '' : placeholder, onFocus: handleFocus, onBlur: handleBlur, className: cx('w-full outline-none resize-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed', {
                             'text-14px py-0.5': size === 'default',
                             'text-18px py-0.5': size === 'large',
                         }), disabled: disabled, rows: minLines, style: {
                             minHeight: `${minLines * 24}px`,
-                        }, "aria-label": label, ref: elementRef })), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, endIcon: endIcon })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
+                        }, "aria-label": label, ref: elementRef }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, endIcon: endIcon })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
 };
 TextArea.isFormInput = true;
 export default TextArea;

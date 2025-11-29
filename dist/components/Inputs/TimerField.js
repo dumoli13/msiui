@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -24,8 +23,7 @@ const convertTime = (time) => {
 /**
  * The Timer Field component is used for collecting time value from users
  */
-const TimerField = (_a) => {
-    var { id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'hh:mm:ss', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width, required } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "loading", "width", "required"]);
+const TimerField = ({ id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'hh:mm:ss', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width, required, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -41,7 +39,7 @@ const TimerField = (_a) => {
         minutes: value ? Math.floor((value % 3600) / 60) : null,
         seconds: value ? value % 60 : null,
     });
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     const scrollRefs = {
@@ -57,16 +55,15 @@ const TimerField = (_a) => {
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => valueRef.current?.focus(),
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
     const handleSelectTime = (category, selected) => {
-        var _a, _b, _c;
         const selectedTime = {
-            hours: (_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0,
-            minutes: (_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0,
-            seconds: (_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0,
+            hours: timeValue.hours ?? 0,
+            minutes: timeValue.minutes ?? 0,
+            seconds: timeValue.seconds ?? 0,
             [category]: selected,
         };
         setTimeValue(selectedTime);
@@ -82,7 +79,7 @@ const TimerField = (_a) => {
         setDropdownOpen(false);
     };
     const handleClearValue = () => {
-        onChange === null || onChange === void 0 ? void 0 : onChange(null);
+        onChange?.(null);
         if (!isControlled) {
             setInternalValue(null);
         }
@@ -90,7 +87,7 @@ const TimerField = (_a) => {
     const debounceTextToValue = useDebouncedCallback((input) => {
         if (clearable && input.length === 0) {
             setTimeValue({ hours: 0, minutes: 0, seconds: 0 });
-            onChange === null || onChange === void 0 ? void 0 : onChange(null);
+            onChange?.(null);
             if (!isControlled)
                 setInternalValue(null);
             return;
@@ -103,7 +100,7 @@ const TimerField = (_a) => {
             const seconds = Number(inputArr[2]);
             setTimeValue({ hours, minutes, seconds });
             const newDuration = hours * 3600 + minutes * 60 + seconds;
-            onChange === null || onChange === void 0 ? void 0 : onChange(newDuration);
+            onChange?.(newDuration);
             if (!isControlled)
                 setInternalValue(newDuration);
             handleBlur();
@@ -114,13 +111,12 @@ const TimerField = (_a) => {
         debounceTextToValue(e.target.value);
     };
     const handleConfirmTime = () => {
-        var _a, _b, _c;
         const newDuration = timeValue
-            ? ((_a = timeValue.hours) !== null && _a !== void 0 ? _a : 0) * 3600 +
-                ((_b = timeValue.minutes) !== null && _b !== void 0 ? _b : 0) * 60 +
-                ((_c = timeValue.seconds) !== null && _c !== void 0 ? _c : 0)
+            ? (timeValue.hours ?? 0) * 3600 +
+                (timeValue.minutes ?? 0) * 60 +
+                (timeValue.seconds ?? 0)
             : null;
-        onChange === null || onChange === void 0 ? void 0 : onChange(newDuration);
+        onChange?.(newDuration);
         if (!isControlled) {
             setInternalValue(newDuration);
         }
@@ -136,12 +132,11 @@ const TimerField = (_a) => {
     };
     React.useEffect(() => {
         const handleClickOutside = (event) => {
-            var _a, _b, _c;
             const target = event.target;
-            const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(target);
-            const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target);
+            const dropdownContainsTarget = dropdownRef.current?.contains(target);
+            const selectElementContainsTarget = elementRef.current?.contains(target);
             if (dropdownContainsTarget || selectElementContainsTarget) {
-                (_c = elementRef.current) === null || _c === void 0 ? void 0 : _c.focus();
+                elementRef.current?.focus();
                 return;
             }
             handleBlur();
@@ -156,10 +151,9 @@ const TimerField = (_a) => {
             return;
         // Delay to ensure dropdown is fully rendered before scrolling
         setTimeout(() => {
-            var _a;
             for (const unit of Object.keys(timeValue)) {
                 const value = timeValue[unit];
-                const container = (_a = scrollRefs[unit]) === null || _a === void 0 ? void 0 : _a.current;
+                const container = scrollRefs[unit]?.current;
                 const item = value === null ? null : itemRefs[unit].current[value];
                 if (container && item) {
                     const containerTop = container.getBoundingClientRect().top;
@@ -209,7 +203,7 @@ const TimerField = (_a) => {
                 }), style: width ? { width } : undefined, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("div", { className: cx('flex items-center w-full', {
                             'text-14px py-0.5': size === 'default',
                             'text-18px py-0.5': size === 'large',
-                        }), children: _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder, onFocus: () => handleFocus('hour'), onChange: handleChangeInput, ref: elementRef, className: "w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, autoComplete: "off" })) }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && !!focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: (!clearable ||
+                        }), children: _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder, onFocus: () => handleFocus('hour'), onChange: handleChangeInput, ref: elementRef, className: "w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed", disabled: disabled, autoComplete: "off" }) }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && !!focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: (!clearable ||
                             (clearable && !focused) ||
                             (clearable && focused && !value)) && (_jsx(Icon, { name: "clock", size: 20, strokeWidth: 2, onClick: handleDropdown, disabled: disabled, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 336, children: dropdownContent })] }));
 };

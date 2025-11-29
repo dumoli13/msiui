@@ -1,4 +1,4 @@
-import { BreadcrumbProps } from "../../types";
+import { BreadcrumbProps } from '../../types/';
 /**
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
  * If more than `maxDisplay` items are provided, it will show the first few, followed by an ellipsis, and then the last few.

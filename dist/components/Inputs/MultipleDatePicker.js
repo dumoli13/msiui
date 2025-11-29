@@ -1,10 +1,8 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /* eslint-disable react/no-array-index-key */
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
-import { useDebouncedCallback } from 'use-debounce';
 import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
 import { Tag } from '../Displays';
@@ -14,13 +12,13 @@ import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { useDebouncedCallback } from 'use-debounce';
 /**
  * The Multiple Date Picker component lets users select multiple date.
  * This component is similar to the Date Picker component but can not set a time of the date.
  *
  */
-const MultipleDatePicker = (_a) => {
-    var { id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, format = 'D/M/YYYY', picker = 'date', required, onKeyDown } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "inputRef", "size", "clearable", "error", "success", "loading", "disabledDate", "width", "format", "picker", "required", "onKeyDown"]);
+const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, format = 'D/M/YYYY', picker = 'date', required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -35,24 +33,23 @@ const MultipleDatePicker = (_a) => {
     const [displayedDate, setDisplayedDate] = React.useState(value.length === 0 ? new Date() : value[0]);
     const yearRange = getYearRange(displayedDate.getFullYear());
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => valueRef.current?.focus(),
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
     React.useEffect(() => {
         const handleClickOutside = (event) => {
-            var _a, _b, _c;
             const target = event.target;
-            const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(target);
-            const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target);
+            const dropdownContainsTarget = dropdownRef.current?.contains(target);
+            const selectElementContainsTarget = elementRef.current?.contains(target);
             if (dropdownContainsTarget || selectElementContainsTarget) {
-                (_c = elementRef.current) === null || _c === void 0 ? void 0 : _c.focus();
+                elementRef.current?.focus();
                 return;
             }
             handleBlur();
@@ -70,10 +67,9 @@ const MultipleDatePicker = (_a) => {
         setDropdownOpen(true);
     };
     const handleBlur = (event) => {
-        var _a, _b;
-        const relatedTarget = event === null || event === void 0 ? void 0 : event.relatedTarget;
-        const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
-        const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(relatedTarget);
+        const relatedTarget = event?.relatedTarget;
+        const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
+        const selectElementContainsTarget = elementRef.current?.contains(relatedTarget);
         if (dropdownContainsTarget || selectElementContainsTarget) {
             return;
         }
@@ -150,7 +146,7 @@ const MultipleDatePicker = (_a) => {
         setDisplayedDate(new Date(displayedDate.getFullYear() + jump, displayedDate.getMonth()));
     };
     const handleChange = (newValue) => {
-        onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
+        onChange?.(newValue);
         if (!isControlled) {
             setInternalValue(newValue);
         }
@@ -167,7 +163,7 @@ const MultipleDatePicker = (_a) => {
         handleChange([]);
     };
     const debounceTextToDate = useDebouncedCallback((input) => {
-        const parsed = dayjs(input, format, true);
+        const parsed = dayjs(inputValue, format, true);
         if (parsed.isValid()) {
             const newDate = parsed.toDate();
             handleSelectDate(newDate);
@@ -190,7 +186,7 @@ const MultipleDatePicker = (_a) => {
             }
         }
         else {
-            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+            onKeyDown?.(e);
         }
     };
     const dropdownContent = (_jsxs("div", { className: "min-w-60", children: [calendarView === 'date' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-left", size: 20, strokeWidth: 2, onClick: handlePrevMonth, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsxs("div", { className: "flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark", children: [_jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]", onClick: () => handleChangeView('month'), children: monthFormatter.format(displayedDate) }), _jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() })] }), _jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-right", size: 20, strokeWidth: 2, onClick: handleNextMonth, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] })] }), _jsx("div", { className: "text-12px p-2 border-neutral-40 dark:border-neutral-40-dark", children: _jsxs("table", { className: "w-full", children: [_jsx("thead", { children: _jsx("tr", { children: DAYS_OF_WEEK.map((day) => (_jsx("th", { children: _jsx("div", { className: "text-center p-1 font-normal w-8", children: day }) }, day))) }) }), _jsx("tbody", { children: dateMatrix.map((row, rowIdx) => (_jsx("tr", { children: row.map((date, dateIdx) => {
@@ -246,15 +242,15 @@ const MultipleDatePicker = (_a) => {
                             'w-full': fullWidth,
                             'cursor-text': !disabled,
                             'cursor-not-allowed': disabled,
-                        }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, children: [value === null || value === void 0 ? void 0 : value.map((selected, index) => {
+                        }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, children: [value?.map((selected, index) => {
                                 const tagValue = dayjs(selected).format(format);
                                 return (_jsx("div", { className: "flex items-center py-[1px]", children: disabled ? (_jsx(Tag, { color: "neutral", children: tagValue })) : (_jsx(Tag, { color: "info", size: size, onRemove: isControlled
                                             ? undefined
                                             : () => handleChange(value.filter((_, i) => i !== index)), children: tagValue })) }, tagValue));
-                            }), _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder || format, className: cx('outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+                            }), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder || format, className: cx('outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
                                     'text-14px py-0.5': size === 'default',
                                     'text-18px py-0.5': size === 'large',
-                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: handleChangeInput, ref: valueRef, onKeyDown: handleKeyDown }))] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
+                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: handleChangeInput, ref: valueRef, onKeyDown: handleKeyDown })] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
                             (clearable && !focused) ||
                             (clearable && focused && !value)) && (_jsx(Icon, { name: "calendar", strokeWidth: 2, size: 20, onClick: disabled ? undefined : handleDropdown, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: valueRef, dropdownRef: dropdownRef, maxHeight: 320, children: dropdownContent })] }));
 };

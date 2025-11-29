@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
-import { CheckboxProps } from '../../types';
 import Icon from '../Icon';
 import InputHelper from './InputHelper';
+import { CheckboxProps } from '../../types';
 
 /**
  * Checkboxes allow the user to turn an option on or off.

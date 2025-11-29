@@ -1,11 +1,11 @@
 import React from 'react';
 import cx from 'classnames';
 import { TextfieldRef } from '../../types';
-import { TableFilterSearchProps } from '../../types/table/tableFilterSearch';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
 import IconButton from '../Inputs/IconButton';
 import TextField from '../Inputs/TextField';
+import { TableFilterSearchProps } from '../../types/table/tableFilterSearch';
 
 const TableFilterSearch = ({
   value,

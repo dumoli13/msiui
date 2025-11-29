@@ -6,8 +6,7 @@ import Icon from '../Icon';
  * Tabs make it easy to explore and switch between different views.
  */
 const Tab = ({ items, defaultActiveKey, activeKey: propActiveKey, onChange, onTabClick, onTabClose, }) => {
-    var _a, _b;
-    const [activeKey, setActiveKey] = React.useState((_a = propActiveKey !== null && propActiveKey !== void 0 ? propActiveKey : defaultActiveKey) !== null && _a !== void 0 ? _a : (_b = items[0]) === null || _b === void 0 ? void 0 : _b.key);
+    const [activeKey, setActiveKey] = React.useState(propActiveKey ?? defaultActiveKey ?? items[0]?.key);
     // Sync internal state with prop changes
     React.useEffect(() => {
         if (propActiveKey !== undefined) {
@@ -18,12 +17,12 @@ const Tab = ({ items, defaultActiveKey, activeKey: propActiveKey, onChange, onTa
         if (propActiveKey === undefined) {
             setActiveKey(key);
         }
-        onTabClick === null || onTabClick === void 0 ? void 0 : onTabClick(key);
-        onChange === null || onChange === void 0 ? void 0 : onChange(key);
+        onTabClick?.(key);
+        onChange?.(key);
     };
     const handleClose = (key, e) => {
         e.stopPropagation();
-        onTabClose === null || onTabClose === void 0 ? void 0 : onTabClose(key);
+        onTabClose?.(key);
     };
     const activeTab = React.useMemo(() => items.find((tab) => tab.key === activeKey) || items[0], [activeKey]);
     const closeable = React.useMemo(() => !!onTabClose, [onTabClose]);
@@ -33,6 +32,6 @@ const Tab = ({ items, defaultActiveKey, activeKey: propActiveKey, onChange, onTa
                             'text-neutral-90 dark:text-neutral-100-dark hover:bg-primary-hover dark:hover:bg-primary-hover-dark hover:text-neutral-10 dark:hover:text-neutral-10-dark': !tab.disabled,
                             'text-neutral-40 dark:text-neutral-40-dark ': tab.disabled,
                         }), onClick: () => handleTabClick(tab.key), children: [_jsx("div", { role: "tab", children: tab.label }), closeable && (_jsx(Icon, { name: "x-mark", size: 16, onClick: (e) => handleClose(tab.key, e), "aria-label": `Close ${tab.label}`, className: "text-neutral-60 dark:text-neutral-60-dark", strokeWidth: 1 }))] }, tab.key));
-                }) }), _jsx("div", { className: "p-4", role: "tabpanel", "aria-labelledby": `tab-${activeTab.key}`, id: `tabpanel-${activeTab.key}`, children: (activeTab === null || activeTab === void 0 ? void 0 : activeTab.children) || (_jsx("div", { className: "text-gray-500", children: "No content available" })) })] }));
+                }) }), _jsx("div", { className: "p-4", role: "tabpanel", "aria-labelledby": `tab-${activeTab.key}`, id: `tabpanel-${activeTab.key}`, children: activeTab?.children || (_jsx("div", { className: "text-gray-500", children: "No content available" })) })] }));
 };
 export default Tab;

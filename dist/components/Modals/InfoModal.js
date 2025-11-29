@@ -11,7 +11,7 @@ const InfoModal = ({ icon = (_jsx(Icon, { name: "alert-circle", size: 24, stroke
         document.body.removeChild(container);
     };
     root.render(_jsx(ModalConfirmContainer, { open: true, title: title, icon: icon, onConfirm: () => {
-            onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm();
+            onConfirm?.();
             handleClose();
         }, confirmText: confirmText, confirmButtonColor: "info", customAction: customAction, children: content }));
 };

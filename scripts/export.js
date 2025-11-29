@@ -1,9 +1,8 @@
-#!/usr/bin/env node
-import { execSync } from 'node:child_process';
-import { createInterface } from 'node:readline';
+const { execSync } = require('child_process');
+const readline = require('readline');
 
 const askQuestion = (question) => {
-  const rl = createInterface({
+  const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
@@ -130,20 +129,17 @@ const main = async () => {
       process.exit(1);
     }
 
-    const branchQuestion = '🌿 Choose base branch (develop/master) [develop]: ';
+    const branchQuestion = '🌿 Choose base branch (develop/main) [develop]: ';
     const baseBranch = await askQuestion(branchQuestion);
 
     const normalizedBranch = baseBranch.trim().toLowerCase();
     if (normalizedBranch === '') {
       // Default to develop if empty input
       createGitTagAndPush(newVersion, 'develop');
-    } else if (
-      normalizedBranch === 'develop' ||
-      normalizedBranch === 'master'
-    ) {
+    } else if (normalizedBranch === 'develop' || normalizedBranch === 'main') {
       createGitTagAndPush(newVersion, normalizedBranch);
     } else {
-      console.error('❌ Invalid branch. Only develop or master are allowed.');
+      console.error('❌ Invalid branch. Only develop or main are allowed.');
       process.exit(1);
     }
 

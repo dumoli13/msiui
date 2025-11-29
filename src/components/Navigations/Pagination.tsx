@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE_SIZE } from '../../const';
-import { PaginationButtonProps, PaginationProps } from '../../types';
 import Icon from '../Icon';
+import { PaginationButtonProps, PaginationProps } from '../../types';
 
 const navButtonStyle = cx(
   'text-14px text-neutral-100 dark:text-neutral-100-dark px-2 shadow-box-1 rounded-md border border-neutral-40 dark:border-neutral-40-dark bg-neutral-10 dark:bg-neutral-10-dark h-8 flex items-center gap-2',

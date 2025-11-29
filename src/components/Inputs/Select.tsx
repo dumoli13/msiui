@@ -1,13 +1,13 @@
 import React from 'react';
 import cx from 'classnames';
-import { useInView } from 'react-intersection-observer';
-import { FETCH_LIMIT } from '../../const/select';
-import { SelectProps, SelectValue } from '../../types/inputs';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { useInView } from 'react-intersection-observer';
+import { FETCH_LIMIT } from '../../const/select';
+import { SelectProps, SelectValue } from '../../types/inputs';
 
 /**
  * Select components are used for collecting user provided information from a list of options.

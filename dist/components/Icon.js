@@ -15,20 +15,26 @@ const Icon = React.forwardRef((props, ref) => {
         };
         switch (animation) {
             case 'spin':
-                return Object.assign(Object.assign({}, baseStyle), { animation: 'spin 1s linear infinite' });
+                return { ...baseStyle, animation: 'spin 1s linear infinite' };
             case 'pulse':
-                return Object.assign(Object.assign({}, baseStyle), { animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' });
+                return {
+                    ...baseStyle,
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                };
             case 'bounce':
-                return Object.assign(Object.assign({}, baseStyle), { animation: 'bounce 1s infinite' });
+                return { ...baseStyle, animation: 'bounce 1s infinite' };
             case 'ping':
-                return Object.assign(Object.assign({}, baseStyle), { animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite' });
+                return {
+                    ...baseStyle,
+                    animation: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+                };
             default:
                 return baseStyle;
         }
     }, [animation]);
-    return (_jsxs("span", Object.assign({ ref: ref, "aria-label": name, className: cx('flex items-center justify-center', className, {
+    return (_jsxs("span", { ref: ref, "aria-label": name, className: cx('flex items-center justify-center', className, {
             'cursor-pointer': !!onClick && !disabled,
-        }) }, (onClick && !disabled && { onClick, role: 'button', tabIndex: 0 }), { children: [_jsx("svg", { width: size, height: size, stroke: color, fill: variant === 'solid' ? fillColor : 'none', strokeWidth: variant === 'outline' && strokeWidth === 0 ? 1 : strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle, "aria-hidden": "true", children: _jsx("use", { xlinkHref: `${variant === 'outline' ? iconOutline : iconFilled}#${name}` }) }), _jsx("style", { children: `
+        }), ...(onClick && !disabled && { onClick, role: 'button', tabIndex: 0 }), children: [_jsx("svg", { width: size, height: size, stroke: color, fill: variant === 'solid' ? fillColor : 'none', strokeWidth: variant === 'outline' && strokeWidth === 0 ? 1 : strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: animationStyle, "aria-hidden": "true", children: _jsx("use", { xlinkHref: `${variant === 'outline' ? iconOutline : iconFilled}#${name}` }) }), _jsx("style", { children: `
           @keyframes spin {
             to { transform: rotate(360deg); }
           }
@@ -43,7 +49,7 @@ const Icon = React.forwardRef((props, ref) => {
           @keyframes ping {
             75%, 100% { transform: scale(2); opacity: 0; }
           }
-        ` })] })));
+        ` })] }));
 });
 Icon.displayName = 'Icon';
 export default Icon;

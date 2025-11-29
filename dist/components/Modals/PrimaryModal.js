@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createRoot } from 'react-dom/client';
 import ModalConfirmContainer from './ModalConfirmContainer';
@@ -17,8 +16,7 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-const PrimaryModal = (_a) => {
-    var { content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm } = _a, props = __rest(_a, ["content", "confirmText", "cancelText", "onConfirm"]);
+const PrimaryModal = ({ content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, ...props }) => {
     const container = document.createElement('div');
     const root = createRoot(container);
     document.body.appendChild(container);
@@ -26,11 +24,11 @@ const PrimaryModal = (_a) => {
         root.unmount();
         document.body.removeChild(container);
     };
-    root.render(_jsx(ModalConfirmContainer, Object.assign({}, props, { open: true, onClose: handleClose, onConfirm: onConfirm
+    root.render(_jsx(ModalConfirmContainer, { ...props, open: true, onClose: handleClose, onConfirm: onConfirm
             ? () => {
                 onConfirm();
                 handleClose();
             }
-            : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", children: content })));
+            : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", children: content }));
 };
 export default PrimaryModal;

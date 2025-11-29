@@ -61,8 +61,7 @@ const ModalContainer = ({ open, children, className, width = 804, height, closeO
     React.useEffect(() => {
         if (open && modalRef.current) {
             const timer = setTimeout(() => {
-                var _a;
-                (_a = modalRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+                modalRef.current?.focus();
             }, 10);
             return () => clearTimeout(timer);
         }

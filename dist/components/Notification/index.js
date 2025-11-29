@@ -9,9 +9,12 @@ let addNotificationToStack = null;
  */
 export const useNotification = () => {
     return (notification) => {
-        var _a;
         if (addNotificationToStack) {
-            addNotificationToStack(Object.assign({ id: Math.random().toString(), color: (_a = notification.color) !== null && _a !== void 0 ? _a : 'primary' }, notification));
+            addNotificationToStack({
+                id: Math.random().toString(),
+                color: notification.color ?? 'primary',
+                ...notification,
+            });
         }
     };
 };

@@ -98,15 +98,19 @@ const Button = React.forwardRef(
         )}
         tabIndex={disabled ? -1 : 0}
       >
-        <span
-          className={cx('flex justify-center items-center gap-1.5', {
-            invisible: loading,
-          })}
-        >
-          {startIcon}
-          {children}
-          {endIcon}
-        </span>
+        {startIcon || endIcon ? (
+          <span
+            className={cx('flex justify-between items-center gap-1.5', {
+              invisible: loading,
+            })}
+          >
+            {startIcon}
+            {children}
+            {endIcon}
+          </span>
+        ) : (
+          children
+        )}
         {loading && (
           <span
             className={cx(

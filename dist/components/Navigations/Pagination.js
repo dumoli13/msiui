@@ -18,7 +18,7 @@ const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_P
     const [itemsPerPage, setItemsPerPage] = React.useState(pageSize);
     const totalPages = total ? Math.ceil(total / itemsPerPage) : -1;
     const handlePageChange = (page) => {
-        onPageChange === null || onPageChange === void 0 ? void 0 : onPageChange({ page: page, limit: itemsPerPage });
+        onPageChange?.({ page: page, limit: itemsPerPage });
     };
     const handlePrevPage = () => {
         if (currentPage > 1) {
@@ -35,7 +35,7 @@ const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_P
     const handleItemsPerPageChange = (e) => {
         const limit = Number(e.target.value);
         setItemsPerPage(limit);
-        onPageChange === null || onPageChange === void 0 ? void 0 : onPageChange({ page: 1, limit });
+        onPageChange?.({ page: 1, limit });
     };
     const renderPageNumbers = () => {
         const pages = [];

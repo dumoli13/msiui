@@ -1,8 +1,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useDebouncedCallback } from 'use-debounce';
-import { ImageViewerProps } from '../../types';
 import Icon from '../Icon';
+import { ImageViewerProps } from '../../types';
 
 const ImageViewer = ({ open, onClose, url }: ImageViewerProps) => {
   const [tempScale, setTempScale] = React.useState(100);

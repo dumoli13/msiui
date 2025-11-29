@@ -2,13 +2,13 @@ import React from 'react';
 import cx from 'classnames';
 import { useInView } from 'react-intersection-observer';
 import { useDebouncedCallback } from 'use-debounce';
-import { FETCH_LIMIT } from '../../const/select';
-import { AutoCompleteProps, SelectValue } from '../../types';
-import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import Icon from '../Icon';
+import { FETCH_LIMIT } from '../../const/select';
+import { AutoCompleteProps, SelectValue } from '../../types';
 
 /**
  * The autocomplete is a normal text input enhanced by a panel of suggested options.

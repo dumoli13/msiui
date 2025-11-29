@@ -1,4 +1,3 @@
-import { __awaiter, __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -13,8 +12,7 @@ import { FETCH_LIMIT } from '../../const/select';
 /**
  * The autocomplete is a normal text input enhanced by a panel of suggested options.
  */
-const AutoComplete = (_a) => {
-    var { id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, placeholder, options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "placeholder", "options", "onChange", "className", "helperText", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "error", "success", "loading", "clearable", "width", "appendIfNotFound", "onAppend", "required", "renderOption", "async", "fetchOptions", "onKeyDown"]);
+const AutoComplete = ({ id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, placeholder, options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -41,28 +39,27 @@ const AutoComplete = (_a) => {
         return options.filter((option) => !inputValue || option.label.toLowerCase().includes(filterKeyword));
     }, [async, inputValue, options]);
     React.useEffect(() => {
-        setInternalValue(options.find((item) => { var _a; return item.value === ((_a = internalValue === null || internalValue === void 0 ? void 0 : internalValue.value) !== null && _a !== void 0 ? _a : defaultValue); }) || null);
+        setInternalValue(options.find((item) => item.value === (internalValue?.value ?? defaultValue)) || null);
     }, [optionsProp]);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
-    const helperMessage = errorProp !== null && errorProp !== void 0 ? errorProp : helperText;
+    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = valueRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => valueRef.current?.focus(),
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
     React.useEffect(() => {
         const handleClickOutside = (event) => {
-            var _a, _b, _c;
             const target = event.target;
-            const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(target);
-            const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(target);
+            const dropdownContainsTarget = dropdownRef.current?.contains(target);
+            const selectElementContainsTarget = elementRef.current?.contains(target);
             if (dropdownContainsTarget || selectElementContainsTarget) {
-                (_c = elementRef.current) === null || _c === void 0 ? void 0 : _c.focus();
+                elementRef.current?.focus();
                 return;
             }
             setFocused(false);
@@ -74,34 +71,34 @@ const AutoComplete = (_a) => {
         };
     }, []);
     React.useEffect(() => {
-        const getAsyncOptions = () => __awaiter(void 0, void 0, void 0, function* () {
+        const getAsyncOptions = async () => {
             setLoadingFetchOptions(true);
             const newPage = page + 1;
-            const response = yield fetchOptions(inputValue, newPage, FETCH_LIMIT);
+            const response = await fetchOptions(inputValue, newPage, FETCH_LIMIT);
             setPage(newPage);
             if (response.length < FETCH_LIMIT) {
                 setStopAsyncFetch(true);
             }
             setAsyncOptions((prev) => [...prev, ...response]);
             setLoadingFetchOptions(false);
-        });
+        };
         if (async && inView && !stopAsyncFetch)
             getAsyncOptions();
     }, [async, inView, dropdownOpen]);
-    const handleFetchOption = (keyword) => __awaiter(void 0, void 0, void 0, function* () {
+    const handleFetchOption = async (keyword) => {
         // Fetch new options and reset page
         setAsyncOptions([]);
         setStopAsyncFetch(false);
         setLoadingFetchOptions(true);
         const newPage = 1;
-        const response = yield fetchOptions(keyword, newPage, FETCH_LIMIT);
+        const response = await fetchOptions(keyword, newPage, FETCH_LIMIT);
         setPage(newPage);
         if (response.length < FETCH_LIMIT) {
             setStopAsyncFetch(true);
         }
         setAsyncOptions(response);
         setLoadingFetchOptions(false);
-    });
+    };
     const debouncedSearch = useDebouncedCallback((keyword) => handleFetchOption(keyword), 500);
     const handleFocus = () => {
         if (disabled)
@@ -110,10 +107,9 @@ const AutoComplete = (_a) => {
         setDropdownOpen(true);
     };
     const handleBlur = (event) => {
-        var _a, _b;
         const relatedTarget = event.relatedTarget;
-        const dropdownContainsTarget = (_a = dropdownRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
-        const selectElementContainsTarget = (_b = elementRef.current) === null || _b === void 0 ? void 0 : _b.contains(relatedTarget);
+        const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
+        const selectElementContainsTarget = elementRef.current?.contains(relatedTarget);
         if (dropdownContainsTarget || selectElementContainsTarget) {
             return;
         }
@@ -128,7 +124,7 @@ const AutoComplete = (_a) => {
     };
     const handleClearValue = () => {
         setDropdownOpen(true);
-        onChange === null || onChange === void 0 ? void 0 : onChange(null);
+        onChange?.(null);
         if (!isControlled)
             setInternalValue(null);
     };
@@ -149,12 +145,12 @@ const AutoComplete = (_a) => {
         }
     };
     const handleSelectOption = (option) => {
-        if ((value === null || value === void 0 ? void 0 : value.value) === option.value)
+        if (value?.value === option.value)
             return;
         if (!isControlled) {
             setInternalValue(option);
         }
-        onChange === null || onChange === void 0 ? void 0 : onChange(option);
+        onChange?.(option);
         setFocused(false);
         setDropdownOpen(false);
     };
@@ -172,7 +168,7 @@ const AutoComplete = (_a) => {
         setInputValue('');
         setDropdownOpen(false);
         setFocused(false);
-        onAppend === null || onAppend === void 0 ? void 0 : onAppend(newValue);
+        onAppend?.(newValue);
     };
     const isCreateNew = appendIfNotFound &&
         inputValue &&
@@ -215,7 +211,7 @@ const AutoComplete = (_a) => {
             }
         }
         else {
-            onKeyDown === null || onKeyDown === void 0 ? void 0 : onKeyDown(e);
+            onKeyDown?.(e);
         }
     };
     const dropdownContent = (_jsxs(_Fragment, { children: [!!isCreateNew && (_jsxs("div", { role: "button", onClick: handleAppend, "data-highlighted": highlightedIndex === 0, className: cx('w-full py-1.5 px-4 text-left break-words cursor-pointer hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark', {
@@ -228,7 +224,7 @@ const AutoComplete = (_a) => {
                         'text-14px': size === 'default',
                         'text-18px': size === 'large',
                         'cursor-default bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark': value && option.value === value.value,
-                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark': option.value !== (value === null || value === void 0 ? void 0 : value.value),
+                        'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark': option.value !== value?.value,
                         '!bg-neutral-20 !dark:bg-neutral-20-dark': highlightedIndex === index + isCreateNew,
                     }), children: option.label }, String(option.value)))), _jsx("div", { ref: refInView }), (loading || loadingFetchOptions) && (_jsx(Icon, { name: "loader", size: 24, strokeWidth: 2, animation: "spin", className: "p-2 text-neutral-60 dark:text-neutral-60-dark" })), !loading &&
                 !loadingFetchOptions &&
@@ -259,11 +255,11 @@ const AutoComplete = (_a) => {
                     'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
                     'py-[3px]': size === 'default',
                     'py-[9px]': size === 'large',
-                }), style: width ? { width } : undefined, ref: elementRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: focused ? inputValue : '', onChange: handleChangeInput, placeholder: focused ? '' : (value === null || value === void 0 ? void 0 : value.label) || placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+                }), style: width ? { width } : undefined, ref: elementRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: focused ? inputValue : '', onChange: handleChangeInput, placeholder: focused ? '' : value?.label || placeholder, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
                             'text-14px py-0.5': size === 'default',
                             'text-18px py-0.5': size === 'large',
-                            'placeholder:text-neutral-100 dark:placeholder:text-neutral-100-dark': value === null || value === void 0 ? void 0 : value.label,
-                        }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef, onKeyDown: handleKeyDown })), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: disabled ? (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, className: "p-0.5 text-neutral-70 dark:text-neutral-70-dark" })) : (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color', {
+                            'placeholder:text-neutral-100 dark:placeholder:text-neutral-100-dark': value?.label,
+                        }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, ref: valueRef, onKeyDown: handleKeyDown }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon, children: disabled ? (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, className: "p-0.5 text-neutral-70 dark:text-neutral-70-dark" })) : (_jsx(Icon, { name: "chevron-down", size: 20, strokeWidth: 2, onClick: handleDropdown, className: cx('rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color', {
                                 'rotate-180': dropdownOpen,
                             }) })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, fullWidth: true, children: dropdownContent })] }));
 };

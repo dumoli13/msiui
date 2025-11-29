@@ -3,8 +3,8 @@ import React from 'react';
 import cx from 'classnames';
 import { useMisDesignContext } from '../../context';
 import { COLORS } from '../../libs';
-import { StepProps } from '../../types';
 import Icon from '../Icon';
+import { StepProps } from '../../types';
 
 /**
  * A component that renders a multi-step progress tracker. Each step can represent a process or a task.

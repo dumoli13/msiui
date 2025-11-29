@@ -1,4 +1,3 @@
-import { __rest } from "tslib";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
@@ -8,13 +7,11 @@ import InputLabel from './InputLabel';
 /**
  * The Text Field component is used for collecting text from users.
  */
-const TextField = (_a) => {
-    var _b;
-    var { id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width, required } = _a, props = __rest(_a, ["id", "name", "value", "defaultValue", "initialValue", "label", "labelPosition", "autoHideLabel", "onChange", "className", "helperText", "placeholder", "disabled", "fullWidth", "startIcon", "endIcon", "inputRef", "size", "clearable", "error", "success", "loading", "width", "required"]);
+const TextField = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, width, required, ...props }) => {
     const parentRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState((_b = (defaultValue || initialValue).toString()) !== null && _b !== void 0 ? _b : '');
+    const [internalValue, setInternalValue] = React.useState((defaultValue || initialValue).toString() ?? '');
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp.toString() : internalValue;
     const helperMessage = errorProp && typeof errorProp === 'string' ? errorProp : helperText;
@@ -23,7 +20,7 @@ const TextField = (_a) => {
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
-        focus: () => { var _a; return (_a = elementRef.current) === null || _a === void 0 ? void 0 : _a.focus(); },
+        focus: () => elementRef.current?.focus(),
         reset: () => setInternalValue(initialValue.toString()),
         disabled,
     }));
@@ -33,9 +30,8 @@ const TextField = (_a) => {
         setFocused(true);
     };
     const handleBlur = (event) => {
-        var _a;
         const relatedTarget = event.relatedTarget;
-        const selectElementContainsTarget = (_a = parentRef.current) === null || _a === void 0 ? void 0 : _a.contains(relatedTarget);
+        const selectElementContainsTarget = parentRef.current?.contains(relatedTarget);
         if (selectElementContainsTarget) {
             return;
         }
@@ -43,13 +39,13 @@ const TextField = (_a) => {
     };
     const handleChange = (e) => {
         const newValue = e.target.value;
-        onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
+        onChange?.(newValue);
         if (!isControlled) {
             setInternalValue(newValue);
         }
     };
     const handleClearValue = () => {
-        onChange === null || onChange === void 0 ? void 0 : onChange('');
+        onChange?.('');
         if (!isControlled) {
             setInternalValue('');
         }
@@ -68,10 +64,10 @@ const TextField = (_a) => {
                     'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
                     'py-[3px]': size === 'default',
                     'py-[9px]': size === 'large',
-                }), style: width ? { width } : undefined, ref: parentRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("input", Object.assign({}, props, { tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: value, onChange: handleChange, placeholder: focused ? '' : placeholder, onFocus: handleFocus, onBlur: handleBlur, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+                }), style: width ? { width } : undefined, ref: parentRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: value, onChange: handleChange, placeholder: focused ? '' : placeholder, onFocus: handleFocus, onBlur: handleBlur, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
                             'text-14px py-0.5': size === 'default',
                             'text-18px py-0.5': size === 'large',
-                        }), disabled: disabled, "aria-label": label, ref: elementRef })), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
+                        }), disabled: disabled, "aria-label": label, ref: elementRef }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
 };
 TextField.isFormInput = true;
 export default TextField;

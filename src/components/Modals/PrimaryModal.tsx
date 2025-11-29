@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ConfirmModalProps } from '../../types';
 import ModalConfirmContainer from './ModalConfirmContainer';
+import { ConfirmModalProps } from '../../types';
 
 /**
  *

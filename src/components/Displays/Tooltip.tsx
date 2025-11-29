@@ -138,20 +138,20 @@ const Tooltip = ({
                     verticalAlign === 'top'
                       ? '100%'
                       : verticalAlign === 'bottom'
-                        ? '-0.375rem'
-                        : '50%',
+                      ? '-0.375rem'
+                      : '50%',
                   left:
                     horizontalAlign === 'left'
                       ? '0.75rem'
                       : horizontalAlign === 'right'
-                        ? 'calc(100% - 0.75rem)'
-                        : '50%',
+                      ? 'calc(100% - 0.75rem)'
+                      : '50%',
                   transform:
                     verticalAlign === 'top'
                       ? 'translate(-50%, -50%) rotate(45deg)'
                       : verticalAlign === 'bottom'
-                        ? 'translate(-50%, 50%) rotate(45deg)'
-                        : 'rotate(45deg)',
+                      ? 'translate(-50%, 50%) rotate(45deg)'
+                      : 'rotate(45deg)',
                 }}
               />
             )}

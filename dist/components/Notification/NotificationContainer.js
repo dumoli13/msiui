@@ -67,7 +67,7 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     const handleClose = () => {
         if (visible) {
             setVisible(false);
-            onClose === null || onClose === void 0 ? void 0 : onClose();
+            onClose?.();
         }
     };
     if (!visible)

@@ -1,12 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
 import { SelectRef, SelectValue } from '../../types';
-import { TableFilterSelectProps } from '../../types/table/tableFilterSelect';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
 import AutoComplete from '../Inputs/AutoComplete';
 import IconButton from '../Inputs/IconButton';
 import Select from '../Inputs/Select';
+import { TableFilterSelectProps } from '../../types/table/tableFilterSelect';
 
 const TableFilterSelect = <T, D>({
   type,

@@ -6,7 +6,6 @@ import { createPortal } from 'react-dom';
  * Tooltips display informative text when users hover over an element
  */
 const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center', arrow = true, mouseEnterDelay = 500, mouseLeaveDelay = 0, title, disabled = false, }) => {
-    var _a, _b, _c;
     const elementRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
     const [open, setOpen] = React.useState(false);
@@ -88,9 +87,9 @@ const Tooltip = ({ children, verticalAlign = 'bottom', horizontalAlign = 'center
                     'cursor-not-allowed': disabled,
                 }), children: disabled ? (_jsx("span", { className: "pointer-events-none", children: children })) : (children) }), open &&
                 createPortal(_jsxs("div", { ref: dropdownRef, style: {
-                        top: (_a = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.top) !== null && _a !== void 0 ? _a : 0,
-                        left: (_b = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.left) !== null && _b !== void 0 ? _b : 0,
-                        opacity: (_c = dropdownStyles === null || dropdownStyles === void 0 ? void 0 : dropdownStyles.opacity) !== null && _c !== void 0 ? _c : 0,
+                        top: dropdownStyles?.top ?? 0,
+                        left: dropdownStyles?.left ?? 0,
+                        opacity: dropdownStyles?.opacity ?? 0,
                         transformOrigin: 'center center',
                         transition: 'opacity 0.15s ease-out',
                     }, className: "absolute z-[2100] bg-neutral-90 dark:bg-neutral-90-dark text-neutral-10 dark:text-neutral-10-dark rounded-sm px-2 py-1.5 mt-1 text-14px", children: [arrow && (_jsx("div", { className: "absolute bg-neutral-90 dark:bg-neutral-90-dark w-2 h-2 transform rotate-45", style: {

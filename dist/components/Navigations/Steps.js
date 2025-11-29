@@ -12,7 +12,7 @@ import Icon from '../Icon';
 function Steps({ active, items, onChange, disabled = false, }) {
     const handleChangePage = (index) => {
         if (!disabled) {
-            onChange === null || onChange === void 0 ? void 0 : onChange(index);
+            onChange?.(index);
         }
     };
     const { theme } = useMisDesignContext();
@@ -33,7 +33,7 @@ function Steps({ active, items, onChange, disabled = false, }) {
                         'items-center': !description,
                     }), role: "button", onClick: () => {
                         if (available)
-                            handleChangePage === null || handleChangePage === void 0 ? void 0 : handleChangePage(index);
+                            handleChangePage?.(index);
                     }, children: [success ? (_jsx("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none border text-primary-main dark:text-primary-main-dark border-primary-main dark:border-primary-main-dark", children: _jsx(Icon, { name: "check", size: 16 }) })) : (_jsx("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none border text-danger-main dark:text-danger-main-dark border-danger-main dark:border-danger-main-dark", children: _jsx(Icon, { name: "x-mark", size: 16 }) })), _jsxs("div", { className: "flex-1", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx("h4", { className: "text-primary-main dark:text-primary-main-dark", children: title }), index < items.length - 1 && (_jsx("div", { className: "h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" }))] }), _jsx("p", { className: cx('text-14px', {
                                         'text-primary-main dark:text-primary-main-dark': error,
                                         'text-neutral-50 dark:text-neutral-50-dark': success,
@@ -47,7 +47,7 @@ function Steps({ active, items, onChange, disabled = false, }) {
                         'items-center': !description,
                     }), role: "button", onClick: () => {
                         if (available)
-                            handleChangePage === null || handleChangePage === void 0 ? void 0 : handleChangePage(index);
+                            handleChangePage?.(index);
                     }, children: [_jsx("div", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-neutral-50 dark:text-neutral-50-dark border-neutral-50 dark:border-neutral-50-dark", children: index + 1 }), _jsxs("div", { className: "flex-1", children: [_jsxs("div", { className: "flex items-center gap-4", children: [_jsx("h4", { className: "text-neutral-50 dark:text-neutral-50-dark", children: title }), index < items.length - 1 && (_jsx("div", { className: "h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" }))] }), _jsx("p", { className: "text-14px text-neutral-50 dark:text-neutral-50-dark", children: description })] })] }, index));
             }
         }) }));

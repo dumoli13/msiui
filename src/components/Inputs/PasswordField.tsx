@@ -1,10 +1,10 @@
 import React from 'react';
 import cx from 'classnames';
-import { PasswordFieldProps } from '../../types/inputs';
 import Icon from '../Icon';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { PasswordFieldProps } from '../../types/inputs';
 
 /**
  * The Password Field component is used for collecting sensitive data from users.

@@ -13,7 +13,7 @@ const Drawer = ({ className, position = 'left', open, onClose, children, width =
     React.useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'Escape' && !disableEscapeKeyDown) {
-                onClose === null || onClose === void 0 ? void 0 : onClose();
+                onClose?.();
             }
         };
         if (open) {
@@ -25,13 +25,12 @@ const Drawer = ({ className, position = 'left', open, onClose, children, width =
     }, [open, onClose, disableEscapeKeyDown]);
     // Manage focus when drawer opens/closes
     React.useEffect(() => {
-        var _a, _b, _c;
         if (open) {
             previouslyFocusedElement.current = document.activeElement;
-            (_a = drawerRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+            drawerRef.current?.focus();
         }
         else {
-            (_c = (_b = previouslyFocusedElement.current) === null || _b === void 0 ? void 0 : _b.focus) === null || _c === void 0 ? void 0 : _c.call(_b);
+            previouslyFocusedElement.current?.focus?.();
         }
     }, [open]);
     // Prevent body scroll when drawer is open
@@ -74,6 +73,10 @@ const Drawer = ({ className, position = 'left', open, onClose, children, width =
                     'right-0 top-0': position === 'right',
                     'top-0 left-0 right-0': position === 'top',
                     'bottom-0 left-0 right-0': position === 'bottom',
-                }, className), style: Object.assign(Object.assign(Object.assign({}, drawerStyle), { transform: getTransform() }), (open ? { transform: 'translateX(0)' } : {})), role: "dialog", "aria-modal": "true", tabIndex: -1, children: children })] }), document.body);
+                }, className), style: {
+                    ...drawerStyle,
+                    transform: getTransform(),
+                    ...(open ? { transform: 'translateX(0)' } : {}),
+                }, role: "dialog", "aria-modal": "true", tabIndex: -1, children: children })] }), document.body);
 };
 export default Drawer;

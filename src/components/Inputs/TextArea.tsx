@@ -1,9 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
-import { TextAreaProps } from '../../types/inputs/textArea';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { TextAreaProps } from '../../types/inputs/textArea';
 
 /**
  * The Text Area component is used for collecting large amounts of text from users.

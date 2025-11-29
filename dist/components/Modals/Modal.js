@@ -7,7 +7,7 @@ import PrimaryModal from './PrimaryModal';
 import SuccessModal from './SuccessModal';
 import WarningModal from './WarningModal';
 const Modal = (props) => {
-    return _jsx(ModalContainer, Object.assign({}, props));
+    return _jsx(ModalContainer, { ...props });
 };
 Modal.confirm = ConfirmModal;
 Modal.success = SuccessModal;

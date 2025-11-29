@@ -4,15 +4,15 @@ import cx from 'classnames';
 import { useDebouncedCallback } from 'use-debounce';
 import { DEFAULT_ITEMS_PER_PAGE } from '../../const';
 import { SelectValue, TableProps, TableSortingProps } from '../../types';
-import {
-  PaginationDataType,
-  PaginationRef,
-} from '../../types/navigations/pagination';
 import { Skeleton } from '../Displays';
 import Checkbox from '../Inputs/Checkbox';
 import { Pagination } from '../Navigations';
 import TableFilterSearch from './TableFilterSearch';
 import TableFilterSelect from './TableFilterSelect';
+import {
+  PaginationDataType,
+  PaginationRef,
+} from '../../types/navigations/pagination';
 
 /**
  * Tables display sets of data. They can be fully customized.
@@ -58,18 +58,15 @@ const Table = <T extends { [key: string]: any }>({
     },
   );
   const [filter, setFilter] = React.useState<Record<keyof T, string>>(
-    columns.reduce<Record<keyof T, string>>(
-      (acc, col) => {
-        const value = col.filterValue;
-        if ('filterValue' in col && value) {
-          acc[col.key as keyof T] = String(
-            typeof value === 'object' && 'value' in value ? value.value : value,
-          );
-        }
-        return acc;
-      },
-      {} as Record<keyof T, string>,
-    ),
+    columns.reduce<Record<keyof T, string>>((acc, col) => {
+      const value = col.filterValue;
+      if ('filterValue' in col && value) {
+        acc[col.key as keyof T] = String(
+          typeof value === 'object' && 'value' in value ? value.value : value,
+        );
+      }
+      return acc;
+    }, {} as Record<keyof T, string>),
   );
   const [ordering, setOrdering] = React.useState<TableSortingProps<T>>(
     sorting || {

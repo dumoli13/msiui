@@ -5,6 +5,7 @@ import Icon from '../Icon';
 /**
  *
  * This component renders a collapsible accordion interface. You can configure the accordion to allow single or multiple panels to be open simultaneously and control the collapsible behavior via props.
+ *
  */
 const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaultActiveKey = [], activeKey, onChangeActiveKey, size = 'default', className, }) => {
     // Validation: Ensure only one active key for singleCollapse
@@ -19,10 +20,10 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
     const [height, setHeight] = React.useState(Array(items.length).fill(0));
     const refs = React.useRef([]);
     // Use activeKey if provided, otherwise fall back to defaultActiveKey
-    const [openIndex, setOpenIndex] = React.useState(activeKey !== null && activeKey !== void 0 ? activeKey : defaultActiveKey);
+    const [openIndex, setOpenIndex] = React.useState(activeKey ?? defaultActiveKey);
     React.useEffect(() => {
         // Calculate the heights of all the accordion items
-        const newHeights = refs.current.map((ref) => { var _a; return (_a = ref === null || ref === void 0 ? void 0 : ref.scrollHeight) !== null && _a !== void 0 ? _a : 0; });
+        const newHeights = refs.current.map((ref) => ref?.scrollHeight ?? 0);
         setHeight(newHeights);
     }, [items]);
     React.useEffect(() => {
@@ -47,7 +48,7 @@ const Accordion = ({ items, collapsible = 'icon', singleCollapse = false, defaul
         if (!activeKey) {
             setOpenIndex(newOpenIndex);
         }
-        onChangeActiveKey === null || onChangeActiveKey === void 0 ? void 0 : onChangeActiveKey(newOpenIndex);
+        onChangeActiveKey?.(newOpenIndex);
     };
     return (_jsx("div", { className: cx('box-shadow rounded-md border border-neutral-40 dark:border-neutral-40-dark', className), children: items.map((item, index) => {
             const isOpen = openIndex.includes(item.key);

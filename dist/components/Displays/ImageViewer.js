@@ -94,7 +94,7 @@ const ImageViewer = ({ open, onClose, url }) => {
             if (viewer) {
                 viewer.addEventListener('wheel', handleWheel, { passive: false });
                 return () => {
-                    viewer === null || viewer === void 0 ? void 0 : viewer.removeEventListener('wheel', handleWheel);
+                    viewer?.removeEventListener('wheel', handleWheel);
                 };
             }
         });

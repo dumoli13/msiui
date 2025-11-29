@@ -1,4 +1,3 @@
-import { __awaiter } from "tslib";
 import { jsx as _jsx } from "react/jsx-runtime";
 import React from 'react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -49,10 +48,9 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const formDisabled = disabled || isSubmitting;
     const getErrorMessage = (rule, ruleType) => {
-        var _a;
         if (typeof rule === 'string')
             return DEFAULT_ERROR_MESSAGES[ruleType];
-        const message = (_a = rule.message) !== null && _a !== void 0 ? _a : DEFAULT_ERROR_MESSAGES[ruleType];
+        const message = rule.message ?? DEFAULT_ERROR_MESSAGES[ruleType];
         return message
             .replace('{minLength}', String(rule.minLength))
             .replace('{maxLength}', String(rule.maxLength))
@@ -60,15 +58,15 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             .replace('{min}', String(rule.min))
             .replace('{max}', String(rule.max));
     };
-    const handleSubmit = () => __awaiter(void 0, void 0, void 0, function* () {
+    const handleSubmit = async () => {
         setIsSubmitting(true);
         const invalidFields = validate();
         if (invalidFields.length === 0) {
             const result = getValues();
-            onSubmit === null || onSubmit === void 0 ? void 0 : onSubmit(result);
+            onSubmit?.(result);
         }
         setIsSubmitting(false);
-    });
+    };
     const handleReset = React.useCallback(() => {
         for (const refs of Object.values(inputRefsRef.current)) {
             for (const ref of refs) {
@@ -78,13 +76,13 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             }
         }
         setErrors({});
-        onReset === null || onReset === void 0 ? void 0 : onReset();
+        onReset?.();
     }, []);
     const validate = React.useCallback(() => {
         const newErrors = {};
         const typedValues = {};
         for (const [key, refs] of Object.entries(inputRefsRef.current)) {
-            const values = refs.map((r) => r === null || r === void 0 ? void 0 : r.value).filter((v) => v !== undefined);
+            const values = refs.map((r) => r?.value).filter((v) => v !== undefined);
             typedValues[key] = values;
         }
         if (!rules)
@@ -169,7 +167,6 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
         return Object.keys(newErrors);
     }, [rules]);
     const handleFormKeyDown = (e, currentKey) => {
-        var _a;
         if (e.key === 'Enter' || e.key === 'Tab') {
             e.preventDefault();
             const order = inputOrderRef.current;
@@ -182,7 +179,7 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                 for (let i = currentIndex - 1; i >= 0; i--) {
                     const prevKey = order[i];
                     const refs = inputRefsRef.current[prevKey];
-                    if (refs === null || refs === void 0 ? void 0 : refs.some((r) => !r.disabled)) {
+                    if (refs?.some((r) => !r.disabled)) {
                         nextIndex = i;
                         break;
                     }
@@ -193,7 +190,7 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                 for (let i = currentIndex + 1; i < order.length; i++) {
                     const nextKey = order[i];
                     const refs = inputRefsRef.current[nextKey];
-                    if (refs === null || refs === void 0 ? void 0 : refs.some((r) => !r.disabled)) {
+                    if (refs?.some((r) => !r.disabled)) {
                         nextIndex = i;
                         break;
                     }
@@ -201,8 +198,8 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             }
             if (nextIndex > -1) {
                 const targetRefs = inputRefsRef.current[order[nextIndex]];
-                const target = targetRefs.find((r) => !(r === null || r === void 0 ? void 0 : r.disabled));
-                (_a = target === null || target === void 0 ? void 0 : target.focus) === null || _a === void 0 ? void 0 : _a.call(target);
+                const target = targetRefs.find((r) => !r?.disabled);
+                target?.focus?.();
                 return;
             }
             // 🔹 No more enabled inputs
@@ -224,12 +221,12 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             return undefined;
         if (refs.length === 1)
             return refs[0].value;
-        return refs.map((r) => r === null || r === void 0 ? void 0 : r.value);
+        return refs.map((r) => r?.value);
     }, []);
     const getValues = React.useCallback(() => {
         const result = {};
         for (const [key, refs] of Object.entries(inputRefsRef.current)) {
-            const values = refs.map((r) => r === null || r === void 0 ? void 0 : r.value).filter((v) => v !== undefined);
+            const values = refs.map((r) => r?.value).filter((v) => v !== undefined);
             if (values.length === 1) {
                 result[key] = values[0];
             }
@@ -245,15 +242,17 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
         const invalidFields = validate();
         if (invalidFields.length === 0) {
             const result = getValues();
-            onSubmit === null || onSubmit === void 0 ? void 0 : onSubmit(result);
+            onSubmit?.(result);
         }
     }, 2000);
     const enhanceChild = (child) => {
-        var _a, _b;
         if (!React.isValidElement(child))
             return child;
         if (isFormSubmitButton(child)) {
-            return React.cloneElement(child, Object.assign(Object.assign({}, child.props), { ref: child.ref || submitButtonRef }));
+            return React.cloneElement(child, {
+                ...child.props,
+                ref: child.ref || submitButtonRef,
+            });
         }
         const childProps = child.props;
         if (isFormInput(child)) {
@@ -265,22 +264,29 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             }
             const handleChange = (value) => {
                 if (errors[name]) {
-                    setErrors((prev) => (Object.assign(Object.assign({}, prev), { [name]: undefined })));
+                    setErrors((prev) => ({ ...prev, [name]: undefined }));
                 }
-                childOnChange === null || childOnChange === void 0 ? void 0 : childOnChange(value);
+                childOnChange?.(value);
                 if (submitOnChange) {
                     debounceSubmit();
                 }
             };
             // Preserve existing ref and props
-            return React.cloneElement(child, Object.assign(Object.assign({}, child.props), { defaultValue, onChange: handleChange, error: (_a = errors[name]) !== null && _a !== void 0 ? _a : undefined, disabled: (_b = childProps.disabled) !== null && _b !== void 0 ? _b : formDisabled, onKeyDown: (e) => {
+            return React.cloneElement(child, {
+                ...child.props,
+                defaultValue,
+                onChange: handleChange,
+                error: errors[name] ?? undefined,
+                disabled: childProps.disabled ?? formDisabled,
+                onKeyDown: (e) => {
                     if (childProps.onKeyDown) {
                         childProps.onKeyDown(e);
                     }
                     else {
                         handleFormKeyDown(e, name);
                     }
-                }, inputRef: (ref) => {
+                },
+                inputRef: (ref) => {
                     if (name && ref) {
                         if (!inputRefsRef.current[name]) {
                             inputRefsRef.current[name] = [];
@@ -294,7 +300,7 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                     if (typeof originalInputRef === 'function') {
                         originalInputRef(ref);
                     }
-                    else if ((originalInputRef === null || originalInputRef === void 0 ? void 0 : originalInputRef.current) !== undefined) {
+                    else if (originalInputRef?.current !== undefined) {
                         originalInputRef.current = ref;
                     }
                     // Clean up on unmount
@@ -306,7 +312,8 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                             }
                         }
                     };
-                } }));
+                },
+            });
         }
         if (childProps.children) {
             return React.cloneElement(child, {
@@ -345,17 +352,16 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
             };
         };
         const renderItem = (item, index) => {
-            var _a;
-            const key = (_a = item.id) !== null && _a !== void 0 ? _a : index;
+            const key = item.id ?? index;
             const commonInputProps = (name, childOnChange) => name
                 ? {
                     disabled: formDisabled,
                     error: errors[name],
                     onChange: (value) => {
                         if (errors[name]) {
-                            setErrors((prev) => (Object.assign(Object.assign({}, prev), { [name]: undefined })));
+                            setErrors((prev) => ({ ...prev, [name]: undefined }));
                         }
-                        childOnChange === null || childOnChange === void 0 ? void 0 : childOnChange(value);
+                        childOnChange?.(value);
                         if (submitOnChange) {
                             debounceSubmit();
                         }
@@ -367,35 +373,35 @@ const Form = ({ onSubmit, onReset, className, rules, disabled = false, formRef, 
                 case 'div':
                     return (_jsx("div", { className: item.className, style: item.style, children: item.children ? renderTemplate(item.children) : null }, key));
                 case 'Button':
-                    return (_jsx(Button, Object.assign({}, item, { children: item.children }), key));
+                    return (_jsx(Button, { ...item, children: item.children }, key));
                 case 'AutoComplete':
-                    return (_jsx(AutoComplete, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(AutoComplete, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'AutoCompleteMultiple':
-                    return (_jsx(AutoCompleteMultiple, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(AutoCompleteMultiple, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'Checkbox':
-                    return (_jsx(Checkbox, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(Checkbox, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'DatePicker':
-                    return (_jsx(DatePicker, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(DatePicker, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'DateRangePicker':
-                    return (_jsx(DateRangePicker, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(DateRangePicker, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'MultipleDatePicker':
-                    return (_jsx(MultipleDatePicker, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(MultipleDatePicker, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'NumberTextField':
-                    return (_jsx(NumberTextField, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(NumberTextField, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'PasswordField':
-                    return (_jsx(PasswordField, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(PasswordField, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'RadioGroup':
-                    return (_jsx(RadioGroup, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(RadioGroup, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'Select':
-                    return (_jsx(Select, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(Select, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'Switch':
-                    return (_jsx(Switch, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(Switch, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'TextArea':
-                    return (_jsx(TextArea, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(TextArea, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'TextField':
-                    return (_jsx(TextField, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(TextField, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 case 'TimerField':
-                    return (_jsx(TimerField, Object.assign({}, item, commonInputProps(item.name, item.onChange)), key));
+                    return (_jsx(TimerField, { ...item, ...commonInputProps(item.name, item.onChange) }, key));
                 default:
                     // eslint-disable-next-line no-console
                     console.warn('Unknown component:', item);

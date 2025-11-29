@@ -1,9 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
-import { TextFieldProps } from '../../types';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import { TextFieldProps } from '../../types';
 
 /**
  * The Text Field component is used for collecting text from users.
