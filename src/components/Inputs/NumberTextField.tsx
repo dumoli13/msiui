@@ -6,15 +6,17 @@ import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 
 const formatValue = (value: string | number | null | undefined) => {
-  if (value === '' || value === null || value === undefined) {
-    return '';
-  }
+  if (value === '' || value === null || value === undefined) return '';
 
-  const numberValue = Number(value);
-  if (isNaN(numberValue)) return value.toString(); // In case it's not a valid number
+  const str = value.toString();
 
-  // Format number with thousand separators
-  return numberValue.toLocaleString('en-US');
+  const [int, dec] = str.split('.');
+
+  if (!int || int === '-') return str;
+
+  const formattedInt = Number(int).toLocaleString('en-US');
+
+  return dec !== undefined ? `${formattedInt}.${dec}` : formattedInt;
 };
 
 /**
@@ -26,28 +28,28 @@ const NumberTextField = ({
   value: valueProp,
   defaultValue,
   initialValue = null,
-  max,
-  min,
   label,
   labelPosition = 'top',
   autoHideLabel = false,
+  placeholder = '',
   onChange,
-  onFocus,
-  onBlur,
   className,
   helperText,
-  placeholder = '',
   disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
-  clearable = false,
   inputRef,
   size = 'default',
   error: errorProp,
   success: successProp,
   loading = false,
+  clearable = false,
   width,
+  onFocus,
+  onBlur,
+  max,
+  min,
   required,
   ...props
 }: NumberTextFieldProps) => {
@@ -163,37 +165,41 @@ const NumberTextField = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
+
     const decimalRegex = /^-?\d*\.?\d*$/;
-    // Allow decimal numbers and dot input
-    if (decimalRegex.test(inputValue)) {
-      setInternalStringValue(inputValue);
+    if (!decimalRegex.test(inputValue)) return;
 
-      // Only convert to number if input is not "-" or "."
-      const newValue =
-        inputValue === '' || inputValue === '.' || inputValue === '-'
-          ? null
-          : Number(inputValue);
+    setInternalStringValue(inputValue);
 
-      let constrainedValue = newValue;
+    let newValue: number | null = null;
 
-      if (newValue !== null && typeof newValue === 'number') {
-        if (min !== undefined && newValue < min) {
-          constrainedValue = min;
-          setInternalError(`Must be at least ${min}`);
-        } else if (max !== undefined && newValue > max) {
-          constrainedValue = max;
-          setInternalError(`Must be no more than ${max}`);
-        } else if (internalError) {
-          setInternalError('');
-        }
+    if (inputValue !== '' && inputValue !== '-' && inputValue !== '.') {
+      const parsed = Number(inputValue);
+      if (!Number.isNaN(parsed)) {
+        newValue = parsed;
       }
-
-      setInternalStringValue(newValue?.toString() ?? '');
-      if (!isControlled) setInternalValue(newValue);
-      onChange?.(constrainedValue);
     }
-  };
 
+    let constrainedValue = newValue;
+
+    if (newValue !== null) {
+      if (min !== undefined && newValue < min) {
+        constrainedValue = min;
+        setInternalError(`Must be at least ${min}`);
+      } else if (max !== undefined && newValue > max) {
+        constrainedValue = max;
+        setInternalError(`Must be no more than ${max}`);
+      } else if (internalError) {
+        setInternalError('');
+      }
+    }
+
+    if (!isControlled) {
+      setInternalValue(constrainedValue);
+    }
+
+    onChange?.(constrainedValue);
+  };
   const handleClearValue = () => {
     onChange?.(null);
     if (!isControlled) {

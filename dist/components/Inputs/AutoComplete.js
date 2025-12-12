@@ -3,12 +3,13 @@ import React from 'react';
 import cx from 'classnames';
 import { useInView } from 'react-intersection-observer';
 import { useDebouncedCallback } from 'use-debounce';
+import { FETCH_LIMIT } from '../../const/select';
+import { isSelectValue } from '../../libs';
+import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import Icon from '../Icon';
-import { FETCH_LIMIT } from '../../const/select';
 /**
  * The autocomplete is a normal text input enhanced by a panel of suggested options.
  */
@@ -31,16 +32,27 @@ const AutoComplete = ({ id, name, value: valueProp, defaultValue, initialValue =
         const combinedOptions = [...appendOptions, ...sourceOptions];
         return Array.from(new Map(combinedOptions.map((item) => [item.label, item])).values());
     }, [async, optionsProp, asyncOptions, appendOptions]);
-    const [internalValue, setInternalValue] = React.useState(options.find((item) => item.value === defaultValue) || initialValue);
+    const [internalValue, setInternalValue] = React.useState(() => {
+        if (isSelectValue(defaultValue))
+            return defaultValue;
+        if (defaultValue == null)
+            return initialValue ?? null;
+        return (options.find((item) => item.value === defaultValue) ??
+            initialValue ??
+            null);
+    });
+    React.useEffect(() => {
+        if (!isSelectValue(defaultValue)) {
+            const next = options.find((item) => item.value === defaultValue) ?? null;
+            setInternalValue(next);
+        }
+    }, [defaultValue, options]);
     const filteredOptions = React.useMemo(() => {
         if (async)
             return options;
         const filterKeyword = inputValue.trim().toLowerCase();
         return options.filter((option) => !inputValue || option.label.toLowerCase().includes(filterKeyword));
     }, [async, inputValue, options]);
-    React.useEffect(() => {
-        setInternalValue(options.find((item) => item.value === (internalValue?.value ?? defaultValue)) || null);
-    }, [optionsProp]);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
     const helperMessage = errorProp ?? helperText;
@@ -100,6 +112,14 @@ const AutoComplete = ({ id, name, value: valueProp, defaultValue, initialValue =
         setLoadingFetchOptions(false);
     };
     const debouncedSearch = useDebouncedCallback((keyword) => handleFetchOption(keyword), 500);
+    const debounceMatchInputtoOptions = useDebouncedCallback((keyword) => {
+        const inputLower = keyword.toLowerCase();
+        const matched = options.find(({ label }) => label.toLowerCase() === inputLower);
+        if (matched) {
+            handleSelectOption(matched);
+            setInputValue('');
+        }
+    }, 500);
     const handleFocus = () => {
         if (disabled)
             return;
@@ -137,12 +157,7 @@ const AutoComplete = ({ id, name, value: valueProp, defaultValue, initialValue =
             return;
         }
         // if what user typed exactly match with any option, select it
-        const inputLower = input.toLowerCase();
-        const matched = options.find(({ label }) => label.toLowerCase() === inputLower);
-        if (matched) {
-            handleSelectOption(matched);
-            setInputValue('');
-        }
+        debounceMatchInputtoOptions(input);
     };
     const handleSelectOption = (option) => {
         if (value?.value === option.value)
@@ -150,9 +165,9 @@ const AutoComplete = ({ id, name, value: valueProp, defaultValue, initialValue =
         if (!isControlled) {
             setInternalValue(option);
         }
-        onChange?.(option);
         setFocused(false);
         setDropdownOpen(false);
+        onChange?.(option);
     };
     const handleAppend = () => {
         if (inputValue.length === 0 || !appendIfNotFound)

@@ -11,10 +11,16 @@ export interface AutoCompleteRef<T, D = undefined> {
 interface BaseProps<T, D = undefined>
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
-    'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked'
+    | 'onChange'
+    | 'value'
+    | 'defaultValue'
+    | 'size'
+    | 'required'
+    | 'checked'
+    | 'defaultChecked'
   > {
   value?: SelectValue<T, D> | null;
-  defaultValue?: T | null;
+  defaultValue?: SelectValue<T, D> | T | null;
   initialValue?: SelectValue<T, D> | null;
   label?: string;
   labelPosition?: 'top' | 'left';

@@ -59,13 +59,18 @@ const ModalContainer = ({ open, children, className, width = 804, height, closeO
         };
     }, [open, document.body.style.overflow]);
     React.useEffect(() => {
-        if (open && modalRef.current) {
-            const timer = setTimeout(() => {
-                modalRef.current?.focus();
-            }, 10);
-            return () => clearTimeout(timer);
-        }
-    }, [open, modalRef.current]);
+        if (!open || !modalRef.current)
+            return;
+        const activeEl = document.activeElement;
+        // ✅ Do NOTHING if focus is already inside the modal
+        if (modalRef.current.contains(activeEl))
+            return;
+        // ✅ Otherwise, move focus into the modal
+        const id = requestAnimationFrame(() => {
+            modalRef.current?.focus();
+        });
+        return () => cancelAnimationFrame(id);
+    }, [open]);
     if (!open)
         return null;
     return createPortal(_jsxs("div", { role: "dialog", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, ref: modalRef, "aria-modal": "true", tabIndex: -1, children: [closeOnOverlayClick ? (_jsx("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })) : (_jsx("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })), _jsx("div", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width, height }, children: children })] }), document.body);

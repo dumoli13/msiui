@@ -1,3 +1,5 @@
+import { SelectValue } from '../types';
+
 export function isToday(date: Date | null): boolean {
   if (!date) return false;
   const today = new Date();
@@ -54,5 +56,24 @@ export function getYearRange(year: number) {
   return Array.from(
     { length: upperBound - lowerBound },
     (_, i) => lowerBound + i,
+  );
+}
+
+export function isSelectValue<T, D>(
+  value: SelectValue<T, D> | T | null,
+): value is SelectValue<T, D> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'value' in value &&
+    'label' in value
+  );
+}
+
+export function isSelectValueArray<T, D>(
+  value: SelectValue<T, D>[] | T[] | null | undefined,
+): value is SelectValue<T, D>[] {
+  return (
+    Array.isArray(value) && value.length > 0 && typeof value[0] === 'object'
   );
 }

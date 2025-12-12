@@ -1,10 +1,10 @@
 import React from 'react';
 import cx from 'classnames';
+import { PasswordFieldProps } from '../../types/inputs';
 import Icon from '../Icon';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import { PasswordFieldProps } from '../../types/inputs';
 
 /**
  * The Password Field component is used for collecting sensitive data from users.
@@ -19,22 +19,22 @@ const PasswordField = ({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
+  placeholder = '',
   onChange,
   className,
   helperText,
-  placeholder = '',
   disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
   inputRef,
   size = 'default',
-  clearable = false,
-  type,
   error: errorProp,
   success: successProp,
   loading = false,
+  clearable = false,
   width,
+  type,
   required,
   ...props
 }: PasswordFieldProps) => {

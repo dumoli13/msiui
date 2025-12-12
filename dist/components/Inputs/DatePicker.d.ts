@@ -7,7 +7,7 @@ export declare const CancelButton: ({ onClick, }: {
  * The Date Picker component lets users select a date. User can also set a time of the date.
  */
 declare const DatePicker: {
-    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, inputRef, size, clearable, error: errorProp, success: successProp, loading, disabledDate, width, showTime, format: formatProps, picker, required, onKeyDown, ...props }: DatePickerProps): import("react/jsx-runtime").JSX.Element;
+    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, placeholder, onChange, className, helperText, disabled: disabledProp, fullWidth, inputRef, size, error: errorProp, success: successProp, loading, clearable, width, disabledDate, showTime, format: formatProps, picker, required, onKeyDown, ...props }: DatePickerProps): import("react/jsx-runtime").JSX.Element;
     isFormInput: boolean;
 };
 export default DatePicker;

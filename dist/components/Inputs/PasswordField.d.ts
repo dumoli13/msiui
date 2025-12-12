@@ -4,7 +4,7 @@ import { PasswordFieldProps } from '../../types/inputs';
  * This component will hide the password input. User can toggle the visibility of the password.
  */
 declare const PasswordField: {
-    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, clearable, type, error: errorProp, success: successProp, loading, width, required, ...props }: PasswordFieldProps): import("react/jsx-runtime").JSX.Element;
+    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, placeholder, onChange, className, helperText, disabled: disabledProp, fullWidth, startIcon, endIcon, inputRef, size, error: errorProp, success: successProp, loading, clearable, width, type, required, ...props }: PasswordFieldProps): import("react/jsx-runtime").JSX.Element;
     isFormInput: boolean;
 };
 export default PasswordField;

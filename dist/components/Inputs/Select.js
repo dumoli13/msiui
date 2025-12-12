@@ -1,13 +1,13 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
+import { useInView } from 'react-intersection-observer';
+import { FETCH_LIMIT } from '../../const/select';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import { useInView } from 'react-intersection-observer';
-import { FETCH_LIMIT } from '../../const/select';
 /**
  * Select components are used for collecting user provided information from a list of options.
  */

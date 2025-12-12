@@ -7,7 +7,7 @@ import InputLabel from './InputLabel';
 /**
  * The Text Area component is used for collecting large amounts of text from users.
  */
-const TextArea = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, lines: minLines = 2, required, width, ...props }) => {
+const TextArea = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, placeholder = '', onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, lines: minLines = 2, required, width, ...props }) => {
     const parentRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);

@@ -36,20 +36,20 @@ const DateRangePicker = ({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
+  placeholder,
   onChange,
   className,
   helperText,
-  placeholder,
   disabled: disabledProp = false,
   fullWidth,
   inputRef,
   size = 'default',
-  clearable = false,
   error: errorProp,
   success: successProp,
   loading = false,
-  disabledDate = () => false,
+  clearable = false,
   width,
+  disabledDate = () => false,
   showTime = false,
   format: formatProps,
   picker = 'date',
@@ -370,13 +370,14 @@ const DateRangePicker = ({
   const convertDateTime = () => {
     const start = tempValue[0];
     const end = tempValue[1];
+
     const newDate: [Date | null, Date | null] = [start, end];
 
     if (start !== null && end !== null) {
-      /**
-       * use selected time instead of start of the day or end of the day
-       */
-      if (isDateABeforeDateB(start, end)) {
+      const startTime = start?.getTime();
+      const endTime = end?.getTime();
+
+      if (startTime < endTime) {
         newDate[0] = start;
         newDate[1] = end;
       } else {
@@ -385,6 +386,7 @@ const DateRangePicker = ({
       }
       handleChangeValue(newDate as [Date, Date]);
     }
+
     setTempValue(newDate);
   };
 

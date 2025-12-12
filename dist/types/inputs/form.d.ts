@@ -28,7 +28,7 @@ export interface InputProps<T> {
     initialValue?: T;
     onChange?: (value: T) => void;
     children?: React.ReactNode;
-    inputRef?: React.RefObject<InputPropsRefType> | React.RefCallback<InputPropsRefType>;
+    inputRef?: React.RefObject<InputPropsRefType | null> | React.RefCallback<InputPropsRefType | null>;
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 export interface FormRef<T> {

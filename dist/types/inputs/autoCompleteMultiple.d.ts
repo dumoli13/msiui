@@ -6,9 +6,9 @@ export interface AutoCompleteMultipleRef<T, D = undefined> {
     reset: () => void;
     disabled: boolean;
 }
-interface BaseAutoCompleteMultipleProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked'> {
+interface BaseAutoCompleteMultipleProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked' | 'defaultChecked'> {
     value?: SelectValue<T, D>[];
-    defaultValue?: T[];
+    defaultValue?: SelectValue<T, D>[] | T[];
     initialValue?: SelectValue<T, D>[];
     label?: string;
     labelPosition?: 'top' | 'left';

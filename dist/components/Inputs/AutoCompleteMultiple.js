@@ -4,6 +4,7 @@ import cx from 'classnames';
 import { useInView } from 'react-intersection-observer';
 import { useDebouncedCallback } from 'use-debounce';
 import { FETCH_LIMIT } from '../../const/select';
+import { isSelectValueArray } from '../../libs';
 import Tag from '../Displays/Tag';
 import Icon from '../Icon';
 import InputDropdown from './InputDropdown';
@@ -13,7 +14,7 @@ import InputLabel from './InputLabel';
 /**
  * An autocomplete where multiple options can be selected
  */
-const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue = [], initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown, onPaste, ...props }) => {
+const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = '', options: optionsProp, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, appendIfNotFound, onAppend, required, renderOption, async, fetchOptions, onKeyDown, onPaste, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -32,16 +33,24 @@ const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue = [], i
         const combinedOptions = [...appendOptions, ...sourceOptions];
         return Array.from(new Map(combinedOptions.map((item) => [item.label, item])).values());
     }, [async, optionsProp, asyncOptions, appendOptions]);
-    const [internalValue, setInternalValue] = React.useState(options.filter((item) => defaultValue.includes(item.value)) || initialValue);
+    const [internalValue, setInternalValue] = React.useState(() => {
+        if (isSelectValueArray(defaultValue))
+            return defaultValue;
+        if (defaultValue == null)
+            return initialValue;
+        return options.filter((item) => defaultValue.includes(item.value));
+    });
+    React.useEffect(() => {
+        if (defaultValue && !isSelectValueArray(defaultValue)) {
+            setInternalValue(options.filter((item) => defaultValue.map((v) => v).includes(item.value)));
+        }
+    }, [defaultValue, options]);
     const filteredOptions = React.useMemo(() => {
         if (async)
             return options;
         const filterKeyword = inputValue.trim().toLowerCase();
         return options.filter((option) => !inputValue || option.label.toLowerCase().includes(filterKeyword));
     }, [async, inputValue, options]);
-    React.useEffect(() => {
-        setInternalValue(options.filter((item) => defaultValue.map((v) => v).includes(item.value)) || []);
-    }, [optionsProp]);
     const isControlled = valueProp !== undefined;
     const value = valueProp ?? internalValue; // Default to internal state if undefined
     const helperMessage = errorProp ?? helperText;
@@ -99,6 +108,14 @@ const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue = [], i
         setLoadingFetchOptions(false);
     };
     const debouncedSearch = useDebouncedCallback((keyword) => handleFetchOption(keyword), 500);
+    const debounceMatchInputtoOptions = useDebouncedCallback((keyword) => {
+        const inputLower = keyword.toLowerCase();
+        const matched = options.find(({ label }) => label.toLowerCase() === inputLower);
+        if (matched) {
+            handleSelectOption(matched);
+            setInputValue('');
+        }
+    }, 500);
     const handleFocus = () => {
         if (disabled)
             return;
@@ -136,12 +153,7 @@ const AutoCompleteMultiple = ({ id, name, value: valueProp, defaultValue = [], i
             return;
         }
         // if what user typed exactly match with any option, select it
-        const inputLower = input.toLowerCase();
-        const matched = options.find(({ label }) => label.toLowerCase() === inputLower);
-        if (matched) {
-            handleSelectOption(matched);
-            setInputValue('');
-        }
+        debounceMatchInputtoOptions(input);
     };
     const handleSelectOption = (option) => {
         const selected = value.some((v) => v.value === option.value);

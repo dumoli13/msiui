@@ -5,19 +5,19 @@ import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 const formatValue = (value) => {
-    if (value === '' || value === null || value === undefined) {
+    if (value === '' || value === null || value === undefined)
         return '';
-    }
-    const numberValue = Number(value);
-    if (isNaN(numberValue))
-        return value.toString(); // In case it's not a valid number
-    // Format number with thousand separators
-    return numberValue.toLocaleString('en-US');
+    const str = value.toString();
+    const [int, dec] = str.split('.');
+    if (!int || int === '-')
+        return str;
+    const formattedInt = Number(int).toLocaleString('en-US');
+    return dec !== undefined ? `${formattedInt}.${dec}` : formattedInt;
 };
 /**
  * The Number Text Field component is used for collecting numeric data from users. This component will format thousand separator on blur.
  */
-const NumberTextField = ({ id, name, value: valueProp, defaultValue, initialValue = null, max, min, label, labelPosition = 'top', autoHideLabel = false, onChange, onFocus, onBlur, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, clearable = false, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, width, required, ...props }) => {
+const NumberTextField = ({ id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, placeholder = '', onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, onFocus, onBlur, max, min, required, ...props }) => {
     const parentRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
@@ -108,32 +108,34 @@ const NumberTextField = ({ id, name, value: valueProp, defaultValue, initialValu
     const handleChange = (e) => {
         const inputValue = e.target.value;
         const decimalRegex = /^-?\d*\.?\d*$/;
-        // Allow decimal numbers and dot input
-        if (decimalRegex.test(inputValue)) {
-            setInternalStringValue(inputValue);
-            // Only convert to number if input is not "-" or "."
-            const newValue = inputValue === '' || inputValue === '.' || inputValue === '-'
-                ? null
-                : Number(inputValue);
-            let constrainedValue = newValue;
-            if (newValue !== null && typeof newValue === 'number') {
-                if (min !== undefined && newValue < min) {
-                    constrainedValue = min;
-                    setInternalError(`Must be at least ${min}`);
-                }
-                else if (max !== undefined && newValue > max) {
-                    constrainedValue = max;
-                    setInternalError(`Must be no more than ${max}`);
-                }
-                else if (internalError) {
-                    setInternalError('');
-                }
+        if (!decimalRegex.test(inputValue))
+            return;
+        setInternalStringValue(inputValue);
+        let newValue = null;
+        if (inputValue !== '' && inputValue !== '-' && inputValue !== '.') {
+            const parsed = Number(inputValue);
+            if (!Number.isNaN(parsed)) {
+                newValue = parsed;
             }
-            setInternalStringValue(newValue?.toString() ?? '');
-            if (!isControlled)
-                setInternalValue(newValue);
-            onChange?.(constrainedValue);
         }
+        let constrainedValue = newValue;
+        if (newValue !== null) {
+            if (min !== undefined && newValue < min) {
+                constrainedValue = min;
+                setInternalError(`Must be at least ${min}`);
+            }
+            else if (max !== undefined && newValue > max) {
+                constrainedValue = max;
+                setInternalError(`Must be no more than ${max}`);
+            }
+            else if (internalError) {
+                setInternalError('');
+            }
+        }
+        if (!isControlled) {
+            setInternalValue(constrainedValue);
+        }
+        onChange?.(constrainedValue);
     };
     const handleClearValue = () => {
         onChange?.(null);

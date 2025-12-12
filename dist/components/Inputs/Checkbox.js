@@ -6,7 +6,7 @@ import InputHelper from './InputHelper';
 /**
  * Checkboxes allow the user to turn an option on or off.
  */
-const Checkbox = ({ id, name, label = '', labelPosition = 'right', checked: valueProp, defaultChecked = false, initialChecked = false, indeterminate = false, onChange, helperText, disabled: disabledProp = false, className, inputRef, size = 'default', error: errorProp, loading = false, width, 'aria-label': ariaLabel, ...props }) => {
+const Checkbox = ({ id, name, defaultChecked = false, initialChecked = false, indeterminate = false, label = '', labelPosition = 'right', checked: valueProp, onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', error: errorProp, loading = false, width, 'aria-label': ariaLabel, ...props }) => {
     const elementRef = React.useRef(null);
     const [internalValue, setInternalValue] = React.useState(defaultChecked || initialChecked);
     const [focused, setFocused] = React.useState(false);

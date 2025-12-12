@@ -1,4 +1,5 @@
 import React from 'react';
+import { ConfirmModalProps, ModalProps } from '../../types';
 import ConfirmModal from './ConfirmModal';
 import DangerModal from './DangerModal';
 import InfoModal from './InfoModal';
@@ -6,7 +7,6 @@ import ModalContainer from './ModalContainer';
 import PrimaryModal from './PrimaryModal';
 import SuccessModal from './SuccessModal';
 import WarningModal from './WarningModal';
-import { ConfirmModalProps, ModalProps } from '../../types';
 
 interface ExtendedModal extends React.FC<ModalProps> {
   confirm: (props: ConfirmModalProps) => void;

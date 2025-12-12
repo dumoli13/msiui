@@ -33,3 +33,12 @@ export function getYearRange(year) {
     const upperBound = lowerBound + step;
     return Array.from({ length: upperBound - lowerBound }, (_, i) => lowerBound + i);
 }
+export function isSelectValue(value) {
+    return (typeof value === 'object' &&
+        value !== null &&
+        'value' in value &&
+        'label' in value);
+}
+export function isSelectValueArray(value) {
+    return (Array.isArray(value) && value.length > 0 && typeof value[0] === 'object');
+}

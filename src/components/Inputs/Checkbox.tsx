@@ -1,8 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
+import { CheckboxProps } from '../../types';
 import Icon from '../Icon';
 import InputHelper from './InputHelper';
-import { CheckboxProps } from '../../types';
 
 /**
  * Checkboxes allow the user to turn an option on or off.
@@ -10,16 +10,16 @@ import { CheckboxProps } from '../../types';
 const Checkbox = ({
   id,
   name,
-  label = '',
-  labelPosition = 'right',
-  checked: valueProp,
   defaultChecked = false,
   initialChecked = false,
   indeterminate = false,
+  label = '',
+  labelPosition = 'right',
+  checked: valueProp,
   onChange,
+  className,
   helperText,
   disabled: disabledProp = false,
-  className,
   inputRef,
   size = 'default',
   error: errorProp,

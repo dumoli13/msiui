@@ -1,9 +1,9 @@
 import React from 'react';
 import cx from 'classnames';
+import { TextFieldProps } from '../../types';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import { TextFieldProps } from '../../types';
 
 /**
  * The Text Field component is used for collecting text from users.
@@ -17,20 +17,20 @@ const TextField = ({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
+  placeholder = '',
   onChange,
   className,
   helperText,
-  placeholder = '',
   disabled: disabledProp = false,
   fullWidth,
   startIcon,
   endIcon,
   inputRef,
   size = 'default',
-  clearable = false,
   error: errorProp,
   success: successProp,
   loading = false,
+  clearable = false,
   width,
   required,
   ...props

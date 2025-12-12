@@ -3,6 +3,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import dayjs from 'dayjs';
+import { useDebouncedCallback } from 'use-debounce';
 import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
 import { Tag } from '../Displays';
@@ -12,13 +13,12 @@ import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import { useDebouncedCallback } from 'use-debounce';
 /**
  * The Multiple Date Picker component lets users select multiple date.
  * This component is similar to the Date Picker component but can not set a time of the date.
  *
  */
-const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = 'Input date', disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, format = 'D/M/YYYY', picker = 'date', required, onKeyDown, ...props }) => {
+const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = 'Input date', onChange, className, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable, width, disabledDate = () => false, format = 'D/M/YYYY', picker = 'date', required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);

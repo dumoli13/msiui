@@ -9,7 +9,7 @@ import InputLabel from './InputLabel';
  * The Password Field component is used for collecting sensitive data from users.
  * This component will hide the password input. User can toggle the visibility of the password.
  */
-const PasswordField = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder = '', disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', clearable = false, type, error: errorProp, success: successProp, loading = false, width, required, ...props }) => {
+const PasswordField = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, placeholder = '', onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, type, required, ...props }) => {
     const parentRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);

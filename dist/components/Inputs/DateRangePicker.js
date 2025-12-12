@@ -15,7 +15,7 @@ import InputLabel from './InputLabel';
 /**
  * The Date Range Picker lets the user select a range of dates.
  */
-const DateRangePicker = ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition = 'top', autoHideLabel = false, onChange, className, helperText, placeholder, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', clearable = false, error: errorProp, success: successProp, loading = false, disabledDate = () => false, width, showTime = false, format: formatProps, picker = 'date', required, onKeyDown, ...props }) => {
+const DateRangePicker = ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition = 'top', autoHideLabel = false, placeholder, onChange, className, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, disabledDate = () => false, showTime = false, format: formatProps, picker = 'date', required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const valueStartRef = React.useRef(null);
     const valueEndRef = React.useRef(null);
@@ -274,10 +274,9 @@ const DateRangePicker = ({ id, name, value: valueProp, defaultValue, initialValu
         const end = tempValue[1];
         const newDate = [start, end];
         if (start !== null && end !== null) {
-            /**
-             * use selected time instead of start of the day or end of the day
-             */
-            if (isDateABeforeDateB(start, end)) {
+            const startTime = start?.getTime();
+            const endTime = end?.getTime();
+            if (startTime < endTime) {
                 newDate[0] = start;
                 newDate[1] = end;
             }

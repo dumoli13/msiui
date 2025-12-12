@@ -5,7 +5,7 @@ import { MultipleDatePickerProps } from '../../types/inputs';
  *
  */
 declare const MultipleDatePicker: {
-    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, onChange, className, helperText, placeholder, disabled: disabledProp, fullWidth, inputRef, size, clearable, error: errorProp, success: successProp, loading, disabledDate, width, format, picker, required, onKeyDown, ...props }: MultipleDatePickerProps): import("react/jsx-runtime").JSX.Element;
+    ({ id, name, value: valueProp, defaultValue, initialValue, label, labelPosition, autoHideLabel, placeholder, onChange, className, helperText, disabled: disabledProp, fullWidth, inputRef, size, error: errorProp, success: successProp, loading, clearable, width, disabledDate, format, picker, required, onKeyDown, ...props }: MultipleDatePickerProps): import("react/jsx-runtime").JSX.Element;
     isFormInput: boolean;
 };
 export default MultipleDatePicker;

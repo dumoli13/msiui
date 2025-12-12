@@ -1,24 +1,24 @@
 import React from 'react';
 import cx from 'classnames';
+import { RadioGroupProps, SelectValue } from '../../types/inputs';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
-import { RadioGroupProps, SelectValue } from '../../types/inputs';
 
 /**
  * RadioGroup components allow users to select one option from a set.
  */
 const RadioGroup = <T, D = undefined>({
+  id,
+  name,
   value: valueProp,
   defaultValue,
   initialValue = null,
-  id,
-  name,
   label,
   labelPosition = 'top',
   autoHideLabel = false,
   options,
-  direction = 'column',
   onChange,
+  className,
   helperText,
   disabled: disabledProp = false,
   fullWidth,
@@ -28,7 +28,7 @@ const RadioGroup = <T, D = undefined>({
   success: successProp,
   loading = false,
   width,
-  className,
+  direction = 'column',
   required,
   ...props
 }: RadioGroupProps<T, D>) => {

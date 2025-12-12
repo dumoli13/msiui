@@ -6,7 +6,7 @@ import InputLabel from './InputLabel';
 /**
  * RadioGroup components allow users to select one option from a set.
  */
-const RadioGroup = ({ value: valueProp, defaultValue, initialValue = null, id, name, label, labelPosition = 'top', autoHideLabel = false, options, direction = 'column', onChange, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, width, className, required, ...props }) => {
+const RadioGroup = ({ id, name, value: valueProp, defaultValue, initialValue = null, label, labelPosition = 'top', autoHideLabel = false, options, onChange, className, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, width, direction = 'column', required, ...props }) => {
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? initialValue);

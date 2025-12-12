@@ -24,10 +24,10 @@ const Switch = ({
   size = 'default',
   fullWidth = false,
   error: errorProp,
+  loading = false,
+  width,
   trueLabel = 'Yes',
   falseLabel = 'No',
-  width,
-  loading = false,
   required,
   onKeyDown,
   ...props

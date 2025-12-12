@@ -7,7 +7,7 @@ import InputLabel from './InputLabel';
 /**
  * The Switch component is used for toggling between two states. Most commonly used for setting on or off.
  */
-const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, trueLabel = 'Yes', falseLabel = 'No', width, loading = false, required, onKeyDown, ...props }) => {
+const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: checkedProp, label, labelPosition = 'top', onChange, className, helperText, disabled: disabledProp = false, inputRef, size = 'default', fullWidth = false, error: errorProp, loading = false, width, trueLabel = 'Yes', falseLabel = 'No', required, onKeyDown, ...props }) => {
     const elementRef = React.useRef(null);
     const [internalChecked, setInternalChecked] = React.useState(defaultChecked || initialChecked);
     const isControlled = checkedProp !== undefined;

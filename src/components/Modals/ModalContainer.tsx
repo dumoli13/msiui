@@ -73,13 +73,20 @@ const ModalContainer = ({
   }, [open, document.body.style.overflow]);
 
   React.useEffect(() => {
-    if (open && modalRef.current) {
-      const timer = setTimeout(() => {
-        modalRef.current?.focus();
-      }, 10);
-      return () => clearTimeout(timer);
-    }
-  }, [open, modalRef.current]);
+    if (!open || !modalRef.current) return;
+
+    const activeEl = document.activeElement;
+
+    // ✅ Do NOTHING if focus is already inside the modal
+    if (modalRef.current.contains(activeEl)) return;
+
+    // ✅ Otherwise, move focus into the modal
+    const id = requestAnimationFrame(() => {
+      modalRef.current?.focus();
+    });
+
+    return () => cancelAnimationFrame(id);
+  }, [open]);
 
   if (!open) return null;
 

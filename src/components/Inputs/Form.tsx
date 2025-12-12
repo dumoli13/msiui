@@ -341,6 +341,9 @@ const Form = <T,>({
         }
       };
 
+      // Use React.useRef to persist the cleanup function across re-renders
+      const cleanupRef = React.useRef<(() => void) | null>(null);
+
       return React.cloneElement(child, {
         ...child.props,
         defaultValue,
@@ -355,18 +358,13 @@ const Form = <T,>({
           }
         },
         inputRef: (ref: InputPropsRefType) => {
-          // Generate unique key for this specific input instance
-          const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
-
-          // Run previous cleanup if it exists for this instance
-          if (cleanupRefs.current[instanceKey]) {
-            console.log('Running cleanup for:', name, instanceKey);
-            cleanupRefs.current[instanceKey]();
-            delete cleanupRefs.current[instanceKey];
+          // Run previous cleanup if it exists
+          if (cleanupRef.current) {
+            cleanupRef.current();
+            cleanupRef.current = null;
           }
 
           if (name && ref) {
-            console.log('Setting ref for:', name, ref, instanceKey);
             if (!inputRefsRef.current[name]) {
               inputRefsRef.current[name] = [];
             }
@@ -376,8 +374,7 @@ const Form = <T,>({
             }
 
             // Create cleanup function
-            const cleanup = () => {
-              console.log('Cleanup called for:', name, instanceKey);
+            cleanupRef.current = () => {
               if (inputRefsRef.current[name]) {
                 inputRefsRef.current[name] = inputRefsRef.current[name].filter(
                   (r) => r !== ref,
@@ -386,11 +383,7 @@ const Form = <T,>({
                   delete inputRefsRef.current[name];
                 }
               }
-              delete cleanupRefs.current[instanceKey];
             };
-
-            // Store cleanup function
-            cleanupRefs.current[instanceKey] = cleanup;
           }
 
           // Call original ref if it exists
@@ -399,6 +392,8 @@ const Form = <T,>({
           } else if (originalInputRef?.current !== undefined) {
             originalInputRef.current = ref;
           }
+
+          return cleanupRef.current || undefined;
         },
       });
     }
@@ -431,22 +426,18 @@ const Form = <T,>({
 
   const renderTemplate = React.useCallback(
     (template: FormTemplate[]): React.ReactNode => {
-      // Track cleanup functions for template components
-      const templateCleanupRefs = React.useRef<Record<string, () => void>>({});
-
       const registerInputRef = (name?: string) => {
+        const cleanupRef = React.useRef<(() => void) | null>(null);
+
         return (ref: any) => {
-          if (!name || !ref) return;
-
-          const instanceKey = `${name}_${Math.random().toString(36).substr(2, 9)}`;
-
           // Run previous cleanup if it exists
-          if (templateCleanupRefs.current[instanceKey]) {
-            templateCleanupRefs.current[instanceKey]();
-            delete templateCleanupRefs.current[instanceKey];
+          if (cleanupRef.current) {
+            cleanupRef.current();
+            cleanupRef.current = null;
           }
 
-          console.log('Template - Setting ref for:', name, ref, instanceKey);
+          if (!name || !ref) return;
+
           if (!inputRefsRef.current[name]) {
             inputRefsRef.current[name] = [];
           }
@@ -456,8 +447,7 @@ const Form = <T,>({
           }
 
           // Create cleanup function
-          const cleanup = () => {
-            console.log('Template - Cleanup called for:', name, instanceKey);
+          cleanupRef.current = () => {
             if (inputRefsRef.current[name]) {
               inputRefsRef.current[name] = inputRefsRef.current[name].filter(
                 (r) => r !== ref,
@@ -466,10 +456,9 @@ const Form = <T,>({
                 delete inputRefsRef.current[name];
               }
             }
-            delete templateCleanupRefs.current[instanceKey];
           };
 
-          templateCleanupRefs.current[instanceKey] = cleanup;
+          return cleanupRef.current;
         };
       };
 

@@ -50,8 +50,8 @@ export interface InputProps<T> {
   onChange?: (value: T) => void;
   children?: React.ReactNode;
   inputRef?:
-    | React.RefObject<InputPropsRefType>
-    | React.RefCallback<InputPropsRefType>;
+    | React.RefObject<InputPropsRefType | null>
+    | React.RefCallback<InputPropsRefType | null>;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
