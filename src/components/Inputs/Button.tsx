@@ -104,9 +104,9 @@ const Button = React.forwardRef(
               invisible: loading,
             })}
           >
-            {startIcon}
+            {startIcon ?? <div />}
             {children}
-            {endIcon}
+            {endIcon ?? <div />}
           </span>
         ) : (
           children

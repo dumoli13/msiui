@@ -1,4 +1,4 @@
-import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
 import Icon from '../Icon';
@@ -43,7 +43,7 @@ const Button = React.forwardRef(({ children, variant = 'contained', color = 'pri
             'text-info-main dark:text-info-main-dark hover:text-info-hover dark:hover:text-info-hover-dark active:text-info-pressed dark:active:text-info-pressed-dark focus:ring-info-focus dark:focus:ring-info-focus-dark': color === 'info' && variant === 'text',
         }, className), tabIndex: disabled ? -1 : 0, children: [startIcon || endIcon ? (_jsxs("span", { className: cx('flex justify-between items-center gap-1.5', {
                     invisible: loading,
-                }), children: [startIcon, children, endIcon] })) : (children), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
+                }), children: [startIcon ?? _jsx("div", {}), children, endIcon ?? _jsx("div", {})] })) : (children), loading && (_jsx("span", { className: cx('absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center', {
                     'text-16px': size !== 'large',
                     'text-20px': size === 'large',
                 }), children: _jsx(Icon, { name: "loader", animation: "spin", strokeWidth: 2 }) }))] }));
