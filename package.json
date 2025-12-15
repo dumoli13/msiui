@@ -80,6 +80,11 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
+    "./client": {
+      "import": "./dist/components/client/index.js",
+      "require": "./dist/components/client/index.cjs",
+      "types": "./dist/components/client/index.d.ts"
+    },
     "./dist/output.css": "./dist/output.css"
   },
   "husky": {
