@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import iconFilled from '../assets/icon-filled.svg';
-import iconOutline from '../assets/icon-outline.svg';
+import iconFilled from '../../assets/icon-filled.svg';
+import iconOutline from '../../assets/icon-outline.svg';
 
 // Base props that all icons share
 type BaseIconProps = {

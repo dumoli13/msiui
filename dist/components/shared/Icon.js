@@ -1,8 +1,8 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import iconFilled from '../assets/icon-filled.svg';
-import iconOutline from '../assets/icon-outline.svg';
+import iconFilled from '../../assets/icon-filled.svg';
+import iconOutline from '../../assets/icon-outline.svg';
 /**
  * ready-to-use icons from the MisDesign icon library
  */
