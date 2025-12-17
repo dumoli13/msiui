@@ -1,5 +1,5 @@
 import React from 'react';
-import { NotificationStack } from '../components/client/Notification';
+import { NotificationStack } from '../components/Notification';
 import { Theme } from '../const';
 
 interface LibraryContextType {

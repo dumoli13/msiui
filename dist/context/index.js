@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
-import { NotificationStack } from '../components/client/Notification';
+import { NotificationStack } from '../components/Notification';
 import { Theme } from '../const';
 const LibraryContext = React.createContext(undefined);
 export const useMisDesignContext = () => {

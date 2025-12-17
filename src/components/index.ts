@@ -1,11 +1,17 @@
-// Compatible With Server Side Rendering
-export * from './shared/Displays';
+export * from './Displays';
 
-export * from './shared/Inputs';
+export * from './Feedback';
 
-export * from './shared/Navigations';
+export * from './Inputs';
 
-export * from './shared/Table';
+export * from './Modals';
 
-export { default as Icon } from './shared/Icon';
-export type { IconNames, IconProps } from './shared/Icon';
+export * from './Navigations';
+
+export { useNotification } from './Notification';
+export type { NotificationProps } from './Notification';
+
+export * from './Table';
+
+export { default as Icon } from './Icon';
+export type { IconNames, IconProps } from './Icon';

@@ -1,7 +1,11 @@
-export * from './shared/Displays';
-export * from './shared/Inputs';
-export * from './shared/Navigations';
-export * from './shared/Table';
-export { default as Icon } from './shared/Icon';
-export type { IconNames, IconProps } from './shared/Icon';
+export * from './Displays';
+export * from './Feedback';
+export * from './Inputs';
+export * from './Modals';
+export * from './Navigations';
+export { useNotification } from './Notification';
+export type { NotificationProps } from './Notification';
+export * from './Table';
+export { default as Icon } from './Icon';
+export type { IconNames, IconProps } from './Icon';
 //# sourceMappingURL=index.d.ts.map
