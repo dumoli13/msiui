@@ -1,7 +1,7 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
-import { Portal } from '../Portal';
+import { createPortal } from 'react-dom';
 const Popper = ({ disabled = false, content, children, open: openProp, onOpen, placement = 'bottom-left', offset = 8, className, style, closeOnClickChild = false, onClickOutside, }) => {
     const elementRef = React.useRef(null);
     const popperRef = React.useRef(null);
@@ -202,13 +202,14 @@ const Popper = ({ disabled = false, content, children, open: openProp, onOpen, p
     if (disabled) {
         return children;
     }
-    return (_jsxs(_Fragment, { children: [anchorElement, open && (_jsx(Portal, { children: _jsx("div", { ref: popperRef, style: {
+    return (_jsxs(_Fragment, { children: [anchorElement, open &&
+                createPortal(_jsx("div", { ref: popperRef, style: {
                         top: 0,
                         left: 0,
                         transform: `translate(${position.left}px, ${position.top}px)`,
                         ...style,
                     }, onClick: handleContentClick, className: cx('absolute z-[2200] bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg', className, {
                         invisible: !open,
-                    }), children: content }) }))] }));
+                    }), children: content }), document.body)] }));
 };
 export default Popper;

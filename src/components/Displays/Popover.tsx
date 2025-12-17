@@ -1,4 +1,11 @@
-import React from 'react';
+'use client';
+
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useEffect,
+  useState,
+} from 'react';
 import cx from 'classnames';
 import { PopoverProps } from '../../types';
 import { Portal } from '../Portal';
@@ -12,115 +19,134 @@ const Popover = ({
   verticalAlign = 'bottom',
   horizontalAlign = 'left',
 }: PopoverProps) => {
-  const popoverRef = React.useRef<HTMLDivElement | null>(null);
-  const [dropdownPosition, setDropdownPosition] = React.useState({
+  const [ready, setReady] = useState(false);
+  const [position, setPosition] = useState({
     top: 0,
     left: 0,
     width: 0,
   });
+  const [popoverEl, setPopoverEl] = useState<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+  const setPopoverRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      setPopoverEl(node);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = prev;
     };
-  }, [open, document.body.style.overflow]);
+  }, [open]);
 
-  const calculateDropdownPosition = React.useCallback(() => {
-    if (elementRef.current && popoverRef.current) {
-      const rect = elementRef.current.getBoundingClientRect();
-      const dropdownRect = popoverRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
+  /** -------------------------------------------------
+   * Position calculation
+   * ------------------------------------------------- */
+  const calculatePosition = useCallback(() => {
+    if (!elementRef.current || !popoverEl) return;
 
-      let top = rect.top + window.scrollY;
-      let left = rect.left + window.scrollX;
+    const trigger = elementRef.current.getBoundingClientRect();
+    const popover = popoverEl.getBoundingClientRect();
 
-      // Check and adjust for vertical alignment
-      if (verticalAlign === 'top') {
-        top = rect.top + window.scrollY - dropdownRect.height - 8;
-        if (top < 0) {
-          top = rect.bottom + window.scrollY;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let top = 0;
+    let left = 0;
+
+    // Vertical alignment
+    switch (verticalAlign) {
+      case 'top':
+        top = trigger.top - popover.height - 8;
+        if (top < 0) top = trigger.bottom;
+        break;
+
+      case 'center':
+        top = trigger.top + trigger.height / 2 - popover.height / 2;
+        break;
+
+      case 'bottom':
+      default:
+        top = trigger.bottom;
+        if (top + popover.height > viewportHeight) {
+          top = trigger.top - popover.height;
         }
-      } else if (verticalAlign === 'bottom') {
-        top = rect.bottom + window.scrollY;
-        if (top + dropdownRect.height > viewportHeight) {
-          top = rect.top + window.scrollY - dropdownRect.height;
-        }
-      } else if (verticalAlign === 'center') {
-        top =
-          rect.top + window.scrollY + rect.height / 2 - dropdownRect.height / 2;
-      }
-
-      // Check and adjust for horizontal alignment
-      if (horizontalAlign === 'left') {
-        left = rect.left + window.scrollX;
-        if (left + dropdownRect.width > viewportWidth) {
-          left = rect.right + window.scrollX - dropdownRect.width;
-        }
-      } else if (horizontalAlign === 'right') {
-        left = rect.right + window.scrollX - dropdownRect.width;
-        if (left < 0) {
-          left = rect.left + window.scrollX;
-        }
-      } else if (horizontalAlign === 'center') {
-        left =
-          rect.left + window.scrollX + rect.width / 2 - dropdownRect.width / 2;
-      }
-
-      setDropdownPosition({
-        top,
-        left,
-        width: rect.width,
-      });
     }
-  }, [verticalAlign, horizontalAlign]);
 
-  React.useEffect(() => {
-    if (open) {
-      calculateDropdownPosition();
+    // Horizontal alignment
+    switch (horizontalAlign) {
+      case 'right':
+        left = trigger.right - popover.width;
+        if (left < 0) left = trigger.left;
+        break;
+
+      case 'center':
+        left = trigger.left + trigger.width / 2 - popover.width / 2;
+        break;
+
+      case 'left':
+      default:
+        left = trigger.left;
+        if (left + popover.width > viewportWidth) {
+          left = trigger.right - popover.width;
+        }
     }
-  }, [open, calculateDropdownPosition]);
 
-  React.useEffect(() => {
-    const handleScrollOrResize = () => {
-      if (open) {
-        calculateDropdownPosition();
-      }
-    };
-    window.addEventListener('scroll', handleScrollOrResize);
-    window.addEventListener('resize', handleScrollOrResize);
+    setPosition({
+      top: Math.max(8, top),
+      left: Math.max(8, left),
+      width: trigger.width,
+    });
+    setReady(true);
+  }, [elementRef, popoverEl, verticalAlign, horizontalAlign]);
+
+  useLayoutEffect(() => {
+    if (!open || !popoverEl) return;
+
+    // 2nd frame guarantees size is correct
+    requestAnimationFrame(calculatePosition);
+  }, [open, popoverEl, calculatePosition]);
+
+  useEffect(() => {
+    if (!open || !popoverEl) return;
+
+    window.addEventListener('scroll', calculatePosition, true);
+    window.addEventListener('resize', calculatePosition);
+
     return () => {
-      window.removeEventListener('scroll', handleScrollOrResize);
-      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('scroll', calculatePosition, true);
+      window.removeEventListener('resize', calculatePosition);
     };
-  }, [open, calculateDropdownPosition]);
+  }, [open, popoverEl, calculatePosition]);
 
   if (!open) return null;
 
-  // Create the transform-origin string
-
   return (
     <Portal>
-      <div role="none" className="fixed z-[1300] inset-0">
+      <div className="fixed inset-0 z-[1300]">
+        {/* Click outside */}
         <div
           aria-hidden="true"
-          className="z-[2000] fixed inset-0"
+          className="fixed inset-0"
           onClick={() => onClose?.()}
         />
 
+        {/* Popover */}
         <div
-          ref={popoverRef}
+          ref={setPopoverRef}
           style={{
-            top: `${dropdownPosition.top}px`,
-            left: `${dropdownPosition.left}px`,
+            top: `${position.top}px`,
+            left: `${position.left}px`,
+            visibility: ready ? 'visible' : 'hidden',
           }}
           className={cx(
-            'text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 mt-1 absolute z-[2100]',
+            'fixed z-[2100] rounded-lg shadow-box-2 p-4',
+            'bg-neutral-10 dark:bg-neutral-30-dark',
             className,
           )}
         >

@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { Placement, PopperProps } from '../../types';
 import { Portal } from '../Portal';
+import { createPortal } from 'react-dom';
 
 const Popper = ({
   disabled = false,
@@ -241,8 +242,8 @@ const Popper = ({
   return (
     <>
       {anchorElement}
-      {open && (
-        <Portal>
+      {open &&
+        createPortal(
           <div
             ref={popperRef}
             style={{
@@ -261,9 +262,9 @@ const Popper = ({
             )}
           >
             {content}
-          </div>
-        </Portal>
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 };
