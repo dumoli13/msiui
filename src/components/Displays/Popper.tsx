@@ -1,155 +1,274 @@
 import React from 'react';
 import cx from 'classnames';
-import { Placement, PopperProps } from '../../types';
-import { Portal } from '../Portal';
+import gsap from 'gsap';
 import { createPortal } from 'react-dom';
+import { OverlayContext } from '../../context/OverlayContext';
+import getTransitionVars, { resolveAnimation } from '../../libs/transition';
+import type {
+  Horizontal,
+  Origin,
+  PopperProps,
+  Vertical,
+} from '../../types/displays/popper';
+
+const flipHorizontal = (h: Horizontal): Horizontal => {
+  if (h === 'left') return 'right';
+  if (h === 'right') return 'left';
+  return 'center';
+};
+
+const flipVertical = (v: Vertical): Vertical => {
+  if (v === 'top') return 'bottom';
+  if (v === 'bottom') return 'top';
+  return 'center';
+};
+
+/**
+ * Module-level registry: portal div → anchor element.
+ *
+ * Each open Popper registers its portal div here so that parent Poppers
+ * can detect clicks inside a child portal (which is a DOM sibling of the
+ * parent portal, not a descendant, because both are portaled to document.body).
+ */
+const openPopperRegistry = new Map<HTMLDivElement, HTMLElement>();
 
 const Popper = ({
   disabled = false,
+  trigger = 'click',
   content,
   children,
   open: openProp,
   onOpen,
-  placement = 'bottom-left',
-  offset = 8,
+  anchorOrigin = { vertical: 'bottom', horizontal: 'left' },
+  transformOrigin = { vertical: 'top', horizontal: 'left' },
+  offset = 0,
   className,
   style,
-  closeOnClickChild = false,
   onClickOutside,
+  animation = [
+    {
+      duration: 0.3,
+      ease: 'power2.in',
+      transition: 'grow',
+      transformOrigin: 'top left',
+    },
+    {
+      duration: 0.25,
+      ease: 'power2.in',
+      transition: 'grow',
+      transformOrigin: 'top left',
+    },
+  ],
 }: PopperProps) => {
   const elementRef = React.useRef<HTMLElement>(null);
   const popperRef = React.useRef<HTMLDivElement>(null);
-  const [open, setOpen] = React.useState(openProp ?? false);
-  const [position, setPosition] = React.useState({ top: 0, left: 0 });
+  const [isClosing, setIsClosing] = React.useState(false);
+  const {
+    animDuration,
+    animEase,
+    animTransition,
+    animTransformOrigin,
+    animDurationOut,
+    animEaseOut,
+    animTransformOriginOut,
+  } = resolveAnimation(animation);
+  const vars = getTransitionVars(
+    animTransition,
+    animTransformOrigin,
+    animTransformOriginOut,
+  );
 
-  const isDropdownOpen = openProp ?? open;
+  // Read parent overlay context: where to portal + which coordinate space.
+  const { container: parentContainer, isFixed: parentIsFixed } =
+    React.useContext(OverlayContext);
+
+  // useState so OverlayContext consumers re-render when the element mounts.
+  const [popperContainer, setPopperContainer] =
+    React.useState<HTMLDivElement | null>(null);
+
+  // Dual ref: keeps popperRef.current in sync (for synchronous reads in
+  // click-outside / registry / position calc) and triggers a state update
+  // so OverlayContext gets the real element after first render.
+  const setPopperRef = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      popperRef.current = el;
+      setPopperContainer(el);
+
+      if (el) {
+        const inner = el.firstElementChild as HTMLElement;
+        if (inner && !isClosing) {
+          gsap.fromTo(inner, vars.from, {
+            ...vars.to,
+            duration: animDuration,
+            ease: animEase,
+          });
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animation config intentionally excluded
+    [isClosing],
+  );
+
+  const triggerClose = React.useCallback(() => {
+    if (!popperRef.current) return;
+    const inner = popperRef.current.firstElementChild as HTMLElement;
+
+    setIsClosing(true);
+
+    if (openProp === undefined) {
+      setInternalOpen(false);
+    }
+
+    if (inner) {
+      gsap.to(inner, {
+        ...vars.fromOut,
+        duration: animDurationOut,
+        ease: animEaseOut,
+        onComplete: () => {
+          setIsClosing(false);
+          if (openProp === undefined) {
+            setInternalOpen(false);
+          }
+        },
+      });
+    } else {
+      setIsClosing(false);
+      if (openProp === undefined) {
+        setInternalOpen(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animation config intentionally excluded
+  }, [openProp]);
+  const [internalOpen, setInternalOpen] = React.useState(openProp ?? false);
+
+  const [position, setPosition] = React.useState({
+    top: 0,
+    left: 0,
+  });
+
+  const isDropdownOpen = openProp ?? internalOpen;
+  const shouldRender = isDropdownOpen || isClosing;
+
+  const getAnchorPoint = (rect: DOMRect, origin: Origin) => {
+    let x = rect.left;
+    let y = rect.top;
+
+    if (origin.horizontal === 'center') {
+      x = rect.left + rect.width / 2;
+    }
+    if (origin.horizontal === 'right') {
+      x = rect.right;
+    }
+
+    if (origin.vertical === 'center') {
+      y = rect.top + rect.height / 2;
+    }
+    if (origin.vertical === 'bottom') {
+      y = rect.bottom;
+    }
+
+    return { x, y };
+  };
+
+  const getTransformOffset = (rect: DOMRect, origin: Origin) => {
+    let x = 0;
+    let y = 0;
+
+    if (origin.horizontal === 'center') {
+      x = rect.width / 2;
+    }
+    if (origin.horizontal === 'right') {
+      x = rect.width;
+    }
+
+    if (origin.vertical === 'center') {
+      y = rect.height / 2;
+    }
+    if (origin.vertical === 'bottom') {
+      y = rect.height;
+    }
+
+    return { x, y };
+  };
 
   const calculatePosition = React.useCallback(() => {
-    if (!elementRef.current || !popperRef.current) return;
+    if (!elementRef.current || !popperRef.current) {
+      return;
+    }
 
     const anchorRect = elementRef.current.getBoundingClientRect();
     const popperRect = popperRef.current.getBoundingClientRect();
-    const scrollY = window.scrollY;
-    const scrollX = window.scrollX;
 
-    let newPosition = { top: 0, left: 0 };
-    let fixPlacement = placement;
+    // Determine the containing block's viewport-space origin.
+    //
+    // CSS `position: absolute` is offset from the nearest positioned ancestor.
+    // The child Popper's portal div may live inside:
+    //   • document.body  → containing block is the ICB, whose viewport origin
+    //                       is (-scrollX, -scrollY).
+    //   • a parent Popper's div (position:absolute) or a Modal overlay
+    //                     (position:fixed) → use its getBoundingClientRect().
+    //
+    // Unified formula:  cssTop = vp.y − containerViewportTop
+    //                   cssLeft = vp.x − containerViewportLeft
+    const containerRect = parentContainer
+      ? parentContainer.getBoundingClientRect()
+      : { top: -window.scrollY, left: -window.scrollX };
 
-    const { top, bottom, left, right } = anchorRect;
-    const { width, height } = popperRect;
+    // Compute viewport-space position for edge detection and final offset.
+    const computeViewport = (ao: Origin, to: Origin) => {
+      const ap = getAnchorPoint(anchorRect, ao);
+      const tOffset = getTransformOffset(popperRect, to);
+      return { x: ap.x - tOffset.x, y: ap.y - tOffset.y + offset };
+    };
 
-    if (top - height - offset < 0) {
-      fixPlacement = fixPlacement.replace('top', 'bottom') as Placement;
-    } else if (bottom + height + offset > window.innerHeight) {
-      fixPlacement = fixPlacement.replace('bottom', 'top') as Placement;
-    }
-    if (left + width + offset > window.innerWidth) {
-      fixPlacement = fixPlacement.replace('left', 'right') as Placement;
-    } else if (right - width - offset < 0) {
-      fixPlacement = fixPlacement.replace('right', 'left') as Placement;
-    }
+    let effAnchor = anchorOrigin;
+    let effTransform = transformOrigin;
+    let vp = computeViewport(effAnchor, effTransform);
 
-    // Calculate position based on effective placement
-    switch (fixPlacement) {
-      case 'top':
-        newPosition = {
-          top: anchorRect.top + scrollY - popperRect.height - offset,
-          left:
-            anchorRect.left +
-            scrollX +
-            anchorRect.width / 2 -
-            popperRect.width / 2,
-        };
-        break;
-      case 'top-left':
-        newPosition = {
-          top: anchorRect.top + scrollY - popperRect.height - offset,
-          left: anchorRect.left + scrollX,
-        };
-        break;
-      case 'top-right':
-        newPosition = {
-          top: anchorRect.top + scrollY - popperRect.height - offset,
-          left: anchorRect.right + scrollX - popperRect.width,
-        };
-        break;
-      case 'bottom':
-        newPosition = {
-          top: anchorRect.bottom + scrollY + offset,
-          left:
-            anchorRect.left +
-            scrollX +
-            anchorRect.width / 2 -
-            popperRect.width / 2,
-        };
-        break;
-      case 'bottom-left':
-        newPosition = {
-          top: anchorRect.bottom + scrollY + offset,
-          left: anchorRect.left + scrollX,
-        };
-        break;
-      case 'bottom-right':
-        newPosition = {
-          top: anchorRect.bottom + scrollY + offset,
-          left: anchorRect.right + scrollX - popperRect.width,
-        };
-        break;
-      case 'left':
-        newPosition = {
-          top:
-            anchorRect.top +
-            scrollY +
-            anchorRect.height / 2 -
-            popperRect.height / 2,
-          left: anchorRect.left + scrollX - popperRect.width - offset,
-        };
-        break;
-      case 'left-top':
-        newPosition = {
-          top: anchorRect.top + scrollY,
-          left: anchorRect.left + scrollX - popperRect.width - offset,
-        };
-        break;
-      case 'left-bottom':
-        newPosition = {
-          top: anchorRect.bottom + scrollY - popperRect.height,
-          left: anchorRect.left + scrollX - popperRect.width - offset,
-        };
-        break;
-      case 'right':
-        newPosition = {
-          top:
-            anchorRect.top +
-            scrollY +
-            anchorRect.height / 2 -
-            popperRect.height / 2,
-          left: anchorRect.right + scrollX + offset,
-        };
-        break;
-      case 'right-top':
-        newPosition = {
-          top: anchorRect.top + scrollY,
-          left: anchorRect.right + scrollX + offset,
-        };
-        break;
-      case 'right-bottom':
-        newPosition = {
-          top: anchorRect.bottom + scrollY - popperRect.height,
-          left: anchorRect.right + scrollX + offset,
-        };
-        break;
+    // Flip both origins horizontally if the popper overflows the right edge.
+    if (vp.x + popperRect.width > window.innerWidth) {
+      effAnchor = {
+        ...effAnchor,
+        horizontal: flipHorizontal(effAnchor.horizontal),
+      };
+      effTransform = {
+        ...effTransform,
+        horizontal: flipHorizontal(effTransform.horizontal),
+      };
+      vp = computeViewport(effAnchor, effTransform);
     }
 
-    setPosition(newPosition);
-  }, [elementRef, placement, offset]);
+    // Flip both origins vertically if the popper overflows the bottom edge.
+    if (vp.y + popperRect.height > window.innerHeight) {
+      effAnchor = { ...effAnchor, vertical: flipVertical(effAnchor.vertical) };
+      effTransform = {
+        ...effTransform,
+        vertical: flipVertical(effTransform.vertical),
+      };
+      vp = computeViewport(effAnchor, effTransform);
+    }
 
-  React.useEffect(() => {
+    const newPosition = {
+      top: vp.y - containerRect.top,
+      left: vp.x - containerRect.left,
+    };
+
+    setPosition((prev) => {
+      if (prev.top === newPosition.top && prev.left === newPosition.left) {
+        return prev;
+      }
+      return newPosition;
+    });
+  }, [anchorOrigin, transformOrigin, offset, parentContainer]);
+
+  // useLayoutEffect runs synchronously after DOM mutations, before the browser
+  // paints. This ensures the popper never flashes at (0,0) and that the flip
+  // check uses the correct rendered dimensions before the first paint.
+  React.useLayoutEffect(() => {
     calculatePosition();
   }, [isDropdownOpen, calculatePosition]);
 
   React.useEffect(() => {
-    calculatePosition();
     const handleScrollOrResize = () => {
       if (isDropdownOpen) {
         calculatePosition();
@@ -158,6 +277,7 @@ const Popper = ({
 
     window.addEventListener('scroll', handleScrollOrResize, true);
     window.addEventListener('resize', handleScrollOrResize);
+
     return () => {
       window.removeEventListener('scroll', handleScrollOrResize, true);
       window.removeEventListener('resize', handleScrollOrResize);
@@ -166,41 +286,120 @@ const Popper = ({
 
   React.useEffect(() => {
     if (openProp !== undefined) {
-      setOpen(openProp);
+      setInternalOpen(openProp);
     }
   }, [openProp]);
 
   React.useEffect(() => {
-    onOpen?.(open);
-  }, [open, onOpen]);
+    onOpen?.(internalOpen);
+  }, [internalOpen, onOpen]);
+
+  // Register this portal in the global registry while it is open so that
+  // ancestor Poppers can recognise clicks inside this (child) portal.
+  React.useEffect(() => {
+    const portalEl = popperRef.current;
+    const anchorEl = elementRef.current;
+
+    if (isDropdownOpen && portalEl && anchorEl) {
+      openPopperRegistry.set(portalEl, anchorEl);
+      return () => {
+        openPopperRegistry.delete(portalEl);
+      };
+    }
+  }, [isDropdownOpen]);
 
   const handleDropdownToggle = () => {
-    if (!disabled) {
-      setOpen((prev) => !prev);
+    if (!disabled && openProp === undefined) {
+      if (internalOpen) {
+        triggerClose();
+      } else {
+        setInternalOpen(true);
+      }
     }
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as Node;
-    if (
-      !popperRef.current?.contains(target) &&
-      !elementRef.current?.contains(target)
-    ) {
-      setOpen(false);
-      onClickOutside?.();
+  const hoverCloseTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  React.useEffect(() => {
+    return () => {
+      if (hoverCloseTimerRef.current !== null) {
+        clearTimeout(hoverCloseTimerRef.current);
+      }
+    };
+  }, []);
+
+  const cancelHoverClose = () => {
+    if (hoverCloseTimerRef.current !== null) {
+      clearTimeout(hoverCloseTimerRef.current);
+      hoverCloseTimerRef.current = null;
     }
   };
-  const handleContentClick = (e: React.MouseEvent) => {
-    // Prevent event from bubbling to document
-    e.stopPropagation();
-    // Close when any content is clicked
-    if (closeOnClickChild) setOpen(false);
+
+  const handleMouseEnter = () => {
+    if (!disabled && trigger === 'hover' && openProp === undefined) {
+      cancelHoverClose();
+      // Kill any in-progress close animation so onComplete doesn't fire late
+      if (popperRef.current?.firstElementChild) {
+        gsap.killTweensOf(popperRef.current.firstElementChild);
+      }
+      setIsClosing(false);
+      setInternalOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!disabled && trigger === 'hover' && openProp === undefined) {
+      hoverCloseTimerRef.current = setTimeout(() => {
+        hoverCloseTimerRef.current = null;
+        triggerClose();
+      }, animDurationOut * 100);
+    }
+  };
+
+  // Keep the handler in a ref so the document listener is registered only
+  // once while always calling the latest version (no stale closure).
+
+  const handleClickOutsideRef = React.useRef<
+    ((event: MouseEvent) => void) | null
+  >(null);
+  handleClickOutsideRef.current = (event: MouseEvent) => {
+    const target = event.target as Node;
+
+    // Click inside this popper's own portal or anchor element — ignore.
+    if (
+      popperRef.current?.contains(target) ||
+      elementRef.current?.contains(target)
+    ) {
+      return;
+    }
+
+    // Click inside a child popper that was opened from within our content.
+    // Child portals are DOM siblings (both attached to document.body), so
+    // a plain `contains` check misses them — we use the registry instead.
+    for (const [portalDiv, anchorEl] of openPopperRegistry.entries()) {
+      if (portalDiv === popperRef.current) {
+        continue;
+      }
+      if (popperRef.current?.contains(anchorEl) && portalDiv.contains(target)) {
+        return;
+      }
+    }
+
+    if (openProp === undefined && trigger === 'click') {
+      triggerClose();
+    }
+    onClickOutside?.();
   };
 
   React.useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    const handler = (event: MouseEvent) =>
+      handleClickOutsideRef.current?.(event);
+
+    document.addEventListener('mousedown', handler);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handler);
     };
   }, []);
 
@@ -208,8 +407,9 @@ const Popper = ({
     ['ref' as string]: (node: HTMLElement | null) => {
       elementRef.current = node;
 
-      // Handle original ref if exists
-      const childRef = (children as any).ref;
+      const childRef = (
+        children as React.ReactElement & { ref?: React.Ref<HTMLElement> }
+      ).ref;
 
       if (childRef) {
         if (typeof childRef === 'function') {
@@ -219,21 +419,55 @@ const Popper = ({
         }
       }
     },
+
     ['onClick' as string]: (e: React.MouseEvent) => {
-      // Call original onClick handler if it exists
-      const childProps = (children as any).props;
+      const childProps = (
+        children as React.ReactElement<{
+          onClick?: (e: React.MouseEvent) => void;
+        }>
+      ).props;
+
       if (childProps.onClick) {
         childProps.onClick(e);
       }
 
-      if (!e.isPropagationStopped() && !disabled) {
+      if (!e.isPropagationStopped() && !disabled && trigger === 'click') {
         handleDropdownToggle();
       }
     },
+
+    ['onMouseEnter' as string]: (e: React.MouseEvent) => {
+      const childProps = (
+        children as React.ReactElement<{
+          onMouseEnter?: (e: React.MouseEvent) => void;
+        }>
+      ).props;
+      childProps.onMouseEnter?.(e);
+      handleMouseEnter();
+    },
+
+    ['onMouseLeave' as string]: (e: React.MouseEvent) => {
+      const childProps = (
+        children as React.ReactElement<{
+          onMouseLeave?: (e: React.MouseEvent) => void;
+        }>
+      ).props;
+      childProps.onMouseLeave?.(e);
+      handleMouseLeave();
+    },
+
     ['aria-expanded' as string]: isDropdownOpen ? 'true' : 'false',
     ['aria-haspopup' as string]: 'dialog',
     ['role' as string]: 'button',
   });
+
+  // Popper is `position: absolute` — it preserves its parent's coordinate
+  // space. Pass parentIsFixed through so nested overlays (Tooltip, Modal, etc.)
+  // inside this Popper use the same coordinate space.
+  const overlayContextValue = React.useMemo(
+    () => ({ container: popperContainer, isFixed: parentIsFixed }),
+    [popperContainer, parentIsFixed],
+  );
 
   if (disabled) {
     return children;
@@ -242,28 +476,34 @@ const Popper = ({
   return (
     <>
       {anchorElement}
-      {open &&
+
+      {shouldRender &&
         createPortal(
-          <div
-            ref={popperRef}
-            style={{
-              top: 0,
-              left: 0,
-              transform: `translate(${position.left}px, ${position.top}px)`,
-              ...style,
-            }}
-            onClick={handleContentClick}
-            className={cx(
-              'absolute z-[2200] bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg',
-              className,
-              {
-                invisible: !open,
-              },
-            )}
-          >
-            {content}
-          </div>,
-          document.body,
+          // Outer div: positioning only — no `transform` so that any
+          // `fixed`-positioned descendant (e.g. Modal overlay) is still
+          // positioned relative to the viewport, not this element.
+          <OverlayContext.Provider value={overlayContextValue}>
+            <div
+              ref={setPopperRef}
+              style={{
+                top: `${position.top}px`,
+                left: `${position.left}px`,
+                // opacity: position.left > 0 && position.top > 0 ? 1 : 0,
+                ...style,
+              }}
+              className={cx('absolute z-[1300]', className)}
+              onMouseEnter={
+                trigger === 'hover' ? () => cancelHoverClose() : undefined
+              }
+              onMouseLeave={trigger === 'hover' ? handleMouseLeave : undefined}
+            >
+              {/* Inner div: visual styles + overflow-hidden for rounded corners */}
+              <div className="bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg overflow-hidden">
+                {content}
+              </div>
+            </div>
+          </OverlayContext.Provider>,
+          parentContainer ?? document.body,
         )}
     </>
   );

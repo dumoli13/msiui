@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
 import cx from 'classnames';
-import {
+import type {
   SkeletonInputProps,
   SkeletonProps,
   SkeletonTableProps,
@@ -39,7 +38,7 @@ const SkeletonInput = ({ size = 'default', height }: SkeletonInputProps) => (
           'h-[44px]': size === 'large',
         },
       )}
-      style={{ height: height }}
+      style={{ height }}
     />
   </div>
 );

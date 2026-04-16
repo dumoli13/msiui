@@ -1,6 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import cx from 'classnames';
-import { TextAreaProps } from '../../types/inputs/textArea';
+import type { TextAreaProps } from '../../types/inputs/textArea';
+import InputBase from './InputBase';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
@@ -17,7 +18,7 @@ const TextArea = ({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
-  placeholder = '',
+  placeholder,
   onChange,
   className,
   helperText,
@@ -35,18 +36,25 @@ const TextArea = ({
   width,
   ...props
 }: TextAreaProps) => {
-  const parentRef = React.useRef<HTMLDivElement>(null);
+  const generatedId = React.useId();
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const elementRef = React.useRef<HTMLTextAreaElement>(null);
   const [focused, setFocused] = React.useState(false);
+
   const [internalValue, setInternalValue] = React.useState(
-    defaultValue || initialValue,
+    defaultValue ?? initialValue,
   );
   const isControlled = valueProp !== undefined;
-  const value = isControlled ? valueProp.toString() : internalValue;
+  const value = isControlled ? (valueProp ?? '') : internalValue;
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `textarea-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -56,36 +64,26 @@ const TextArea = ({
     disabled,
   }));
 
-  const handleFocus = () => {
-    if (disabled) return;
+  const handleFocus = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     setFocused(true);
+    props.onFocus?.(event);
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
-    const relatedTarget = event.relatedTarget;
-
-    const selectElementContainsTarget =
-      parentRef.current?.contains(relatedTarget);
-
-    if (selectElementContainsTarget) {
-      return;
-    }
-
+    if (containerRef.current?.contains(event.relatedTarget)) return;
     setFocused(false);
+    props.onBlur?.(event);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     onChange?.(newValue);
-    if (!isControlled) {
-      setInternalValue(newValue);
-    }
+    if (!isControlled) setInternalValue(newValue);
   };
-
-  const inputId = `textarea-${id || name}-${React.useId()}`;
 
   return (
     <div
+      id={inputId}
       className={cx(
         'relative',
         {
@@ -95,70 +93,67 @@ const TextArea = ({
         className,
       )}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          ' relative px-4 border rounded-md flex gap-2 items-start',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3': !disabled,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        style={width ? { width } : undefined}
-        ref={parentRef}
+
+      {/* align='start' so icon and end-icons align to the top of the textarea */}
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        startIcon={startIcon}
+        align="start"
+        containerRef={containerRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            endIcon={endIcon}
+          />
+        }
       >
-        {!!startIcon && (
-          <div className="text-neutral-70 dark:text-neutral-70-dark">
-            {startIcon}
-          </div>
-        )}
         <textarea
           {...props}
-          tabIndex={disabled ? -1 : 0}
-          id={inputId}
+          id={inputElementId}
           name={name}
           value={value}
+          placeholder={placeholder}
           onChange={handleChange}
-          placeholder={focused ? '' : placeholder}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          disabled={disabled}
+          aria-invalid={isError || undefined}
+          aria-describedby={helperMessage ? helperId : undefined}
+          rows={minLines}
+          style={{ minHeight: `${minLines * 24}px` }}
+          ref={elementRef}
           className={cx(
-            'w-full outline-none resize-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
+            'w-full min-w-0 outline-none resize-none bg-transparent',
+            'text-neutral-90 dark:text-neutral-90-dark',
+            'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark',
+            'disabled:cursor-not-allowed',
             {
               'text-14px py-0.5': size === 'default',
               'text-18px py-0.5': size === 'large',
             },
           )}
-          disabled={disabled}
-          rows={minLines}
-          style={{
-            minHeight: `${minLines * 24}px`,
-          }}
-          aria-label={label}
-          ref={elementRef}
         />
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          endIcon={endIcon}
-        />
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { CheckboxProps } from '../../types';
+import type { CheckboxProps } from '../../types';
 /**
  * Checkboxes allow the user to turn an option on or off.
  */

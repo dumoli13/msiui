@@ -7,7 +7,7 @@ type BaseDrawerProps = {
     disableEscapeKeyDown?: boolean;
 };
 type LeftRightDrawerProps = BaseDrawerProps & {
-    position: 'left' | 'right';
+    position?: 'left' | 'right';
     width?: number | string;
     height?: never;
 };

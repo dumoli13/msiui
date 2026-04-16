@@ -1,7 +1,13 @@
 export { default as Accordion } from './Accordion';
+export { default as Alert } from './Alert';
+export { default as Avatar } from './avatar';
+export { default as Chip } from './Chip';
+export { default as ImageViewer } from './ImageViewer';
 export { default as Popover } from './Popover';
 export { default as Popper } from './Popper';
 export { default as Skeleton } from './Skeleton';
 export { default as Tag } from './Tag';
 export { default as Tooltip } from './Tooltip';
+export { default as PdfViewer } from './PdfViewer';
+export { default as PdfThumbnail } from './PdfThumbnail';
 //# sourceMappingURL=index.d.ts.map

@@ -21,4 +21,8 @@ node_modules
 *.sln
 *.sw?
 
- 
+.claude/worktrees
+storybook-static
+coverage
+.playwright-mcp
+.eslintcache

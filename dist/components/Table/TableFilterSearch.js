@@ -8,9 +8,9 @@ import TextField from '../Inputs/TextField';
 const TableFilterSearch = ({ value, label, onChange, }) => {
     const inputRef = React.useRef(null);
     const [open, setOpen] = React.useState(false);
-    const handleChange = (value) => {
-        onChange?.(value);
-        if (value === '') {
+    const handleChange = (newValue) => {
+        onChange?.(newValue);
+        if (newValue === '') {
             setOpen(false);
         }
     };
@@ -24,7 +24,7 @@ const TableFilterSearch = ({ value, label, onChange, }) => {
     }, [open]);
     return (_jsx(Popper, { open: open, onOpen: setOpen, className: "py-4 px-2", content: _jsx(TextField, { id: `search_${label}`, inputRef: inputRef, value: value, onChange: handleChange, placeholder: `Search ${label}`, startIcon: _jsx(Icon, { name: "magnifying-glass", size: 16 }), clearable: true, width: 280 }), children: _jsx(IconButton, { icon: _jsx(Icon, { name: "magnifying-glass", size: 16, className: cx({
                     'text-primary-main dark:text-parimary-main-dark': value,
-                }) }), variant: "outlined", className: cx({
+                }), strokeWidth: 2 }), variant: "outlined", className: cx({
                 'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': value,
             }), title: "Search by Keyword", size: "small" }) }));
 };

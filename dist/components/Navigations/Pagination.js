@@ -18,7 +18,7 @@ const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_P
     const [itemsPerPage, setItemsPerPage] = React.useState(pageSize);
     const totalPages = total ? Math.ceil(total / itemsPerPage) : -1;
     const handlePageChange = (page) => {
-        onPageChange?.({ page: page, limit: itemsPerPage });
+        onPageChange?.({ page, limit: itemsPerPage });
     };
     const handlePrevPage = () => {
         if (currentPage > 1) {
@@ -26,7 +26,9 @@ const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_P
         }
     };
     const handleNextPage = () => {
-        handlePageChange(currentPage + 1);
+        if (currentPage < totalPages) {
+            handlePageChange(currentPage + 1);
+        }
     };
     React.useImperativeHandle(paginationRef, () => ({
         next: handleNextPage,
@@ -72,7 +74,7 @@ const Pagination = ({ total, hasNext, currentPage, itemPerPage = DEFAULT_ITEMS_P
         }
         return pages;
     };
-    return (_jsxs("div", { className: `flex gap-4 md:gap-10 items-start justify-between ${totalPages > 1 || totalPages < 0 ? 'flex-row' : 'flex-row-reverse'}`, children: [totalPages > 1 ? (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), renderPageNumbers(), _jsx(NextButton, { onClick: handleNextPage, disabled: currentPage === totalPages })] })) : (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), _jsx(NextButton, { onClick: handleNextPage, disabled: !hasNext })] })), _jsx("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: itemPerPage.map((option) => (_jsx("option", { value: option, className: "p-2", children: `${option}/page` }, option))) })] }));
+    return (_jsxs("div", { className: "flex gap-3 items-center justify-end", children: [!!total && (_jsx("div", { className: "text-14px", children: `Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, total)} of ${total} entries` })), _jsx("select", { id: "pagination", "aria-label": "items-per-page", value: itemsPerPage, onChange: handleItemsPerPageChange, className: "text-14px flex items-center gap-2 h-8 px-2 shadow-box-1 rounded border border-neutral-40 dark:border-neutral-40-dark text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-10-dark focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark", children: itemPerPage.map((option) => (_jsx("option", { value: option, className: "p-2", children: `${option}/page` }, option))) }), totalPages > 1 && (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), renderPageNumbers(), _jsx(NextButton, { onClick: handleNextPage, disabled: currentPage >= totalPages })] })), totalPages === -1 && (_jsxs("div", { className: "flex item-center flex-wrap gap-2", children: [_jsx(PrevButton, { onClick: handlePrevPage, disabled: currentPage === 1 }), _jsx(NextButton, { onClick: handleNextPage, disabled: !hasNext })] }))] }));
 };
 Pagination.Prev = PrevButton;
 Pagination.Next = NextButton;

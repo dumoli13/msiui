@@ -1,5 +1,6 @@
 export var TimeUnit;
 (function (TimeUnit) {
+    TimeUnit["days"] = "days";
     TimeUnit["hours"] = "hours";
     TimeUnit["minutes"] = "minutes";
     TimeUnit["seconds"] = "seconds";

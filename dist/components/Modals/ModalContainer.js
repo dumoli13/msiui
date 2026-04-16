@@ -1,6 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
+import gsap from 'gsap';
+import { OverlayContext } from '../../context/OverlayContext';
+import getTransitionVars, { resolveAnimation } from '../../libs/transition';
 import { Portal } from '../Portal';
 /**
  *
@@ -20,11 +23,65 @@ import { Portal } from '../Portal';
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-const ModalContainer = ({ open, children, className, width = 804, height, closeOnOverlayClick = false, onClose, }) => {
+const ModalContainer = ({ open, children, className, width = 804, height, closeOnOverlayClick = false, onClose, animation, }) => {
     const modalRef = React.useRef(null);
+    const previouslyFocusedRef = React.useRef(null);
+    const overlayRef = React.useRef(null);
+    const contentRef = React.useRef(null);
+    const [isClosing, setIsClosing] = React.useState(false);
+    const shouldRender = open || isClosing;
+    const { animDuration, animEase, animTransition, animDurationOut, animEaseOut, } = resolveAnimation(animation);
+    const vars = getTransitionVars(animTransition);
+    const [modalEl, setModalEl] = React.useState(null);
+    const overlayContextValue = React.useMemo(() => ({ container: modalEl, isFixed: true }), [modalEl]);
+    const setModalRef = React.useCallback((el) => {
+        modalRef.current = el;
+        setModalEl(el);
+    }, []);
+    const setOverlayRef = React.useCallback((el) => {
+        overlayRef.current = el;
+        if (el && !isClosing) {
+            gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: animDuration, ease: 'power2.out' });
+        }
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animation config intentionally excluded
+    [isClosing]);
+    const setContentRef = React.useCallback((el) => {
+        contentRef.current = el;
+        if (el && !isClosing) {
+            gsap.fromTo(el, vars.from, {
+                ...vars.to,
+                duration: animDuration,
+                ease: animEase,
+            });
+        }
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animation config intentionally excluded
+    [isClosing]);
+    const handleCloseWithAnimation = React.useCallback((callback) => {
+        setIsClosing(true);
+        callback?.();
+        const tl = gsap.timeline({
+            onComplete: () => {
+                setIsClosing(false);
+            },
+        });
+        if (contentRef.current) {
+            tl.to(contentRef.current, {
+                ...vars.fromOut,
+                duration: animDurationOut,
+                ease: animEaseOut,
+            });
+        }
+        if (overlayRef.current) {
+            tl.to(overlayRef.current, { opacity: 0, duration: animDurationOut, ease: animEaseOut }, '<');
+        }
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- animation config intentionally excluded
+    []);
     const handleKeyDown = (e) => {
         if (e.key === 'Escape' && onClose) {
-            onClose();
+            handleCloseWithAnimation(onClose);
         }
         else if (e.key === 'Tab' && open) {
             trapFocus(e);
@@ -51,28 +108,36 @@ const ModalContainer = ({ open, children, className, width = 804, height, closeO
         if (open) {
             document.body.style.overflow = 'hidden';
         }
-        else {
+        else if (!isClosing) {
             document.body.style.overflow = '';
         }
         return () => {
             document.body.style.overflow = '';
         };
-    }, [open, document.body.style.overflow]);
+    }, [open, isClosing]);
     React.useEffect(() => {
         if (!open || !modalRef.current)
             return;
         const activeEl = document.activeElement;
-        // ✅ Do NOTHING if focus is already inside the modal
+        previouslyFocusedRef.current = activeEl;
         if (modalRef.current.contains(activeEl))
             return;
-        // ✅ Otherwise, move focus into the modal
         const id = requestAnimationFrame(() => {
             modalRef.current?.focus();
         });
         return () => cancelAnimationFrame(id);
     }, [open]);
-    if (!open)
+    React.useEffect(() => {
+        if (open)
+            return;
+        const el = previouslyFocusedRef.current;
+        if (el && el instanceof HTMLElement) {
+            el.focus();
+            previouslyFocusedRef.current = null;
+        }
+    }, [open]);
+    if (!shouldRender)
         return null;
-    return (_jsx(Portal, { children: _jsxs("div", { role: "dialog", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, ref: modalRef, "aria-modal": "true", tabIndex: -1, children: [closeOnOverlayClick ? (_jsx("div", { role: "button", "aria-label": "Close Modal", onClick: onClose, className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })) : (_jsx("div", { className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })), _jsx("div", { className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh] ', className), style: { width, height }, children: children })] }) }));
+    return (_jsx(Portal, { children: _jsx("div", { ref: setModalRef, role: "dialog", id: "modal-container", className: "flex items-center justify-center z-[1300] inset-0 fixed", onKeyDown: handleKeyDown, "aria-modal": "true", "aria-labelledby": "modal-title", tabIndex: -1, children: _jsxs(OverlayContext.Provider, { value: overlayContextValue, children: [closeOnOverlayClick ? (_jsx("div", { ref: setOverlayRef, role: "button", tabIndex: 0, "aria-label": "Close Modal", onClick: () => handleCloseWithAnimation(onClose), onKeyDown: (e) => e.key === 'Enter' && handleCloseWithAnimation, className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })) : (_jsx("div", { ref: setOverlayRef, role: "presentation", className: "fixed top-0 left-0 bottom-0 right-0 bg-[#00000080]" })), _jsx("div", { ref: setContentRef, className: cx('border border-neutral-40 dark:border-neutral-50-dark rounded-md drop-shadow-sm bg-neutral-10 dark:bg-neutral-10-dark m-8 flex flex-col max-h-[90vh]', className), style: { width, height }, children: children })] }) }) }));
 };
 export default ModalContainer;

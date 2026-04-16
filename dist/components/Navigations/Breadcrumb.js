@@ -1,9 +1,21 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Modal } from '..';
+import { Modal, Tooltip } from '..';
+const MAX_LABEL_LENGTH = 32;
+const truncateLabel = (label) => {
+    const isTruncated = typeof label === 'string' && label.length > MAX_LABEL_LENGTH;
+    return {
+        display: isTruncated
+            ? `${label.slice(0, MAX_LABEL_LENGTH)}...`
+            : label,
+        fullLabel: isTruncated ? label : '',
+        isTruncated,
+    };
+};
 const BreadcrumbLink = ({ item, isLast = false, isFormEdited, onNavigate, }) => {
-    const handleRoute = (href) => {
+    const handleRoute = (href) => (e) => {
+        e.preventDefault();
         if (!onNavigate)
             return;
         Modal.danger({
@@ -15,7 +27,13 @@ const BreadcrumbLink = ({ item, isLast = false, isFormEdited, onNavigate, }) => 
             },
         });
     };
-    return isLast ? (_jsx("div", { className: "font-bold text-neutral-100 dark:text-neutral-100-dark", children: item.label })) : (_jsxs(_Fragment, { children: [item.href && isFormEdited && (_jsx("div", { role: "link", tabIndex: 0, onClick: () => handleRoute(item.href), className: "cursor-pointer", children: item.label })), item.href && !isFormEdited && _jsx(Link, { to: item.href, children: item.label }), !item.href && _jsx("div", { children: item.label }), _jsx("div", { children: "/" })] }));
+    const { display, fullLabel, isTruncated } = truncateLabel(item.label);
+    const wrapWithTooltip = (node) => isTruncated ? (_jsx(Tooltip, { title: fullLabel, verticalAlign: "bottom", horizontalAlign: "center", arrow: true, children: node })) : (_jsx(_Fragment, { children: node }));
+    return isLast ? (wrapWithTooltip(_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: display }))) : (_jsxs(_Fragment, { children: [item.href &&
+                isFormEdited &&
+                wrapWithTooltip(_jsx(Link, { to: item.href, onClick: handleRoute(item.href), className: "cursor-pointer", children: display })), item.href &&
+                !isFormEdited &&
+                wrapWithTooltip(_jsx(Link, { to: item.href, children: display })), !item.href && wrapWithTooltip(_jsx("div", { children: display })), _jsx("div", { children: "/" })] }));
 };
 /**
  * Displays a list of breadcrumb items with support for truncating when the item count exceeds the maximum display value.
@@ -42,6 +60,6 @@ const Breadcrumb = ({ items, maxDisplay = 4, ...props }) => {
             ...lastItems.map((item, index) => (_jsx(BreadcrumbLink, { item: item, isLast: index === lastItems.length - 1, ...props }, item.key))),
         ];
     };
-    return (_jsx("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-90 dark:text-neutral-90-dark text-14px", children: renderItems() }));
+    return (_jsx("nav", { "aria-label": "breadcrumb", className: "flex items-center gap-2.5 font-medium text-neutral-100 dark:text-neutral-100-dark text-14px", children: renderItems() }));
 };
 export default Breadcrumb;

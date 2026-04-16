@@ -10,11 +10,17 @@ export interface DatePickerRef {
   disabled: boolean;
 }
 
-export interface DatePickerProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked'
-  > {
+export interface DatePickerProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  | 'value'
+  | 'defaultValue'
+  | 'onChange'
+  | 'size'
+  | 'required'
+  | 'checked'
+  | 'defaultChecked'
+  | 'type'
+> {
   value?: DateValue;
   defaultValue?: DateValue;
   initialValue?: DateValue;

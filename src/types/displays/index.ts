@@ -1,10 +1,16 @@
 export type { AccordionProps, AccordionItem } from './accordion';
 
+export type { AlertProps } from './alert';
+
+export type { AvatarProps } from './avatar';
+
+export type { ChipProps } from './Chip';
+
 export type { ImageViewerProps } from './imageViewer';
 
-export type { PopoverProps } from './popover';
+export type { PopoverProps, PopoverOrigin } from './popover';
 
-export type { Placement, PopperProps } from './popper';
+export type { PopperProps } from './popper';
 
 export type {
   SkeletonProps,
@@ -15,3 +21,7 @@ export type {
 export type { TagProps } from './tag';
 
 export type { TooltipProps } from './tooltip';
+
+export type { PdfViewerProps } from './pdfViewer';
+
+export type { PdfThumbnailProps } from './pdfThumbnail';

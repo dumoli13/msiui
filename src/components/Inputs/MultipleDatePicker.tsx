@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { useDebouncedCallback } from 'use-debounce';
 import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
-import {
+import type {
   DateValue,
   MultipleDatePickerProps,
   MultipleDateValue,
@@ -13,11 +13,14 @@ import {
 } from '../../types/inputs';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
+import CalendarHeader from './CalendarHeader';
 import { CancelButton } from './DatePicker';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import useClickOutside from './useClickOutside';
 
 /**
  * The Multiple Date Picker component lets users select multiple date.
@@ -47,12 +50,13 @@ const MultipleDatePicker = ({
   clearable,
   width,
   disabledDate = () => false,
-  format = 'D/M/YYYY',
+  format = 'DD MMMYYYY',
   picker = 'date',
   required,
   onKeyDown,
   ...props
 }: MultipleDatePickerProps) => {
+  const generatedId = React.useId();
   const elementRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -75,9 +79,14 @@ const MultipleDatePicker = ({
 
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `multipledatepicker-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -87,31 +96,19 @@ const MultipleDatePicker = ({
     disabled,
   }));
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const dropdownContainsTarget = dropdownRef.current?.contains(target);
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (dropdownContainsTarget || selectElementContainsTarget) {
-        elementRef.current?.focus();
-        return;
-      }
-
-      handleBlur();
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+  const handleClose = React.useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
   }, []);
 
-  const handleFocus = () => {
+  useClickOutside([elementRef, dropdownRef], handleClose);
+
+  const handleFocus = (event: React.FocusEvent<HTMLDivElement>) => {
     if (disabled) return;
     handleChangeView(picker);
     setFocused(true);
     setDropdownOpen(true);
+    props.onFocus?.(event);
   };
 
   const handleBlur = (event?: React.FocusEvent<HTMLDivElement>) => {
@@ -126,6 +123,7 @@ const MultipleDatePicker = ({
     }
     setFocused(false);
     setDropdownOpen(false);
+    if (event) props.onBlur?.(event);
   };
 
   const handleDropdown = () => {
@@ -254,7 +252,7 @@ const MultipleDatePicker = ({
   }, [value, dropdownOpen]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       if (!dropdownOpen) {
         handleDropdown();
@@ -264,60 +262,24 @@ const MultipleDatePicker = ({
     }
   };
 
+  // Show the calendar toggle when the clear button is NOT shown
+  const showCalendarButton =
+    !clearable || !focused || (clearable && focused && !value.length);
+
   const dropdownContent = (
     <div className="min-w-60">
       {calendarView === 'date' && (
         <>
-          <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <div className="flex items-center">
-              <Icon
-                name="chevron-double-left"
-                size={20}
-                strokeWidth={2}
-                onClick={() => handleChangeYear(-1)}
-                className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-              />
-              <Icon
-                name="chevron-left"
-                size={20}
-                strokeWidth={2}
-                onClick={handlePrevMonth}
-                className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-              />
-            </div>
-            <div className="flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark">
-              <button
-                type="button"
-                className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]"
-                onClick={() => handleChangeView('month')}
-              >
-                {monthFormatter.format(displayedDate)}
-              </button>
-              <button
-                type="button"
-                className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10"
-                onClick={() => handleChangeView('year')}
-              >
-                {displayedDate.getFullYear()}
-              </button>
-            </div>
-            <div className="flex items-center">
-              <Icon
-                name="chevron-right"
-                size={20}
-                strokeWidth={2}
-                onClick={handleNextMonth}
-                className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-              />
-              <Icon
-                name="chevron-double-right"
-                size={20}
-                strokeWidth={2}
-                onClick={() => handleChangeYear(1)}
-                className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-              />
-            </div>
-          </div>
+          <CalendarHeader
+            displayedDate={displayedDate}
+            monthFormatter={monthFormatter}
+            onPrevYear={() => handleChangeYear(-1)}
+            onPrevMonth={handlePrevMonth}
+            onNextMonth={handleNextMonth}
+            onNextYear={() => handleChangeYear(1)}
+            onClickMonth={() => handleChangeView('month')}
+            onClickYear={() => handleChangeView('year')}
+          />
           <div className="text-12px p-2 border-neutral-40 dark:border-neutral-40-dark">
             <table className="w-full">
               <thead>
@@ -388,13 +350,14 @@ const MultipleDatePicker = ({
       {calendarView === 'month' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <Icon
-              name="chevron-double-left"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Previous year"
               onClick={() => handleChangeYear(-1)}
               className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+            >
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
+            </button>
             <button
               type="button"
               className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark"
@@ -404,16 +367,11 @@ const MultipleDatePicker = ({
             </button>
             <button
               type="button"
-              title="Next Year"
+              aria-label="Next year"
               onClick={() => handleChangeYear(1)}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
             >
-              <Icon
-                name="chevron-double-right"
-                size={20}
-                strokeWidth={2}
-                className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-              />
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
             </button>
           </div>
           <div className="grid grid-cols-3 p-2 gap-1 text-14px">
@@ -469,23 +427,25 @@ const MultipleDatePicker = ({
       {calendarView === 'year' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <Icon
-              name="chevron-double-left"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Previous year range"
               onClick={() => handleChangeYear(-12)}
               className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+            >
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
+            </button>
             <div className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark">
               {`${yearRange[0]} - ${yearRange[yearRange.length - 1]}`}
             </div>
-            <Icon
-              name="chevron-double-right"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Next year range"
               onClick={() => handleChangeYear(12)}
               className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+            >
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
+            </button>
           </div>
           <div className="grid grid-cols-3 p-2 gap-1 text-14px">
             {yearRange.map((item) => {
@@ -538,10 +498,9 @@ const MultipleDatePicker = ({
     </div>
   );
 
-  const inputId = `multipledatepicker-${id || name}-${React.useId()}`;
-
   return (
     <div
+      id={inputId}
       className={cx(
         'relative text-14px',
         {
@@ -552,33 +511,46 @@ const MultipleDatePicker = ({
       )}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        ref={elementRef}
-        style={width ? { width } : undefined}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        containerRef={elementRef}
+        align="start"
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={clearable && focused && value.length > 0}
+            onClear={handleClearValue}
+          >
+            {showCalendarButton && (
+              <button
+                type="button"
+                aria-label={
+                  dropdownOpen ? 'Close date picker' : 'Open date picker'
+                }
+                aria-expanded={dropdownOpen}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={disabled ? undefined : handleDropdown}
+                disabled={disabled}
+                className="rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark transition-colors duration-150 disabled:pointer-events-none"
+              >
+                <Icon name="calendar" size={20} strokeWidth={2} />
+              </button>
+            )}
+          </InputEndIconWrapper>
+        }
       >
         <div
           role="button"
@@ -591,7 +563,6 @@ const MultipleDatePicker = ({
           })}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onClick={handleFocus}
         >
           {value?.map((selected, index) => {
             const tagValue = dayjs(selected).format(format);
@@ -619,52 +590,40 @@ const MultipleDatePicker = ({
           <input
             {...props}
             tabIndex={disabled ? -1 : 0}
-            id={inputId}
+            id={inputElementId}
             name={name}
             value={inputValue}
             placeholder={focused ? '' : placeholder || format}
             className={cx(
-              'outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
+              'outline-none bg-transparent disabled:bg-transparent text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
               {
                 'text-14px py-0.5': size === 'default',
                 'text-18px py-0.5': size === 'large',
               },
             )}
             disabled={disabled}
+            aria-invalid={isError || undefined}
+            aria-describedby={helperMessage ? helperId : undefined}
             aria-label={label}
             autoComplete="off"
             onFocus={handleFocus}
             onBlur={handleBlur}
-            onClick={handleFocus}
             onChange={handleChangeInput}
             ref={valueRef}
             onKeyDown={handleKeyDown}
           />
         </div>
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-        >
-          {(!clearable ||
-            (clearable && !focused) ||
-            (clearable && focused && !value)) && (
-            <Icon
-              name="calendar"
-              strokeWidth={2}
-              size={20}
-              onClick={disabled ? undefined : handleDropdown}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
-            />
-          )}
-        </InputEndIconWrapper>
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
       <InputDropdown
         open={dropdownOpen}
-        elementRef={valueRef}
+        elementRef={elementRef}
         dropdownRef={dropdownRef}
         maxHeight={320}
       >

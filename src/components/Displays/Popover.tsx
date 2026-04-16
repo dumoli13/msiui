@@ -1,14 +1,30 @@
-'use client';
-
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 import cx from 'classnames';
-import { PopoverProps } from '../../types';
+import { OverlayContext } from '../../context/OverlayContext';
+import type { PopoverOrigin, PopoverProps } from '../../types';
 import { Portal } from '../Portal';
+
+const H_OFFSET: Record<PopoverOrigin['horizontal'], (size: number) => number> =
+  {
+    left: () => 0,
+    center: (size) => size / 2,
+    right: (size) => size,
+  };
+
+const V_OFFSET: Record<PopoverOrigin['vertical'], (size: number) => number> = {
+  top: () => 0,
+  center: (size) => size / 2,
+  bottom: (size) => size,
+};
+
+const DEFAULT_ANCHOR: PopoverOrigin = {
+  vertical: 'bottom',
+  horizontal: 'left',
+};
+const DEFAULT_TRANSFORM: PopoverOrigin = {
+  vertical: 'top',
+  horizontal: 'left',
+};
 
 const Popover = ({
   children,
@@ -16,142 +32,121 @@ const Popover = ({
   open,
   elementRef,
   onClose,
-  verticalAlign = 'bottom',
-  horizontalAlign = 'left',
+  anchorOrigin = DEFAULT_ANCHOR,
+  transformOrigin = DEFAULT_TRANSFORM,
 }: PopoverProps) => {
-  const [ready, setReady] = useState(false);
-  const [position, setPosition] = useState({
+  const popoverRef = React.useRef<HTMLDivElement | null>(null);
+  const [position, setPosition] = React.useState({
     top: 0,
     left: 0,
-    width: 0,
+    opacity: 0,
+    scale: 0.75,
   });
-  const [popoverEl, setPopoverEl] = useState<HTMLDivElement | null>(null);
 
-  const setPopoverRef = useCallback((node: HTMLDivElement | null) => {
-    if (node) {
-      setPopoverEl(node);
-    }
-  }, []);
+  // Read parent context: skip scroll offset when inside a fixed container.
+  const { isFixed } = React.useContext(OverlayContext);
 
-  useEffect(() => {
+  // Provide context for children inside Popover: its outer wrapper is
+  // `position: fixed; inset: 0`, so children use viewport coordinates.
+  const [wrapperEl, setWrapperEl] = React.useState<HTMLDivElement | null>(null);
+  const overlayContextValue = React.useMemo(
+    () => ({ container: wrapperEl, isFixed: true }),
+    [wrapperEl],
+  );
+
+  const calculatePosition = React.useCallback(() => {
+    if (!elementRef.current || !popoverRef.current) return;
+
+    const rect = elementRef.current.getBoundingClientRect();
+    const popoverRect = popoverRef.current.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 8;
+
+    const scrollY = isFixed ? 0 : window.scrollY;
+    const scrollX = isFixed ? 0 : window.scrollX;
+
+    const anchorX =
+      rect.left + scrollX + H_OFFSET[anchorOrigin.horizontal](rect.width);
+    const anchorY =
+      rect.top + scrollY + V_OFFSET[anchorOrigin.vertical](rect.height);
+
+    const transformX = H_OFFSET[transformOrigin.horizontal](popoverRect.width);
+    const transformY = V_OFFSET[transformOrigin.vertical](popoverRect.height);
+
+    const left = Math.max(
+      margin,
+      Math.min(anchorX - transformX, vw - popoverRect.width - margin),
+    );
+    const top = Math.max(
+      margin,
+      Math.min(anchorY - transformY, vh - popoverRect.height - margin),
+    );
+
+    setPosition({ top, left, opacity: 1, scale: 1 });
+  }, [anchorOrigin, transformOrigin, elementRef, isFixed]);
+
+  React.useEffect(() => {
     if (!open) return;
-
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
-  /** -------------------------------------------------
-   * Position calculation
-   * ------------------------------------------------- */
-  const calculatePosition = useCallback(() => {
-    if (!elementRef.current || !popoverEl) return;
-
-    const trigger = elementRef.current.getBoundingClientRect();
-    const popover = popoverEl.getBoundingClientRect();
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    let top = 0;
-    let left = 0;
-
-    // Vertical alignment
-    switch (verticalAlign) {
-      case 'top':
-        top = trigger.top - popover.height - 8;
-        if (top < 0) top = trigger.bottom;
-        break;
-
-      case 'center':
-        top = trigger.top + trigger.height / 2 - popover.height / 2;
-        break;
-
-      case 'bottom':
-      default:
-        top = trigger.bottom;
-        if (top + popover.height > viewportHeight) {
-          top = trigger.top - popover.height;
-        }
-    }
-
-    // Horizontal alignment
-    switch (horizontalAlign) {
-      case 'right':
-        left = trigger.right - popover.width;
-        if (left < 0) left = trigger.left;
-        break;
-
-      case 'center':
-        left = trigger.left + trigger.width / 2 - popover.width / 2;
-        break;
-
-      case 'left':
-      default:
-        left = trigger.left;
-        if (left + popover.width > viewportWidth) {
-          left = trigger.right - popover.width;
-        }
-    }
-
-    setPosition({
-      top: Math.max(8, top),
-      left: Math.max(8, left),
-      width: trigger.width,
+    const frameId = requestAnimationFrame(() => {
+      calculatePosition();
     });
-    setReady(true);
-  }, [elementRef, popoverEl, verticalAlign, horizontalAlign]);
+    return () => cancelAnimationFrame(frameId);
+  }, [open, calculatePosition]);
 
-  useLayoutEffect(() => {
-    if (!open || !popoverEl) return;
-
-    // 2nd frame guarantees size is correct
-    requestAnimationFrame(calculatePosition);
-  }, [open, popoverEl, calculatePosition]);
-
-  useEffect(() => {
-    if (!open || !popoverEl) return;
-
-    window.addEventListener('scroll', calculatePosition, true);
-    window.addEventListener('resize', calculatePosition);
-
+  React.useEffect(() => {
+    if (!open) return;
+    const handleScrollOrResize = () => calculatePosition();
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
     return () => {
-      window.removeEventListener('scroll', calculatePosition, true);
-      window.removeEventListener('resize', calculatePosition);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
     };
-  }, [open, popoverEl, calculatePosition]);
+  }, [open, calculatePosition]);
+
+  // Handle escape key
+  React.useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose?.();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
 
   if (!open) return null;
 
+  const transformOriginCss = `${transformOrigin.vertical} ${transformOrigin.horizontal}`;
+
   return (
     <Portal>
-      <div className="fixed inset-0 z-[1300]">
-        {/* Click outside */}
-        <div
-          aria-hidden="true"
-          className="fixed inset-0"
-          onClick={() => onClose?.()}
-        />
-
-        {/* Popover */}
-        <div
-          ref={setPopoverRef}
-          style={{
-            top: `${position.top}px`,
-            left: `${position.left}px`,
-            visibility: ready ? 'visible' : 'hidden',
-          }}
-          className={cx(
-            'fixed z-[2100] rounded-lg shadow-box-2 p-4',
-            'bg-neutral-10 dark:bg-neutral-30-dark',
-            className,
-          )}
-        >
-          {children}
-        </div>
+      <div ref={setWrapperEl} role="none" className="fixed z-[1300] inset-0">
+        <OverlayContext.Provider value={overlayContextValue}>
+          <div
+            aria-hidden="true"
+            className="z-[2000] fixed inset-0"
+            onClick={() => onClose?.()}
+          />
+          <div
+            ref={popoverRef}
+            role="dialog"
+            style={{
+              top: position.top,
+              left: position.left,
+              opacity: position.opacity,
+              transform: `scale(${position.scale})`,
+              transformOrigin: transformOriginCss,
+              transition: 'opacity 0.2s ease-out, transform 0.15s ease-out',
+            }}
+            className={cx(
+              'text-neutral-100 dark:text-neutral-100-dark bg-neutral-10 dark:bg-neutral-30-dark shadow-box-2 rounded-lg p-4 absolute z-[2100]',
+              className,
+            )}
+          >
+            {children}
+          </div>
+        </OverlayContext.Provider>
       </div>
     </Portal>
   );

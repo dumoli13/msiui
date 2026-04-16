@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { RadioGroupProps, SelectValue } from '../../types/inputs';
+import type { RadioGroupProps, SelectValue } from '../../types/inputs';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 
@@ -71,19 +71,22 @@ const RadioGroup = <T, D = undefined>({
     }
   };
 
-  const handleFocus = () => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
     setFocused(true);
+    props.onFocus?.(event);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setFocused(false);
+    props.onBlur?.(event);
   };
 
   const inputId = `radiogroup-${id || name}-${React.useId()}`;
 
   return (
     <div
+      id={id}
       className={cx(
         'relative',
         {
@@ -93,7 +96,7 @@ const RadioGroup = <T, D = undefined>({
         className,
       )}
       ref={elementRef}
-      style={width ? { width } : undefined}
+      style={{ width }}
       {...props}
     >
       {((autoHideLabel && focused) || !autoHideLabel) && label && (

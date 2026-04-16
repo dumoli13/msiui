@@ -1,10 +1,12 @@
 export { default as Accordion } from './Accordion';
 
-// export { default as PdfThumbnail } from './PdfThumbnail';
-// export type { PdfThumbnailProps } from './PdfThumbnail';
+export { default as Alert } from './Alert';
 
-// export { default as PdfViewer } from './PdfViewer';
-// export type { PdfViewerProps } from './PdfViewer';
+export { default as Avatar } from './avatar';
+
+export { default as Chip } from './Chip';
+
+export { default as ImageViewer } from './ImageViewer';
 
 export { default as Popover } from './Popover';
 
@@ -15,3 +17,7 @@ export { default as Skeleton } from './Skeleton';
 export { default as Tag } from './Tag';
 
 export { default as Tooltip } from './Tooltip';
+
+export { default as PdfViewer } from './PdfViewer';
+
+export { default as PdfThumbnail } from './PdfThumbnail';

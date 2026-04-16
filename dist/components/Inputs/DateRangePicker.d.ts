@@ -1,4 +1,4 @@
-import { DateRangePickerProps } from '../../types';
+import type { DateRangePickerProps } from '../../types';
 /**
  * The Date Range Picker lets the user select a range of dates.
  */

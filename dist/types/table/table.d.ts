@@ -1,5 +1,5 @@
-import { SelectValue } from '../inputs';
-import { PaginationDataType } from '../navigations';
+import type { SelectValue } from '../inputs';
+import type { PaginationDataType } from '../navigations';
 type BaseColumnCommon = {
     key: string;
     label: string;
@@ -35,7 +35,7 @@ type SelectColumn<T, K extends keyof T, D = undefined> = (ColumnWithDataIndex<T,
     filter: 'select' | 'autocomplete';
     filterValue: unknown;
     onChange: (value: unknown) => void;
-    option: Array<SelectValue<any, D>>;
+    option: Array<SelectValue<unknown, D>>;
 });
 type NoFilterColumn<T, K extends keyof T = keyof T> = (ColumnWithDataIndex<T, K> & {
     filter?: 'none';
@@ -55,28 +55,43 @@ export type TableSortingProps<T> = {
     direction: 'asc' | 'desc' | null;
     key: keyof T;
 };
-interface BaseProps<T> {
+interface BaseProps<T, K extends keyof T> {
     columns: TableColumn<T>[];
     stickyHeader?: boolean;
     maxHeight?: number | string;
-    selectedRows?: number[];
-    onRowSelect?: (row: number, value: boolean, selectedRows: number[]) => void;
-    sorting?: TableSortingProps<T> | null;
-    onSort?: (sort: TableSortingProps<T>) => void;
     rowClassName?: (record: T) => string;
     rowStyle?: (record: T) => React.CSSProperties;
     fullwidth?: boolean;
-    showSelected?: boolean;
     size?: 'small' | 'default' | 'large';
     verticalAlign?: 'top' | 'center' | 'bottom';
     style?: 'default' | 'simple';
     onRowClick?: (record: T, index: number) => void;
+    sorting?: TableSortingProps<T>;
+    onSort?: (sort: TableSortingProps<T>) => void;
+    dataKey: K;
+    loading?: boolean;
+    freezeLeftColumns?: number;
+    freezeRightColumns?: number;
+    freezeTopRows?: number;
+    freezeBottomRows?: number;
+}
+interface SelectableProps<T, K extends keyof T> {
+    showSelected: boolean;
+    onRowSelect?: (row: number, value: boolean, selectedRows: T[K][]) => void;
+    selectedRows?: T[K][];
+    isSelectAll?: boolean;
+}
+interface NoSelectableProps {
+    showSelected?: never;
+    onRowSelect?: never;
+    selectedRows?: never;
+    isSelectAll?: never;
 }
 interface PaginationProps {
-    paginate: true;
+    paginate: boolean;
     total?: number;
-    pagination: PaginationDataType;
-    onPageChange: (data: PaginationDataType) => void;
+    pagination?: PaginationDataType;
+    onPageChange?: (data: PaginationDataType) => void;
 }
 interface NoPaginationProps {
     paginate?: false;
@@ -84,16 +99,59 @@ interface NoPaginationProps {
     pagination?: never;
     onPageChange?: never;
 }
-interface AsyncProps<T> {
-    async: true;
-    fetchData: (keyword: Record<keyof T, string>, pagination: PaginationDataType, ordering: TableSortingProps<T>) => Promise<T[]>;
+interface ReorderableProps<T> {
+    reorderable: boolean;
+    onReorder?: (columns: TableColumn<T>[]) => void;
+}
+interface NoReorderableProps {
+    reorderable?: false;
+    onReorder?: never;
+}
+interface RowReorderableProps<T> {
+    rowReorderable: boolean;
+    onRowReorder?: (data: T[]) => void;
+}
+interface NoRowReorderableProps {
+    rowReorderable?: false;
+    onRowReorder?: never;
+}
+export type TableGroupNode<T> = {
+    value: T[keyof T];
+    total: number;
+    isLeafGroup?: boolean;
+    children?: TableGroupNode<T>[] | T[];
+    pagination?: PaginationDataType;
+    loading?: boolean;
+    expanded: boolean;
+};
+interface ExpandableProps<T, K extends keyof T> {
+    expandable: boolean;
+    expandedRowKeys?: T[K][];
+    onExpandRow?: (expanded: boolean, record: T, key: T[K]) => void;
+    renderExpandedRow?: (record: T, index: number) => React.ReactNode;
+}
+interface NoExpandableProps {
+    expandable?: false;
+    expandedRowKeys?: never;
+    onExpandRow?: never;
+    renderExpandedRow?: never;
+}
+interface GroupableProps<T> {
+    groupable: true;
     data?: never;
+    groupLevel: Array<keyof T>;
+    groups: TableGroupNode<T>[];
+    onGroupToggle?: (expanded: boolean, path: T[keyof T][]) => void;
+    onGroupPageChange?: (pagination: PaginationDataType, path: string[]) => void;
 }
-interface NonAsyncProps<T> {
-    async?: false;
-    fetchData?: never;
+interface NoGroupableProps<T> {
+    groupable?: false;
     data: T[];
+    groupLevel?: never;
+    groups?: never;
+    onGroupToggle?: never;
+    onGroupPageChange?: never;
 }
-export type TableProps<T> = (BaseProps<T> & AsyncProps<T> & PaginationProps) | (BaseProps<T> & AsyncProps<T> & NoPaginationProps) | (BaseProps<T> & NonAsyncProps<T> & PaginationProps) | (BaseProps<T> & NonAsyncProps<T> & NoPaginationProps);
+export type TableProps<T, K extends keyof T> = BaseProps<T, K> & (SelectableProps<T, K> | NoSelectableProps) & (PaginationProps | NoPaginationProps) & (ReorderableProps<T> | NoReorderableProps) & ((GroupableProps<T> & NoRowReorderableProps & NoExpandableProps) | (NoGroupableProps<T> & (RowReorderableProps<T> | NoRowReorderableProps) & (ExpandableProps<T, K> | NoExpandableProps)));
 export {};
 //# sourceMappingURL=table.d.ts.map

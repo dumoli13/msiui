@@ -1,4 +1,9 @@
-export type { TableColumn, TableSortingProps, TableProps } from './table';
+export type {
+  TableColumn,
+  TableSortingProps,
+  TableProps,
+  TableGroupNode,
+} from './table';
 
 export type { TableFilterSearchProps } from './tableFilterSearch';
 

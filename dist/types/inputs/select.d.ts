@@ -10,7 +10,7 @@ export interface SelectRef<T, D = undefined> {
     reset: () => void;
     disabled: boolean;
 }
-interface BaseProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked'> {
+interface BaseProps<T, D = undefined> extends Omit<React.InputHTMLAttributes<HTMLDivElement>, 'onChange' | 'value' | 'defaultValue' | 'size' | 'required' | 'checked' | 'defaultChecked'> {
     value?: SelectValue<T, D> | null;
     defaultValue?: T | null;
     initialValue?: SelectValue<T, D> | null;

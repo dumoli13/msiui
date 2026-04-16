@@ -1,13 +1,7 @@
-import React from 'react';
 import cx from 'classnames';
-import { TagProps } from '../../types';
+import type { TagProps } from '../../types';
 import Icon from '../Icon';
 
-/**
- *
- * Tag are compact elements that represent an input, attribute, or action.
- *
- */
 function Tag({
   className,
   children,

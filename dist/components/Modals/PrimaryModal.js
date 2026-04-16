@@ -1,6 +1,6 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import { createRoot } from 'react-dom/client';
 import ModalConfirmContainer from './ModalConfirmContainer';
+import { createModal } from './modalManager';
 /**
  *
  * A modal component used to display a primary action confirmation with customizable title, content, and confirm/cancel buttons.
@@ -16,19 +16,16 @@ import ModalConfirmContainer from './ModalConfirmContainer';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-const PrimaryModal = ({ content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, ...props }) => {
-    const container = document.createElement('div');
-    const root = createRoot(container);
-    document.body.appendChild(container);
-    const handleClose = () => {
-        root.unmount();
-        document.body.removeChild(container);
-    };
-    root.render(_jsx(ModalConfirmContainer, { ...props, open: true, onClose: handleClose, onConfirm: onConfirm
+const PrimaryModal = ({ content, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, animation, ...props }) => {
+    const modal = createModal();
+    if (!modal)
+        return;
+    const { root, handleClose } = modal;
+    root.render(_jsx(ModalConfirmContainer, { ...props, open: true, onClose: handleClose, animation: animation, onConfirm: onConfirm
             ? () => {
                 onConfirm();
                 handleClose();
             }
-            : undefined, confirmText: confirmText, cancelText: cancelText, confirmButtonColor: "primary", children: content }));
+            : undefined, confirmText: confirmText, cancelText: cancelText, buttonColor: "primary", children: content }));
 };
 export default PrimaryModal;

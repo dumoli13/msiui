@@ -1,16 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
+import type { NotificationContainerProps } from '../../types/feedback/notification';
 import Icon from '../Icon';
-
-export interface NotificationContainerProps {
-  title: string;
-  description: string | number;
-  icon?: React.ReactNode;
-  open: boolean;
-  color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
-  onClose?: () => void;
-  duration?: number;
-}
 
 /**
  *
@@ -61,16 +52,17 @@ const NotificationContainer = ({
     }
 
     return () => {
-      clearTimeout(timerRef.current!);
-      clearInterval(intervalRef.current!);
+      clearTimeout(timerRef.current ?? undefined);
+      clearInterval(intervalRef.current ?? undefined);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- startProgress and handleClose use refs; duration is stable for the lifetime of this instance
   }, [open]);
 
   const startProgress = () => {
     intervalRef.current = setInterval(() => {
       setProgressWidth((prev) => {
         if (prev <= 0) {
-          clearInterval(intervalRef.current!);
+          clearInterval(intervalRef.current ?? undefined);
           return 0;
         }
         return Math.max(prev - decrementRate, 0);
@@ -79,8 +71,8 @@ const NotificationContainer = ({
   };
 
   const handleMouseEnter = () => {
-    clearInterval(intervalRef.current!);
-    clearTimeout(timerRef.current!);
+    clearInterval(intervalRef.current ?? undefined);
+    clearTimeout(timerRef.current ?? undefined);
   };
 
   const handleMouseLeave = () => {
@@ -108,13 +100,17 @@ const NotificationContainer = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden">
-        <div className="shrink-0">{icon}</div>
-        <div>
-          <div className="min-h-[28px] text-24px mb-2 break-words">{title}</div>
-          <p className="text-20px break-words">{description}</p>
+      <div className="relative p-4 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex items-start gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden">
+        <div className="shrink-0 mt-1">{icon}</div>
+        <div className="flex-1">
+          <div className="font-semibold text-20px mb-2 break-words">
+            {title}
+          </div>
+          {!!description && (
+            <p className="text-16px break-words">{description}</p>
+          )}
         </div>
-        <div className="absolute right-4 top-4">
+        <div className="shrink-0">
           <Icon
             name="x-mark"
             size={16}
@@ -125,12 +121,13 @@ const NotificationContainer = ({
         </div>
         <div className="absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark">
           <div
-            className={cx('h-full transition-all ease-linear bg-primary-main', {
+            className={cx('h-full transition-all ease-linear ', {
               'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
               'bg-success-main dark:bg-success-main-dark': color === 'success',
               'bg-danger-main dark:bg-danger-main-dark': color === 'danger',
               'bg-warning-main dark:bg-warning-main-dark': color === 'warning',
               'bg-info-main dark:bg-info-main-dark': color === 'info',
+              'bg-neutral-80 dark:bg-neutral-30-dark': color === 'neutral',
             })}
             style={{
               width: `${progressWidth}%`,

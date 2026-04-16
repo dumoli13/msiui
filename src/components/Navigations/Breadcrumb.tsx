@@ -1,8 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Modal } from '..';
-import { BreadcrumbProps } from '../../types';
-import { BreadcrumbLinkProps } from '../../types/navigations/breadcrumb';
+import { Modal, Tooltip } from '..';
+import type { BreadcrumbProps } from '../../types';
+import type { BreadcrumbLinkProps } from '../../types/navigations/breadcrumb';
+
+const MAX_LABEL_LENGTH = 32;
+
+const truncateLabel = (label: React.ReactNode) => {
+  const isTruncated =
+    typeof label === 'string' && label.length > MAX_LABEL_LENGTH;
+  return {
+    display: isTruncated
+      ? `${(label as string).slice(0, MAX_LABEL_LENGTH)}...`
+      : label,
+    fullLabel: isTruncated ? (label as string) : '',
+    isTruncated,
+  };
+};
 
 const BreadcrumbLink = ({
   item,
@@ -10,7 +24,9 @@ const BreadcrumbLink = ({
   isFormEdited,
   onNavigate,
 }: BreadcrumbLinkProps) => {
-  const handleRoute = (href: string) => {
+  const handleRoute = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+
     if (!onNavigate) return;
 
     Modal.danger({
@@ -23,24 +39,45 @@ const BreadcrumbLink = ({
     });
   };
 
+  const { display, fullLabel, isTruncated } = truncateLabel(item.label);
+
+  const wrapWithTooltip = (node: React.ReactNode) =>
+    isTruncated ? (
+      <Tooltip
+        title={fullLabel}
+        verticalAlign="bottom"
+        horizontalAlign="center"
+        arrow
+      >
+        {node}
+      </Tooltip>
+    ) : (
+      <>{node}</>
+    );
+
   return isLast ? (
-    <div className="font-bold text-neutral-100 dark:text-neutral-100-dark">
-      {item.label}
-    </div>
+    wrapWithTooltip(
+      <div className="text-neutral-70 dark:text-neutral-70-dark">
+        {display}
+      </div>,
+    )
   ) : (
     <>
-      {item.href && isFormEdited && (
-        <div
-          role="link"
-          tabIndex={0}
-          onClick={() => handleRoute(item.href!)}
-          className="cursor-pointer"
-        >
-          {item.label}
-        </div>
-      )}
-      {item.href && !isFormEdited && <Link to={item.href}>{item.label}</Link>}
-      {!item.href && <div>{item.label}</div>}
+      {item.href &&
+        isFormEdited &&
+        wrapWithTooltip(
+          <Link
+            to={item.href}
+            onClick={handleRoute(item.href)}
+            className="cursor-pointer"
+          >
+            {display}
+          </Link>,
+        )}
+      {item.href &&
+        !isFormEdited &&
+        wrapWithTooltip(<Link to={item.href}>{display}</Link>)}
+      {!item.href && wrapWithTooltip(<div>{display}</div>)}
       <div>/</div>
     </>
   );
@@ -99,7 +136,7 @@ const Breadcrumb = ({ items, maxDisplay = 4, ...props }: BreadcrumbProps) => {
   return (
     <nav
       aria-label="breadcrumb"
-      className="flex items-center gap-2.5 font-medium text-neutral-90 dark:text-neutral-90-dark text-14px"
+      className="flex items-center gap-2.5 font-medium text-neutral-100 dark:text-neutral-100-dark text-14px"
     >
       {renderItems()}
     </nav>

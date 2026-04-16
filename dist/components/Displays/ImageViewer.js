@@ -50,7 +50,7 @@ const ImageViewer = ({ open, onClose, url }) => {
     }, 1000);
     const handleChange = (e) => {
         const inputValue = e.target.value;
-        const decimalRegex = /^\d*\.?\d*$/;
+        const decimalRegex = /^(?:\d+(?:\.\d*)?|\.\d+)$/;
         if (decimalRegex.test(inputValue)) {
             const newScale = Number(e.target.value);
             setTempScale(newScale);
@@ -100,7 +100,7 @@ const ImageViewer = ({ open, onClose, url }) => {
         });
         observer.observe(document.body, { childList: true, subtree: true });
         return () => observer.disconnect();
-    }, []);
+    }, [handleWheel]);
     // Reset on close/open
     React.useEffect(() => {
         if (open) {
@@ -128,11 +128,11 @@ const ImageViewer = ({ open, onClose, url }) => {
     }, [open, onClose, handleMouseMove, handleMouseUp]);
     if (!open)
         return null;
-    return (_jsx(Portal, { children: _jsxs("div", { className: "fixed inset-0 z-[1300] flex items-center justify-center bg-neutral-100/50", children: [_jsx("button", { type: "button", title: "Close", "aria-label": "Close", onClick: onClose, className: "absolute top-8 right-8 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-100/70 hover:bg-opacity-20", children: _jsx(Icon, { name: "x-mark", className: "text-neutral-10", size: 24, strokeWidth: 2 }) }), _jsx("div", { ref: containerRef, className: "relative h-full w-full overflow-hidden", children: _jsx("div", { ref: viewerRef, className: "flex h-full w-full items-center justify-center", onMouseDown: handleMouseDown, children: url && (_jsx("img", { ref: imgRef, src: url, alt: "Zoomable content", className: "max-h-[90vh] max-w-[90vw] object-contain", style: {
+    return (_jsx(Portal, { children: _jsxs("div", { className: "fixed inset-0 z-[1300] flex items-center justify-center bg-neutral-100/50", children: [_jsx("button", { type: "button", title: "Close", "aria-label": "Close", onClick: onClose, className: "absolute top-8 right-8 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-100/70 hover:bg-opacity-20", children: _jsx(Icon, { name: "x-mark", className: "text-neutral-10", size: 24, strokeWidth: 2 }) }), _jsx("div", { ref: containerRef, className: "relative h-full w-full overflow-hidden", children: _jsx("div", { role: "application", ref: viewerRef, className: "flex h-full w-full items-center justify-center", onMouseDown: handleMouseDown, children: url && (_jsx("img", { ref: imgRef, src: url, alt: "Zoomable content", className: "max-h-[90vh] max-w-[90vw] object-contain", style: {
                                 transform: `translate(${position.x}px, ${position.y}px) scale(${scale / 100})`,
                                 transition: dragState.current.isDragging
                                     ? 'none'
                                     : 'transform 0.1s ease',
-                            }, draggable: false })) }) }), _jsxs("div", { className: "absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4 rounded-full bg-neutral-100/70 px-10 py-4 text-lg text-neutral-10", children: [_jsx("button", { type: "button", title: "zoom out", disabled: scale <= 50, onClick: () => handleZoom(false), className: "text-opacity-60 disabled:text-opacity-40", children: _jsx(Icon, { name: "minus-circle", size: 24, strokeWidth: 2 }) }), _jsxs("div", { className: "rounded-full bg-neutral-90 px-3 py-1", children: [_jsx("input", { id: "scale", value: tempScale, onChange: handleChange, className: "w-10 bg-transparent text-center outline-none", "aria-label": "Scale percentage" }), "%"] }), _jsx("button", { type: "button", title: "zoom in", disabled: scale >= 300, onClick: () => handleZoom(true), className: "disabled:opacity-40", children: _jsx(Icon, { name: "plus-circle", size: 24, strokeWidth: 2 }) })] })] }) }));
+                            }, draggable: false })) }) }), _jsxs("div", { className: "absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4 rounded-full bg-neutral-100/70 px-10 py-4 text-lg text-neutral-10", children: [_jsx("button", { type: "button", title: "zoom out", disabled: scale <= 50, onClick: () => handleZoom(false), className: "text-opacity-60 disabled:text-opacity-40", children: _jsx(Icon, { name: "minus-circle", size: 24, strokeWidth: 2 }) }), _jsxs("div", { className: "rounded-full bg-neutral-90 px-3 py-1", children: [_jsx("input", { id: "scale", value: tempScale, onChange: handleChange, className: "w-10 bg-transparent text-center outline-none", "aria-label": "Scale percentage" }), _jsx("span", { children: "%" })] }), _jsx("button", { type: "button", title: "zoom in", disabled: scale >= 300, onClick: () => handleZoom(true), className: "disabled:opacity-40", children: _jsx(Icon, { name: "plus-circle", size: 24, strokeWidth: 2 }) })] })] }) }));
 };
 export default ImageViewer;

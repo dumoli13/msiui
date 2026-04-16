@@ -1,4 +1,4 @@
-import { AccordionProps } from '../../types';
+import type { AccordionProps } from '../../types';
 /**
  *
  * This component renders a collapsible accordion interface. You can configure the accordion to allow single or multiple panels to be open simultaneously and control the collapsible behavior via props.

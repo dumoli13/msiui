@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "storybook",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "node_modules/storybook/dist/bin/dispatcher.js",
+        "dev",
+        "-p",
+        "6007"
+      ],
+      "port": 6007,
+      "autoPort": false
+    }
+  ]
+}

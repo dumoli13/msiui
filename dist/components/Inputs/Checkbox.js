@@ -12,7 +12,7 @@ const Checkbox = ({ id, name, defaultChecked = false, initialChecked = false, in
     const [focused, setFocused] = React.useState(false);
     const isControlled = valueProp !== undefined;
     const value = isControlled ? valueProp : internalValue;
-    const helperMessage = errorProp ?? helperText;
+    const helperMessage = errorProp || helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
     React.useImperativeHandle(inputRef, () => ({
@@ -31,14 +31,18 @@ const Checkbox = ({ id, name, defaultChecked = false, initialChecked = false, in
             }
         }
     };
-    const handleFocus = () => {
+    const handleFocus = (event) => {
         if (disabled)
             return;
         setFocused(true);
+        props.onFocus?.(event);
     };
-    const handleBlur = () => setFocused(false);
+    const handleBlur = (event) => {
+        setFocused(false);
+        props.onBlur?.(event);
+    };
     const inputId = `checkbox-${id || name}-${React.useId()}`;
-    return (_jsxs("div", { className: className, style: width ? { width } : undefined, children: [_jsxs("label", { className: cx('flex w-fit', {
+    return (_jsxs("div", { id: id, className: className, style: { width }, children: [_jsxs("label", { className: cx('flex items w-fit h-fit items-center', {
                     'cursor-not-allowed opacity-50': disabled,
                     'cursor-pointer': !disabled,
                     'gap-0.5 items-center': (labelPosition === 'top' || labelPosition === 'bottom') &&

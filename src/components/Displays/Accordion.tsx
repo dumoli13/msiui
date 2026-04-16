@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { AccordionProps } from '../../types';
+import type { AccordionProps } from '../../types';
 import Icon from '../Icon';
 
 /**
@@ -54,16 +54,14 @@ const Accordion = ({
     }
   }, [activeKey]);
 
-  const handleToggle = (index: number | string) => {
+  const handleToggle = (index: number | string) => () => {
     let newOpenIndex: Array<number | string>;
     if (openIndex.includes(index)) {
       newOpenIndex = openIndex.filter((item) => item !== index);
+    } else if (singleCollapse) {
+      newOpenIndex = [index];
     } else {
-      if (singleCollapse) {
-        newOpenIndex = [index];
-      } else {
-        newOpenIndex = [...openIndex, index];
-      }
+      newOpenIndex = [...openIndex, index];
     }
     if (!activeKey) {
       setOpenIndex(newOpenIndex);
@@ -89,50 +87,59 @@ const Accordion = ({
             {/* Title section */}
             {collapsible === 'icon' ? (
               <div
-                className={cx('flex justify-between items-center text-24px', {
-                  'px-6 gap-6': size === 'default',
-                  'px-10 gap-10': size === 'large',
+                className={cx('flex justify-between items-center text-20px', {
+                  'px-4 gap-4': size === 'default',
+                  'px-6 gap-6': size === 'large',
                 })}
               >
                 <div
                   className={cx(
-                    'w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark',
+                    'flex-1 font-medium text-neutral-100 dark:text-neutral-100-dark',
                     {
-                      'py-4': size === 'default',
-                      'py-8': size === 'large',
+                      'py-3': size === 'default',
+                      'py-4': size === 'large',
                     },
                   )}
                 >
                   {item.title}
                 </div>
-                <div
-                  role="button"
-                  aria-label="toggle"
-                  onClick={() => handleToggle(item.key)}
+                <button
+                  type="button"
+                  id={`accordion-button-${item.key}`}
+                  aria-label={`Toggle ${typeof item.title === 'string' ? item.title : 'section'}`}
+                  aria-expanded={isOpen}
+                  aria-controls={`accordion-content-${item.key}`}
+                  onClick={handleToggle(item.key)}
                   className={cx(
-                    'h-10 w-10 text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
+                    'h-6 w-6 flex justify-center items-center text-neutral-70 dark:text-neutral-70-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >
-                  <Icon name="chevron-down" size={24} />
-                </div>
+                  <Icon name="chevron-down" size={16} strokeWidth={2} />
+                </button>
               </div>
             ) : (
-              <div
-                role="button"
-                aria-label="toggle"
-                onClick={() => handleToggle(item.key)}
-                className={cx('flex justify-between items-center text-24px', {
-                  'px-6 gap-6': size === 'default',
-                  'px-10 gap-10': size === 'large',
-                })}
+              <button
+                type="button"
+                id={`accordion-button-${item.key}`}
+                aria-label={`Toggle ${typeof item.title === 'string' ? item.title : 'section'}`}
+                aria-expanded={isOpen}
+                aria-controls={`accordion-content-${item.key}`}
+                onClick={handleToggle(item.key)}
+                className={cx(
+                  'w-full flex justify-between text-left items-center text-20px',
+                  {
+                    'px-4 gap-4': size === 'default',
+                    'px-6 gap-6': size === 'large',
+                  },
+                )}
               >
                 <div
                   className={cx(
-                    'w-full text-24px font-medium text-neutral-100 dark:text-neutral-100-dark',
+                    'w-full font-medium text-neutral-100 dark:text-neutral-100-dark',
                     {
-                      'py-4': size === 'default',
-                      'py-8': size === 'large',
+                      'py-3': size === 'default',
+                      'py-4': size === 'large',
                     },
                   )}
                 >
@@ -140,17 +147,20 @@ const Accordion = ({
                 </div>
                 <div
                   className={cx(
-                    'h-10 w-10 text-neutral-90 dark:text-neutral-90-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
+                    'h-6 w-6 flex justify-center items-center text-neutral-70 dark:text-neutral-70-dark rounded-full p-2 -mr-2 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark transition-all duration-300',
                     { 'rotate-180': isOpen },
                   )}
                 >
-                  <Icon name="chevron-down" size={24} />
+                  <Icon name="chevron-down" size={16} strokeWidth={2} />
                 </div>
-              </div>
+              </button>
             )}
 
             {/* Content section with transition */}
             <div
+              id={`accordion-content-${item.key}`}
+              role="region"
+              aria-labelledby={`accordion-button-${item.key}`}
               ref={(el) => {
                 refs.current[index] = el;
               }}
@@ -159,10 +169,10 @@ const Accordion = ({
             >
               <div
                 className={cx(
-                  'text-neutral-90 dark:text-neutral-90-dark text-20px',
+                  'text-neutral-90 dark:text-neutral-90-dark text-14px',
                   {
-                    'mx-6 pt-1 pb-6': size === 'default',
-                    'mx-10 py-10 border-t border-neutral-40 dark:border-neutral-40-dark':
+                    'mx-4 pt-0.5 pb-4': size === 'default',
+                    'mx-6 py-6 border-t border-neutral-40 dark:border-neutral-40-dark':
                       size === 'large',
                   },
                 )}

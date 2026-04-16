@@ -5,7 +5,7 @@ export interface NumberTextfieldRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface NumberTextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked' | 'max' | 'min'> {
+export interface NumberTextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'max' | 'min' | 'type'> {
     id?: string;
     value?: number | null;
     defaultValue?: number | null;

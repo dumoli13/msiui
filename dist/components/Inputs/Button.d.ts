@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonProps } from '../../types';
+import type { ButtonProps } from '../../types';
 /**
  * Buttons allow users to take actions, and make choices, with a single tap.
  */

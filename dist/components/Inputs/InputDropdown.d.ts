@@ -1,4 +1,4 @@
-import { InputDropdownProps } from '../../types';
+import type { InputDropdownProps } from '../../types';
 /**
  *
  * A dropdown component that displays content below or above a reference element, dynamically positioning itself based on available space on the screen.
@@ -12,6 +12,6 @@ import { InputDropdownProps } from '../../types';
  * @property {number} [maxHeight=300] - The maximum height of the dropdown, allowing for scroll if content overflows.
  *
  */
-declare const InputDropdown: ({ open, children, elementRef, dropdownRef, fullWidth, maxHeight, }: InputDropdownProps) => import("react/jsx-runtime").JSX.Element;
+declare const InputDropdown: ({ id, open, children, elementRef, dropdownRef, fullWidth, maxHeight, animation, }: InputDropdownProps) => import("react/jsx-runtime").JSX.Element;
 export default InputDropdown;
 //# sourceMappingURL=InputDropdown.d.ts.map

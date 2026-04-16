@@ -4,13 +4,17 @@ import { useInView } from 'react-intersection-observer';
 import { useDebouncedCallback } from 'use-debounce';
 import { FETCH_LIMIT } from '../../const/select';
 import { isSelectValueArray } from '../../libs';
-import { AutoCompleteMultipleProps, SelectValue } from '../../types';
+import type { AutoCompleteMultipleProps, SelectValue } from '../../types';
 import Tag from '../Displays/Tag';
 import Icon from '../Icon';
+import DropdownChevron from './DropdownChevron';
+import DropdownEmptyState from './DropdownEmptyState';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import useClickOutside from './useClickOutside';
 
 /**
  * An autocomplete where multiple options can be selected
@@ -48,8 +52,10 @@ const AutoCompleteMultiple = <T, D>({
   fetchOptions,
   onKeyDown,
   onPaste,
+  animation,
   ...props
 }: AutoCompleteMultipleProps<T, D>) => {
+  const generatedId = React.useId();
   const elementRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -66,7 +72,6 @@ const AutoCompleteMultiple = <T, D>({
   const [appendOptions, setAppendOptions] = React.useState<SelectValue<T, D>[]>(
     [],
   );
-
   const [inputValue, setInputValue] = React.useState('');
   const [page, setPage] = React.useState(0);
 
@@ -83,7 +88,6 @@ const AutoCompleteMultiple = <T, D>({
     () => {
       if (isSelectValueArray(defaultValue)) return defaultValue;
       if (defaultValue == null) return initialValue;
-
       return options.filter((item) => defaultValue.includes(item.value));
     },
   );
@@ -109,11 +113,16 @@ const AutoCompleteMultiple = <T, D>({
   }, [async, inputValue, options]);
 
   const isControlled = valueProp !== undefined;
-  const value = valueProp ?? internalValue; // Default to internal state if undefined
+  const value = valueProp ?? internalValue;
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `autocompletemultiple-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -123,29 +132,21 @@ const AutoCompleteMultiple = <T, D>({
     disabled,
   }));
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const dropdownContainsTarget = dropdownRef.current?.contains(target);
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (!dropdownContainsTarget && !selectElementContainsTarget) {
-        setDropdownOpen(false);
-        setFocused(false); // Add this line to ensure 'focused' is set to false
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+  const handleClose = React.useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
+    setHighlightedIndex(-1);
+    setInputValue('');
   }, []);
+
+  useClickOutside([elementRef, dropdownRef], handleClose);
 
   React.useEffect(() => {
     const getAsyncOptions = async () => {
       setLoadingFetchOptions(true);
       const newPage = page + 1;
-      const response = await fetchOptions!(inputValue, newPage, FETCH_LIMIT);
+      const response =
+        (await fetchOptions?.(inputValue, newPage, FETCH_LIMIT)) ?? [];
       setPage(newPage);
       if (response.length < FETCH_LIMIT) {
         setStopAsyncFetch(true);
@@ -155,15 +156,16 @@ const AutoCompleteMultiple = <T, D>({
     };
 
     if (async && inView && !stopAsyncFetch) getAsyncOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally triggers only on inView/dropdownOpen; page and stopAsyncFetch are modified inside, and fetchOptions/inputValue are stable across these triggers
   }, [async, inView, dropdownOpen]);
 
   const handleFetchOption = async (keyword: string) => {
-    // Fetch new options and reset page
     setAsyncOptions([]);
     setStopAsyncFetch(false);
     setLoadingFetchOptions(true);
     const newPage = 1;
-    const response = await fetchOptions!(keyword, newPage, FETCH_LIMIT);
+    const response =
+      (await fetchOptions?.(keyword, newPage, FETCH_LIMIT)) ?? [];
     setPage(newPage);
     if (response.length < FETCH_LIMIT) {
       setStopAsyncFetch(true);
@@ -181,7 +183,7 @@ const AutoCompleteMultiple = <T, D>({
     (keyword: string) => {
       const inputLower = keyword.toLowerCase();
       const matched = options.find(
-        ({ label }) => label.toLowerCase() === inputLower,
+        ({ label: optionLabel }) => optionLabel.toLowerCase() === inputLower,
       );
 
       if (matched) {
@@ -192,27 +194,25 @@ const AutoCompleteMultiple = <T, D>({
     500,
   );
 
-  const handleFocus = () => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
     setFocused(true);
     setDropdownOpen(true);
+    props.onFocus?.(event);
   };
 
-  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const relatedTarget = event.relatedTarget;
-
     const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
-    const selectElementContainsTarget =
-      elementRef.current?.contains(relatedTarget);
+    const elementContainsTarget = elementRef.current?.contains(relatedTarget);
 
-    if (dropdownContainsTarget || selectElementContainsTarget) {
-      return;
-    }
+    if (dropdownContainsTarget || elementContainsTarget) return;
 
     setFocused(false);
     setDropdownOpen(false);
     setHighlightedIndex(-1);
     setInputValue('');
+    props.onBlur?.(event);
   };
 
   const handleDropdown = () => {
@@ -222,8 +222,8 @@ const AutoCompleteMultiple = <T, D>({
 
   const handleClearValue = () => {
     setDropdownOpen(true);
-    onChange?.([]); // Clear with an empty array
-    if (!isControlled) setInternalValue([]); // Update internal state if uncontrolled
+    onChange?.([]);
+    if (!isControlled) setInternalValue([]);
   };
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,7 +236,6 @@ const AutoCompleteMultiple = <T, D>({
       return;
     }
 
-    // if what user typed exactly match with any option, select it
     debounceMatchInputtoOptions(input);
   };
 
@@ -251,24 +250,22 @@ const AutoCompleteMultiple = <T, D>({
     }
 
     if (!isControlled) {
-      // filter again inside setInternalValue to avoid React concurrency issue.
       setInternalValue((prev) => {
         if (selected) {
           return prev.filter((v) => v.value !== option.value);
-        } else {
-          return [...prev, option];
         }
+        return [...prev, option];
       });
     }
     onChange?.(newValue);
   };
 
-  const handleAppend = (value: string) => {
-    if (value.length === 0 || !appendIfNotFound) return;
+  const handleAppend = (val: string) => {
+    if (val.length === 0 || !appendIfNotFound) return;
 
     const newValue = {
-      label: value,
-      value: value as T,
+      label: val,
+      value: val as T,
     };
     setAppendOptions((prev) => [...prev, newValue]);
     handleSelectOption(newValue);
@@ -337,11 +334,17 @@ const AutoCompleteMultiple = <T, D>({
     }
   };
 
+  const showEmpty =
+    !loading &&
+    !loadingFetchOptions &&
+    ((options.length === 0 && !inputValue) ||
+      (!appendIfNotFound && filteredOptions.length === 0));
+
   const dropdownContent = (
     <>
       {!!isCreateNew && (
-        <div
-          role="button"
+        <button
+          type="button"
           onClick={() => handleAppend(inputValue)}
           data-highlighted={highlightedIndex === 0}
           className={cx(
@@ -354,7 +357,7 @@ const AutoCompleteMultiple = <T, D>({
           )}
         >
           Create <b>{inputValue}</b>...
-        </div>
+        </button>
       )}
       {renderOption
         ? renderOption(
@@ -367,14 +370,15 @@ const AutoCompleteMultiple = <T, D>({
             const selected = value?.some((v) => v.value === option.value);
 
             return (
-              <div
-                role="button"
+              <button
+                type="button"
                 key={String(option.value)}
                 onClick={() => handleSelectOption(option)}
-                onMouseOver={() => setHighlightedIndex(index)}
+                onMouseOver={() => setHighlightedIndex(index + isCreateNew)}
+                onFocus={() => setHighlightedIndex(index + isCreateNew)}
                 data-highlighted={highlightedIndex === index + isCreateNew}
                 className={cx(
-                  'cursor-pointer py-1.5 px-4 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-left break-words',
+                  'select-text w-full py-1.5 px-4 hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-left break-words',
                   {
                     'text-14px': size === 'default',
                     'text-18px': size === 'large',
@@ -395,52 +399,38 @@ const AutoCompleteMultiple = <T, D>({
                     className="text-primary-main dark:text-primary-main-dark"
                   />
                 )}
-              </div>
+              </button>
             );
           })}
       <div ref={refInView} />
       {(loading || loadingFetchOptions) && (
-        <Icon
-          name="loader"
-          size={24}
-          strokeWidth={2}
-          animation="spin"
-          className="p-2 text-neutral-60 dark:text-neutral-60-dark"
-        />
+        <span aria-hidden="true">
+          <Icon
+            name="loader"
+            size={24}
+            strokeWidth={2}
+            animation="spin"
+            className="p-2 text-neutral-60 dark:text-neutral-60-dark"
+          />
+        </span>
       )}
-      {!loading &&
-        !loadingFetchOptions &&
-        ((options.length === 0 && !inputValue) ||
-          (!appendIfNotFound && filteredOptions.length === 0)) && (
-          <div className="flex flex-col items-center gap-4 text center text-neutral-60 text-16px dark:text-neutral-60-dark">
-            <div className="h-12 w-12 bg-neutral-60 dark:bg-neutral-60-dark flex items-center justify-center rounded-full text-neutral-10 dark:text-neutral-10-dark text-36px font-semibold mt-1">
-              !
-            </div>
-            <div>Empty Option</div>
-          </div>
-        )}
+      {showEmpty && <DropdownEmptyState />}
     </>
   );
 
   React.useEffect(() => {
     if (!dropdownRef.current || highlightedIndex < 0) return;
-
-    // Find any element that is marked as the highlighted one
     const activeItem = dropdownRef.current.querySelector(
       '[data-highlighted="true"]',
     ) as HTMLElement | null;
-
-    if (activeItem) {
-      activeItem.scrollIntoView({
-        block: 'nearest',
-      });
-    }
-  }, [highlightedIndex, dropdownContent]);
-
-  const inputId = `autocompletemultiple-${id || name}-${React.useId()}`;
+    activeItem?.scrollIntoView({ block: 'nearest' });
+  }, [highlightedIndex]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- keyboard navigation for combobox
     <div
+      id={inputId}
+      role="group"
       className={cx(
         'relative',
         {
@@ -449,41 +439,41 @@ const AutoCompleteMultiple = <T, D>({
         },
         className,
       )}
+      onKeyDown={handleKeyDown}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        style={width ? { width } : undefined}
-        ref={elementRef}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        startIcon={startIcon}
+        containerRef={elementRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={clearable && focused && value.length > 0}
+            onClear={handleClearValue}
+            endIcon={endIcon}
+          >
+            <DropdownChevron
+              open={dropdownOpen}
+              disabled={disabled}
+              onClick={handleDropdown}
+            />
+          </InputEndIconWrapper>
+        }
       >
-        {!!startIcon && (
-          <div className="text-neutral-70 dark:text-neutral-70-dark">
-            {startIcon}
-          </div>
-        )}
         <div
           className={cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
             'w-full': fullWidth,
@@ -496,67 +486,45 @@ const AutoCompleteMultiple = <T, D>({
           ))}
           <input
             {...props}
-            tabIndex={disabled ? -1 : 0}
-            id={inputId}
+            id={inputElementId}
             name={name}
             value={focused ? inputValue : ''}
             onChange={handleChangeInput}
             placeholder={focused ? '' : placeholder}
+            disabled={disabled}
+            aria-invalid={isError || undefined}
+            aria-describedby={helperMessage ? helperId : undefined}
+            aria-autocomplete="list"
+            autoComplete="off"
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            ref={valueRef}
+            onPaste={handleAppendPaste}
             className={cx(
-              'flex-grow outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark disabled:cursor-not-allowed',
+              'flex-grow min-w-0 outline-none bg-transparent disabled:cursor-not-allowed',
+              'text-neutral-90 dark:text-neutral-90-dark',
+              'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark',
               {
                 'text-14px py-0.5': size === 'default',
                 'text-18px py-0.5': size === 'large',
               },
             )}
-            disabled={disabled}
-            aria-label={label}
-            autoComplete="off"
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onClick={handleFocus}
-            ref={valueRef}
-            onKeyDown={handleKeyDown}
-            onPaste={handleAppendPaste}
           />
         </div>
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-          endIcon={endIcon}
-        >
-          {disabled ? (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              className="p-0.5 text-neutral-70 dark:text-neutral-70-dark"
-            />
-          ) : (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              onClick={handleDropdown}
-              className={cx(
-                'rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color',
-                {
-                  'rotate-180': dropdownOpen,
-                },
-              )}
-            />
-          )}
-        </InputEndIconWrapper>
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
       <InputDropdown
         open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         fullWidth
+        animation={animation}
       >
         {dropdownContent}
       </InputDropdown>

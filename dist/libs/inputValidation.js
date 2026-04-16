@@ -7,10 +7,8 @@ export function isToday(date) {
         date.getDate() === today.getDate());
 }
 export function areDatesEqual(dateA, dateB) {
-    if (!Array.isArray(dateB)) {
-        dateB = [dateB];
-    }
-    return dateB.some((b) => dateA.getFullYear() === b.getFullYear() &&
+    const dates = Array.isArray(dateB) ? dateB : [dateB];
+    return dates.some((b) => dateA.getFullYear() === b.getFullYear() &&
         dateA.getMonth() === b.getMonth() &&
         dateA.getDate() === b.getDate());
 }

@@ -1,1 +1,1 @@
-{"version":3,"file":"PdfViewer.d.ts","sourceRoot":"","sources":["../../../src/components/Displays/PdfViewer.tsx"],"names":[],"mappings":""}
+{"version":3,"file":"PdfViewer.d.ts","sourceRoot":"","sources":["../../../src/components/Displays/PdfViewer.tsx"],"names":[],"mappings":"AAEA,OAAO,yCAAyC,CAAC;AACjD,OAAO,mCAAmC,CAAC;AAY3C,MAAM,WAAW,cAAc;IAC7B,IAAI,EAAE,OAAO,CAAC;IACd,OAAO,EAAE,MAAM,IAAI,CAAC;IACpB,GAAG,EAAE,MAAM,GAAG,IAAI,CAAC;CACpB;AAED;;;;;;;;;;;;GAYG;AAEH,QAAA,MAAM,SAAS,GAAI,wBAAwB,cAAc,mDAiPxD,CAAC;AAEF,eAAe,SAAS,CAAC"}

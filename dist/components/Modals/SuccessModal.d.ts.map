@@ -1,1 +1,1 @@
-{"version":3,"file":"SuccessModal.d.ts","sourceRoot":"","sources":["../../../src/components/Modals/SuccessModal.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,iBAAiB,EAAE,MAAM,aAAa,CAAC;AAIhD,QAAA,MAAM,YAAY,GAAI,mEAcnB,iBAAiB,SA0BnB,CAAC;AAEF,eAAe,YAAY,CAAC"}
+{"version":3,"file":"SuccessModal.d.ts","sourceRoot":"","sources":["../../../src/components/Modals/SuccessModal.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,MAAM,aAAa,CAAC;AAKrD,QAAA,MAAM,YAAY,GAAI,8EAenB,iBAAiB,SAsBnB,CAAC;AAEF,eAAe,YAAY,CAAC"}

@@ -1,4 +1,4 @@
-import { TooltipProps } from '../../types';
+import type { TooltipProps } from '../../types';
 /**
  * Tooltips display informative text when users hover over an element
  */

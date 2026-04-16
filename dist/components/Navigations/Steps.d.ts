@@ -1,4 +1,4 @@
-import { StepProps } from '../../types';
+import type { StepProps } from '../../types';
 /**
  * A component that renders a multi-step progress tracker. Each step can represent a process or a task.
  * The component displays the title and description for each step, along with visual indicators for success, error,

@@ -1,8 +1,7 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { ConfirmModalProps } from '../../types';
+import type { ConfirmModalProps } from '../../types';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
+import { createModal } from './modalManager';
 
 const WarningModal = ({
   icon = (
@@ -17,16 +16,12 @@ const WarningModal = ({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm,
+  animation,
   ...props
 }: ConfirmModalProps) => {
-  const container = document.createElement('div');
-  const root = createRoot(container);
-  document.body.appendChild(container);
-
-  const handleClose = () => {
-    root.unmount();
-    document.body.removeChild(container);
-  };
+  const modal = createModal();
+  if (!modal) return;
+  const { root, handleClose } = modal;
 
   root.render(
     <ModalConfirmContainer
@@ -34,13 +29,14 @@ const WarningModal = ({
       open
       icon={icon}
       onClose={handleClose}
+      animation={animation}
       onConfirm={() => {
         onConfirm?.();
         handleClose();
       }}
       confirmText={confirmText}
       cancelText={cancelText}
-      confirmButtonColor="warning"
+      buttonColor="warning"
     >
       {content}
     </ModalConfirmContainer>,

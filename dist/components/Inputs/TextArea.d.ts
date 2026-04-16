@@ -1,4 +1,4 @@
-import { TextAreaProps } from '../../types/inputs/textArea';
+import type { TextAreaProps } from '../../types/inputs/textArea';
 /**
  * The Text Area component is used for collecting large amounts of text from users.
  */

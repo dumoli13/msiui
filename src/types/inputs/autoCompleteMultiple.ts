@@ -1,4 +1,5 @@
-import { SelectValue } from './select';
+import type { ModalAnimationConfig } from '../animation';
+import type { SelectValue } from './select';
 
 export interface AutoCompleteMultipleRef<T, D = undefined> {
   element: HTMLDivElement | null;
@@ -8,17 +9,17 @@ export interface AutoCompleteMultipleRef<T, D = undefined> {
   disabled: boolean;
 }
 
-interface BaseAutoCompleteMultipleProps<T, D = undefined>
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    | 'onChange'
-    | 'value'
-    | 'defaultValue'
-    | 'size'
-    | 'required'
-    | 'checked'
-    | 'defaultChecked'
-  > {
+interface BaseAutoCompleteMultipleProps<T, D = undefined> extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  | 'onChange'
+  | 'value'
+  | 'defaultValue'
+  | 'size'
+  | 'required'
+  | 'checked'
+  | 'defaultChecked'
+  | 'type'
+> {
   value?: SelectValue<T, D>[];
   defaultValue?: SelectValue<T, D>[] | T[];
   initialValue?: SelectValue<T, D>[];
@@ -47,15 +48,20 @@ interface BaseAutoCompleteMultipleProps<T, D = undefined>
     selected: Array<SelectValue<T, D>>,
     highlightedIndex: number,
   ) => React.ReactNode;
+  animation?: ModalAnimationConfig;
 }
 
-interface WithoutAppendProps<T, D = undefined>
-  extends BaseAutoCompleteMultipleProps<T, D> {
+interface WithoutAppendProps<
+  T,
+  D = undefined,
+> extends BaseAutoCompleteMultipleProps<T, D> {
   appendIfNotFound?: false;
   onAppend?: (input: SelectValue<T, D>) => never;
 }
-interface WithAppendProps<T, D = undefined>
-  extends BaseAutoCompleteMultipleProps<T, D> {
+interface WithAppendProps<
+  T,
+  D = undefined,
+> extends BaseAutoCompleteMultipleProps<T, D> {
   appendIfNotFound: true;
   onAppend?: (input: SelectValue<T>) => void;
 }

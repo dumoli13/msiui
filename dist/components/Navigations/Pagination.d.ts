@@ -1,4 +1,4 @@
-import { PaginationButtonProps, PaginationProps } from '../../types';
+import type { PaginationButtonProps, PaginationProps } from '../../types';
 /**
  * The Pagination component enables the user to select a specific page from a range of pages.
  */

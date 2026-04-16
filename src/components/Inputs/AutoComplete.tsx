@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import cx from 'classnames';
 import { useInView } from 'react-intersection-observer';
 import { useDebouncedCallback } from 'use-debounce';
 import { FETCH_LIMIT } from '../../const/select';
 import { isSelectValue } from '../../libs';
-import { AutoCompleteProps, SelectValue } from '../../types';
+import type { AutoCompleteProps, SelectValue } from '../../types';
 import Icon from '../Icon';
+import DropdownChevron from './DropdownChevron';
+import DropdownEmptyState from './DropdownEmptyState';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import useClickOutside from './useClickOutside';
 
 /**
  * The autocomplete is a normal text input enhanced by a panel of suggested options.
@@ -46,8 +50,12 @@ const AutoComplete = <T, D = undefined>({
   async,
   fetchOptions,
   onKeyDown,
+  animation,
+  autoFocus,
   ...props
 }: AutoCompleteProps<T, D>) => {
+  const generatedId = React.useId();
+  const listboxId = `${id ?? generatedId}-listbox`;
   const elementRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -90,7 +98,7 @@ const AutoComplete = <T, D = undefined>({
   });
 
   React.useEffect(() => {
-    if (!isSelectValue(defaultValue)) {
+    if (defaultValue && !isSelectValue(defaultValue)) {
       const next = options.find((item) => item.value === defaultValue) ?? null;
       setInternalValue(next);
     }
@@ -109,9 +117,14 @@ const AutoComplete = <T, D = undefined>({
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `autocomplete-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -122,31 +135,24 @@ const AutoComplete = <T, D = undefined>({
   }));
 
   React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const dropdownContainsTarget = dropdownRef.current?.contains(target);
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (dropdownContainsTarget || selectElementContainsTarget) {
-        elementRef.current?.focus();
-        return;
-      }
-
-      setFocused(false);
-      setDropdownOpen(false);
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (autoFocus) valueRef.current?.focus();
   }, []);
+
+  const handleClose = React.useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
+    setHighlightedIndex(-1);
+    setInputValue('');
+  }, []);
+
+  useClickOutside([elementRef, dropdownRef], handleClose);
 
   React.useEffect(() => {
     const getAsyncOptions = async () => {
       setLoadingFetchOptions(true);
       const newPage = page + 1;
-      const response = await fetchOptions!(inputValue, newPage, FETCH_LIMIT);
+      const response =
+        (await fetchOptions?.(inputValue, newPage, FETCH_LIMIT)) ?? [];
       setPage(newPage);
       if (response.length < FETCH_LIMIT) {
         setStopAsyncFetch(true);
@@ -156,15 +162,16 @@ const AutoComplete = <T, D = undefined>({
     };
 
     if (async && inView && !stopAsyncFetch) getAsyncOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally triggers only on inView/dropdownOpen; page and stopAsyncFetch are modified inside, and fetchOptions/inputValue are stable across these triggers
   }, [async, inView, dropdownOpen]);
 
   const handleFetchOption = async (keyword: string) => {
-    // Fetch new options and reset page
     setAsyncOptions([]);
     setStopAsyncFetch(false);
     setLoadingFetchOptions(true);
     const newPage = 1;
-    const response = await fetchOptions!(keyword, newPage, FETCH_LIMIT);
+    const response =
+      (await fetchOptions?.(keyword, newPage, FETCH_LIMIT)) ?? [];
     setPage(newPage);
     if (response.length < FETCH_LIMIT) {
       setStopAsyncFetch(true);
@@ -182,7 +189,7 @@ const AutoComplete = <T, D = undefined>({
     (keyword: string) => {
       const inputLower = keyword.toLowerCase();
       const matched = options.find(
-        ({ label }) => label.toLowerCase() === inputLower,
+        ({ label: optionLabel }) => optionLabel.toLowerCase() === inputLower,
       );
 
       if (matched) {
@@ -193,27 +200,25 @@ const AutoComplete = <T, D = undefined>({
     500,
   );
 
-  const handleFocus = () => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
     setFocused(true);
     setDropdownOpen(true);
+    props.onFocus?.(event);
   };
 
-  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const relatedTarget = event.relatedTarget;
-
     const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
-    const selectElementContainsTarget =
-      elementRef.current?.contains(relatedTarget);
+    const elementContainsTarget = elementRef.current?.contains(relatedTarget);
 
-    if (dropdownContainsTarget || selectElementContainsTarget) {
-      return;
-    }
+    if (dropdownContainsTarget || elementContainsTarget) return;
 
     setFocused(false);
     setDropdownOpen(false);
     setHighlightedIndex(-1);
     setInputValue('');
+    props.onBlur?.(event);
   };
 
   const handleDropdown = () => {
@@ -237,17 +242,12 @@ const AutoComplete = <T, D = undefined>({
       return;
     }
 
-    // if what user typed exactly match with any option, select it
     debounceMatchInputtoOptions(input);
   };
 
   const handleSelectOption = (option: SelectValue<T, D>) => {
     if (value?.value === option.value) return;
-
-    if (!isControlled) {
-      setInternalValue(option);
-    }
-
+    if (!isControlled) setInternalValue(option);
     setFocused(false);
     setDropdownOpen(false);
     onChange?.(option);
@@ -261,9 +261,7 @@ const AutoComplete = <T, D = undefined>({
       value: inputValue as T,
     };
     setAppendOptions((prev) => [...prev, newValue]);
-    if (!isControlled) {
-      setInternalValue(newValue);
-    }
+    if (!isControlled) setInternalValue(newValue);
 
     setInputValue('');
     setDropdownOpen(false);
@@ -271,12 +269,15 @@ const AutoComplete = <T, D = undefined>({
     onAppend?.(newValue);
   };
 
-  const isCreateNew =
-    appendIfNotFound &&
-    inputValue &&
-    !options.some((option) => option.label === inputValue)
-      ? 1
-      : 0;
+  const isCreateNew = useMemo(
+    () =>
+      appendIfNotFound &&
+      inputValue &&
+      !options.some((option) => option.label === inputValue)
+        ? 1
+        : 0,
+    [appendIfNotFound, inputValue, options],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const maxIndex = filteredOptions.length - 1 + isCreateNew;
@@ -315,11 +316,18 @@ const AutoComplete = <T, D = undefined>({
     }
   };
 
+  const showEmpty =
+    !loading &&
+    !loadingFetchOptions &&
+    !renderOption &&
+    ((options.length === 0 && !inputValue) ||
+      (!appendIfNotFound && filteredOptions.length === 0));
+
   const dropdownContent = (
     <>
       {!!isCreateNew && (
-        <div
-          role="button"
+        <button
+          type="button"
           onClick={handleAppend}
           data-highlighted={highlightedIndex === 0}
           className={cx(
@@ -332,7 +340,7 @@ const AutoComplete = <T, D = undefined>({
           )}
         >
           Create <b>{inputValue}</b>...
-        </div>
+        </button>
       )}
       {renderOption
         ? renderOption(
@@ -342,11 +350,14 @@ const AutoComplete = <T, D = undefined>({
             highlightedIndex,
           )
         : filteredOptions.map((option, index) => (
-            <div
-              role="button"
+            <button
+              type="button"
+              role="option"
+              aria-selected={value ? option.value === value.value : false}
               key={String(option.value)}
               onClick={() => handleSelectOption(option)}
-              onMouseOver={() => setHighlightedIndex(index)}
+              onMouseOver={() => setHighlightedIndex(index + isCreateNew)}
+              onFocus={() => setHighlightedIndex(index + isCreateNew)}
               data-highlighted={highlightedIndex === index + isCreateNew}
               className={cx(
                 'select-text w-full py-1.5 px-4 text-left break-words',
@@ -363,51 +374,37 @@ const AutoComplete = <T, D = undefined>({
               )}
             >
               {option.label}
-            </div>
+            </button>
           ))}
       <div ref={refInView} />
       {(loading || loadingFetchOptions) && (
-        <Icon
-          name="loader"
-          size={24}
-          strokeWidth={2}
-          animation="spin"
-          className="p-2 text-neutral-60 dark:text-neutral-60-dark"
-        />
+        <span aria-hidden="true">
+          <Icon
+            name="loader"
+            size={24}
+            strokeWidth={2}
+            animation="spin"
+            className="p-2 text-neutral-60 dark:text-neutral-60-dark"
+          />
+        </span>
       )}
-      {!loading &&
-        !loadingFetchOptions &&
-        ((options.length === 0 && !inputValue) ||
-          (!appendIfNotFound && filteredOptions.length === 0)) && (
-          <div className="flex flex-col items-center gap-4 text center text-neutral-60 dark:text-neutral-60-dark text-16px">
-            <div className="h-12 w-12 bg-neutral-60 dark:bg-neutral-60-dark flex items-center justify-center rounded-full text-neutral-10 dark:text-neutral-10-dark text-36px font-semibold mt-1">
-              !
-            </div>
-            <div>Empty Option</div>
-          </div>
-        )}
+      {showEmpty && <DropdownEmptyState />}
     </>
   );
 
   React.useEffect(() => {
     if (!dropdownRef.current || highlightedIndex < 0) return;
-
-    // Find any element that is marked as the highlighted one
     const activeItem = dropdownRef.current.querySelector(
       '[data-highlighted="true"]',
     ) as HTMLElement | null;
-
-    if (activeItem) {
-      activeItem.scrollIntoView({
-        block: 'nearest',
-      });
-    }
-  }, [highlightedIndex, dropdownContent]);
-
-  const inputId = `autocomplete-${id || name}-${React.useId()}`;
+    activeItem?.scrollIntoView({ block: 'nearest' });
+  }, [highlightedIndex]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- keyboard navigation for combobox
     <div
+      id={inputId}
+      role="group"
       className={cx(
         'relative',
         {
@@ -416,104 +413,88 @@ const AutoComplete = <T, D = undefined>({
         },
         className,
       )}
+      onKeyDown={handleKeyDown}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        style={width ? { width } : undefined}
-        ref={elementRef}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        startIcon={startIcon}
+        containerRef={elementRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={clearable && focused && !!value}
+            onClear={handleClearValue}
+            endIcon={endIcon}
+          >
+            <DropdownChevron
+              open={dropdownOpen}
+              disabled={disabled}
+              onClick={handleDropdown}
+            />
+          </InputEndIconWrapper>
+        }
       >
-        {!!startIcon && (
-          <div className="text-neutral-70 dark:text-neutral-70-dark">
-            {startIcon}
-          </div>
-        )}
         <input
           {...props}
-          tabIndex={disabled ? -1 : 0}
-          id={inputId}
+          id={inputElementId}
           name={name}
           value={focused ? inputValue : ''}
           onChange={handleChangeInput}
           placeholder={focused ? '' : value?.label || placeholder}
-          className={cx(
-            'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
-            {
-              'text-14px py-0.5': size === 'default',
-              'text-18px py-0.5': size === 'large',
-              'placeholder:text-neutral-100 dark:placeholder:text-neutral-100-dark':
-                value?.label,
-            },
-          )}
           disabled={disabled}
-          aria-label={label}
+          role="combobox"
+          aria-invalid={isError || undefined}
+          aria-describedby={helperMessage ? helperId : undefined}
+          aria-autocomplete="list"
+          aria-expanded={dropdownOpen}
+          aria-haspopup="listbox"
+          aria-controls={dropdownOpen ? listboxId : undefined}
+          aria-required={required || undefined}
           autoComplete="off"
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onClick={handleFocus}
           ref={valueRef}
-          onKeyDown={handleKeyDown}
-        />
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-          endIcon={endIcon}
-        >
-          {disabled ? (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              className="p-0.5 text-neutral-70 dark:text-neutral-70-dark"
-            />
-          ) : (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              onClick={handleDropdown}
-              className={cx(
-                'rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color',
-                {
-                  'rotate-180': dropdownOpen,
-                },
-              )}
-            />
+          className={cx(
+            'w-full min-w-0 outline-none bg-transparent disabled:cursor-not-allowed',
+            'text-neutral-90 dark:text-neutral-90-dark',
+            'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark',
+            {
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
+              'placeholder:!text-neutral-100 dark:placeholder:!text-neutral-100-dark':
+                !!value?.label,
+            },
           )}
-        </InputEndIconWrapper>
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+        />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
       <InputDropdown
+        id={listboxId}
         open={dropdownOpen}
         elementRef={elementRef}
         dropdownRef={dropdownRef}
         fullWidth
+        animation={animation}
       >
         {dropdownContent}
       </InputDropdown>

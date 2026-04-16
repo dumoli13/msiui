@@ -1,17 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import type { NotificationProps } from '../../types/feedback/notification';
 import Icon from '../Icon';
 import { Portal } from '../Portal';
 import NotificationContainer from './NotificationContainer';
-
-export interface NotificationProps {
-  id: string;
-  title: string;
-  description: string;
-  color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
-  duration?: number;
-  icon?: React.ReactNode;
-}
 
 let addNotificationToStack: ((notification: NotificationProps) => void) | null =
   null;
@@ -22,13 +13,13 @@ let addNotificationToStack: ((notification: NotificationProps) => void) | null =
 export const useNotification = () => {
   return (notification: {
     title: string;
-    description: string;
+    description?: string;
     icon?: React.ReactNode;
-    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info';
+    color?: 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'neutral';
   }) => {
     if (addNotificationToStack) {
       addNotificationToStack({
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         color: notification.color ?? 'primary',
         ...notification,
       });
@@ -57,7 +48,7 @@ export const NotificationStack = () => {
 
   return (
     <Portal>
-      <div className="fixed bottom-0 right-0 p-4 z-[1500] space-y-4">
+      <div className="fixed bottom-0 right-0 z-[1500] space-y-4">
         {notifications.map((notification) => {
           let icon: React.ReactNode;
           switch (notification.color) {
@@ -98,6 +89,16 @@ export const NotificationStack = () => {
                   size={24}
                   strokeWidth={2}
                   className="text-info-main dark:text-info-main-dark"
+                />
+              );
+              break;
+            case 'neutral':
+              icon = (
+                <Icon
+                  name="information-circle"
+                  size={24}
+                  strokeWidth={2}
+                  className="text-neutral-80 dark:text-neutral-80-dark"
                 />
               );
               break;

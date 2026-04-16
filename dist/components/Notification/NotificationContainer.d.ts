@@ -1,13 +1,4 @@
-import React from 'react';
-export interface NotificationContainerProps {
-    title: string;
-    description: string | number;
-    icon?: React.ReactNode;
-    open: boolean;
-    color: 'primary' | 'success' | 'danger' | 'warning' | 'info';
-    onClose?: () => void;
-    duration?: number;
-}
+import type { NotificationContainerProps } from '../../types/feedback/notification';
 /**
  *
  * A component that displays an individual notification with a title, description, icon, and a progress bar indicating the remaining time.

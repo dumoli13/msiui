@@ -1,4 +1,4 @@
-import { SelectValue } from './select';
+import type { SelectValue } from './select';
 
 export interface RadioGroupRef<T, D = undefined> {
   element: HTMLDivElement | null;
@@ -8,11 +8,10 @@ export interface RadioGroupRef<T, D = undefined> {
   disabled: boolean;
 }
 
-export interface RadioGroupProps<T, D = undefined>
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    'onChange' | 'defaultValue'
-  > {
+export interface RadioGroupProps<T, D = undefined> extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'defaultValue'
+> {
   value?: T | null;
   defaultValue?: T | null;
   initialValue?: T | null;

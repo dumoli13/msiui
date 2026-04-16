@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { TextfieldRef } from '../../types';
-import { TableFilterSearchProps } from '../../types/table/tableFilterSearch';
+import type { TextfieldRef } from '../../types';
+import type { TableFilterSearchProps } from '../../types/table/tableFilterSearch';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
 import IconButton from '../Inputs/IconButton';
@@ -15,9 +15,9 @@ const TableFilterSearch = ({
   const inputRef = React.useRef<TextfieldRef>(null);
   const [open, setOpen] = React.useState(false);
 
-  const handleChange = (value: string) => {
-    onChange?.(value);
-    if (value === '') {
+  const handleChange = (newValue: string) => {
+    onChange?.(newValue);
+    if (newValue === '') {
       setOpen(false);
     }
   };
@@ -58,6 +58,7 @@ const TableFilterSearch = ({
             className={cx({
               'text-primary-main dark:text-parimary-main-dark': value,
             })}
+            strokeWidth={2}
           />
         }
         variant="outlined"

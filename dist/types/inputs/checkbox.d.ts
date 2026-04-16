@@ -5,7 +5,7 @@ export interface CheckboxRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'placeholder' | 'required'> {
+export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'placeholder' | 'required' | 'type'> {
     label?: string;
     labelPosition?: 'top' | 'bottom' | 'left' | 'right';
     checked?: boolean;

@@ -1,4 +1,4 @@
-import { RadioGroupProps } from '../../types/inputs';
+import type { RadioGroupProps } from '../../types/inputs';
 /**
  * RadioGroup components allow users to select one option from a set.
  */

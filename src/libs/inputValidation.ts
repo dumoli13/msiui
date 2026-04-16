@@ -1,4 +1,4 @@
-import { SelectValue } from '../types';
+import type { SelectValue } from '../types';
 
 export function isToday(date: Date | null): boolean {
   if (!date) return false;
@@ -11,11 +11,9 @@ export function isToday(date: Date | null): boolean {
 }
 
 export function areDatesEqual(dateA: Date, dateB: Date | Date[]): boolean {
-  if (!Array.isArray(dateB)) {
-    dateB = [dateB];
-  }
+  const dates = Array.isArray(dateB) ? dateB : [dateB];
 
-  return dateB.some(
+  return dates.some(
     (b) =>
       dateA.getFullYear() === b.getFullYear() &&
       dateA.getMonth() === b.getMonth() &&

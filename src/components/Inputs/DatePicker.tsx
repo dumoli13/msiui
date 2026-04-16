@@ -6,12 +6,16 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useDebouncedCallback } from 'use-debounce';
 import { DAYS_OF_WEEK, MONTH_OF_YEAR, TimeUnit } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
-import { DatePickerProps, DateValue, PickerType } from '../../types';
+import type { DatePickerProps, DateValue, PickerType } from '../../types';
 import Icon from '../Icon';
+import CalendarHeader from './CalendarHeader';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import TimeColumn from './TimeColumn';
+import useClickOutside from './useClickOutside';
 
 export const CancelButton = ({
   onClick,
@@ -62,6 +66,7 @@ const DatePicker = ({
   onKeyDown,
   ...props
 }: DatePickerProps) => {
+  const generatedId = React.useId();
   const elementRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLInputElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -74,8 +79,8 @@ const DatePicker = ({
   let format = formatProps;
   if (!format) {
     if (picker === 'year') format = 'YYYY';
-    else if (picker === 'month') format = 'M/YYYY';
-    else format = 'D/M/YYYY';
+    else if (picker === 'month') format = 'MMM YYYY';
+    else format = 'DD MMM YYYY';
     if (showTime) format = `${format} HH:mm:ss`;
   }
 
@@ -96,9 +101,14 @@ const DatePicker = ({
 
   const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `datepicker-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
 
   const dateMatrix = useMemo(() => {
     const year = displayedDate.getFullYear();
@@ -128,43 +138,6 @@ const DatePicker = ({
     return matrix;
   }, [displayedDate]);
 
-  const scrollRefs = {
-    hours: React.useRef<HTMLDivElement>(null),
-    minutes: React.useRef<HTMLDivElement>(null),
-    seconds: React.useRef<HTMLDivElement>(null),
-  };
-
-  const itemRefs = {
-    hours: React.useRef<(HTMLButtonElement | null)[]>([]),
-    minutes: React.useRef<(HTMLButtonElement | null)[]>([]),
-    seconds: React.useRef<(HTMLButtonElement | null)[]>([]),
-  };
-
-  React.useEffect(() => {
-    if (!dropdownOpen) return;
-
-    // Delay to ensure dropdown is fully rendered before scrolling
-    setTimeout(() => {
-      for (const unit of Object.keys(timeValue) as Array<
-        keyof typeof timeValue
-      >) {
-        const value = timeValue[unit];
-        const container = scrollRefs[unit]?.current;
-        const item = value === null ? null : itemRefs[unit].current[value];
-        if (container && item) {
-          const containerTop = container.getBoundingClientRect().top;
-          const itemTop = item.getBoundingClientRect().top;
-          const offset = itemTop - containerTop - 8; // Adjust for 8px padding
-
-          container.scrollTo({
-            top: container.scrollTop + offset,
-            behavior: 'smooth',
-          });
-        }
-      }
-    }, 50); // Small delay for rendering
-  }, [dropdownOpen, timeValue]);
-
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
@@ -173,54 +146,37 @@ const DatePicker = ({
     disabled,
   }));
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const dropdownContainsTarget = dropdownRef.current?.contains(target);
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (dropdownContainsTarget || selectElementContainsTarget) {
-        elementRef.current?.focus();
-        return;
-      }
-
-      handleBlur();
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+  const handleClose = React.useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
   }, []);
 
-  const handleFocus = () => {
+  useClickOutside([elementRef, dropdownRef], handleClose);
+
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
     handleChangeView(picker);
     setFocused(true);
     setDropdownOpen(true);
+    props.onFocus?.(event);
   };
 
-  const handleBlur = (event?: React.FocusEvent<HTMLDivElement>) => {
+  const handleBlur = (event?: React.FocusEvent<HTMLInputElement>) => {
     const relatedTarget = event?.relatedTarget as Node | null;
-
     const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
-    const selectElementContainsTarget =
-      elementRef.current?.contains(relatedTarget);
+    const elementContainsTarget = elementRef.current?.contains(relatedTarget);
 
-    if (dropdownContainsTarget || selectElementContainsTarget) {
-      return;
-    }
+    if (dropdownContainsTarget || elementContainsTarget) return;
 
     setFocused(false);
     setDropdownOpen(false);
+    if (event) props.onBlur?.(event);
   };
 
   const handleDropdown = () => {
     if (disabled) return;
     setFocused(true);
-    setDropdownOpen((prev) => {
-      return !prev;
-    });
+    setDropdownOpen((prev) => !prev);
   };
 
   const handleChangeView = (view: PickerType) => {
@@ -238,7 +194,7 @@ const DatePicker = ({
 
   const handleJumpYear = (year: number) => {
     if (picker === 'year') {
-      handleSelectDate(new Date(year, 0)); // january 1, <YEAR>
+      handleSelectDate(new Date(year, 0));
     } else {
       setDisplayedDate(new Date(year, displayedDate.getMonth()));
       setCalendarView('month');
@@ -300,10 +256,7 @@ const DatePicker = ({
 
   const handleChangeValue = (newValue: DateValue) => {
     onChange?.(newValue);
-    if (!isControlled) {
-      setInternalValue(newValue);
-    }
-
+    if (!isControlled) setInternalValue(newValue);
     setDisplayedDate(newValue || new Date());
     handleBlur();
   };
@@ -378,29 +331,27 @@ const DatePicker = ({
 
   const handleClearValue = () => {
     handleChangeValue(null);
-    setTimeValue({
-      hours: null,
-      minutes: null,
-      seconds: null,
-    });
+    setTimeValue({ hours: null, minutes: null, seconds: null });
   };
 
   React.useEffect(() => {
     setInputValue(value ? dayjs(value).format(format) : '');
     setDisplayedDate(value || new Date());
     if (isControlled) setInternalValue(value);
-  }, [value, dropdownOpen]);
+  }, [value, dropdownOpen, format, isControlled]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
-      if (!dropdownOpen) {
-        handleDropdown();
-      }
+      if (!dropdownOpen) handleDropdown();
     } else {
       onKeyDown?.(e);
     }
   };
+
+  // Show the calendar toggle when the clear button is NOT shown
+  const showCalendarButton =
+    !clearable || !focused || (clearable && focused && !value);
 
   const dropdownContent = (
     <div className="min-w-60">
@@ -408,56 +359,16 @@ const DatePicker = ({
         <>
           <div className="flex">
             <div>
-              <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-                <div className="flex items-center">
-                  <Icon
-                    name="chevron-double-left"
-                    size={20}
-                    strokeWidth={2}
-                    onClick={() => handleChangeYear(-1)}
-                    className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  />
-                  <Icon
-                    name="chevron-left"
-                    size={20}
-                    strokeWidth={2}
-                    onClick={handlePrevMonth}
-                    className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  />
-                </div>
-                <div className="flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark">
-                  <button
-                    type="button"
-                    className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]"
-                    onClick={() => handleChangeView('month')}
-                  >
-                    {monthFormatter.format(displayedDate)}
-                  </button>
-                  <button
-                    type="button"
-                    className="shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10"
-                    onClick={() => handleChangeView('year')}
-                  >
-                    {displayedDate.getFullYear()}
-                  </button>
-                </div>
-                <div className="flex items-center">
-                  <Icon
-                    name="chevron-right"
-                    size={20}
-                    strokeWidth={2}
-                    onClick={handleNextMonth}
-                    className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  />
-                  <Icon
-                    name="chevron-double-right"
-                    size={20}
-                    strokeWidth={2}
-                    onClick={() => handleChangeYear(1)}
-                    className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-                  />
-                </div>
-              </div>
+              <CalendarHeader
+                displayedDate={displayedDate}
+                monthFormatter={monthFormatter}
+                onPrevYear={() => handleChangeYear(-1)}
+                onPrevMonth={handlePrevMonth}
+                onNextMonth={handleNextMonth}
+                onNextYear={() => handleChangeYear(1)}
+                onClickMonth={() => handleChangeView('month')}
+                onClickYear={() => handleChangeView('year')}
+              />
               <div className="text-12px p-2">
                 <table className="w-full">
                   <thead>
@@ -527,34 +438,19 @@ const DatePicker = ({
               <div className="border-l border-neutral-40 dark:border-neutral-40-dark text-14px">
                 <div className="h-[45px] border-b border-neutral-40 dark:border-neutral-40-dark" />
                 <div className="flex">
-                  {Object.keys(TimeUnit).map((key) => {
-                    const unit = key as TimeUnit;
-                    const length = unit === TimeUnit.hours ? 24 : 60;
+                  {(
+                    Object.keys(timeValue) as Array<keyof typeof timeValue>
+                  ).map((unit) => {
+                    const tuUnit = unit as TimeUnit;
                     return (
-                      <div
+                      <TimeColumn
                         key={unit}
-                        ref={scrollRefs[unit]}
-                        className="text-neutral-100 dark:text-neutral-100-dark max-h-[234px] overflow-y-auto p-2 apple-scrollbar flex flex-col gap-1 border-l border-neutral-40 dark:border-neutral-40-dark first:border-none"
-                      >
-                        {Array.from({ length }).map((_, idx) => (
-                          <button
-                            type="button"
-                            key={idx}
-                            ref={(el) => {
-                              itemRefs[unit].current[idx] = el;
-                            }}
-                            className={cx('w-10 text-center rounded py-0.5', {
-                              'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark cursor-default':
-                                idx === timeValue[unit],
-                              'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark':
-                                idx !== timeValue[unit],
-                            })}
-                            onClick={() => handleSelectTime(unit, idx)}
-                          >
-                            {idx.toString().padStart(2, '0')}
-                          </button>
-                        ))}
-                      </div>
+                        unit={tuUnit}
+                        length={tuUnit === TimeUnit.hours ? 24 : 60}
+                        selected={timeValue[unit]}
+                        onSelect={(val) => handleSelectTime(tuUnit, val)}
+                        open={dropdownOpen}
+                      />
                     );
                   })}
                 </div>
@@ -597,13 +493,14 @@ const DatePicker = ({
       {calendarView === 'month' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <Icon
-              name="chevron-double-left"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Previous year"
               onClick={() => handleChangeYear(-1)}
-              className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            >
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
+            </button>
             <button
               type="button"
               className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark"
@@ -611,13 +508,14 @@ const DatePicker = ({
             >
               {displayedDate.getFullYear()}
             </button>
-            <Icon
-              name="chevron-double-right"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Next year"
               onClick={() => handleChangeYear(1)}
-              className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            >
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
+            </button>
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
             {MONTH_OF_YEAR.map((item) => {
@@ -659,23 +557,25 @@ const DatePicker = ({
       {calendarView === 'year' && (
         <>
           <div className="flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark">
-            <Icon
-              name="chevron-double-left"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Previous year range"
               onClick={() => handleChangeYear(-12)}
-              className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            >
+              <Icon name="chevron-double-left" size={20} strokeWidth={2} />
+            </button>
             <div className="text-16px font-medium text-neutral-100 dark:text-neutral-100-dark">
               {`${yearRange[0]} - ${yearRange[yearRange.length - 1]}`}
             </div>
-            <Icon
-              name="chevron-double-right"
-              size={20}
-              strokeWidth={2}
+            <button
+              type="button"
+              aria-label="Next year range"
               onClick={() => handleChangeYear(12)}
-              className="p-1 rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
-            />
+              className="p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25"
+            >
+              <Icon name="chevron-double-right" size={20} strokeWidth={2} />
+            </button>
           </div>
           <div className="grid grid-cols-3 p-2 gap-y-1 text-14px">
             {yearRange.map((item) => {
@@ -714,10 +614,9 @@ const DatePicker = ({
     </div>
   );
 
-  const inputId = `datepicker-${id || name}-${React.useId()}`;
-
   return (
     <div
+      id={inputId}
       className={cx(
         'relative text-14px',
         {
@@ -727,80 +626,82 @@ const DatePicker = ({
         className,
       )}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus dark:focus:ring-primary-focus-dark focus:!border-primary-main dark:focus:!border-primary-main-dark':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        style={width ? { width } : undefined}
-        ref={elementRef}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        containerRef={elementRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={clearable && focused && !!value}
+            onClear={handleClearValue}
+          >
+            {showCalendarButton && (
+              <button
+                type="button"
+                aria-label={
+                  dropdownOpen ? 'Close date picker' : 'Open date picker'
+                }
+                aria-expanded={dropdownOpen}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleDropdown}
+                disabled={disabled}
+                className="rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark transition-colors duration-150 disabled:pointer-events-none"
+              >
+                <Icon name="calendar" size={20} strokeWidth={2} />
+              </button>
+            )}
+          </InputEndIconWrapper>
+        }
       >
         <input
           {...props}
-          tabIndex={disabled ? -1 : 0}
-          id={inputId}
+          id={inputElementId}
           name={name}
           value={inputValue}
           placeholder={focused ? '' : placeholder || format}
-          className={cx(
-            'w-full outline-none py-0.5 bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
-            {
-              'text-14px': size === 'default',
-              'text-18px': size === 'large',
-            },
-          )}
           disabled={disabled}
-          aria-label={label}
+          required={required}
+          aria-required={required}
+          aria-invalid={isError || undefined}
+          aria-describedby={helperMessage ? helperId : undefined}
           autoComplete="off"
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onClick={handleFocus}
           onChange={handleChangeInput}
           onKeyDown={handleKeyDown}
           ref={valueRef}
-        />
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-        >
-          {(!clearable ||
-            (clearable && !focused) ||
-            (clearable && focused && !value)) && (
-            <Icon
-              name="calendar"
-              size={20}
-              strokeWidth={2}
-              onClick={disabled ? undefined : handleDropdown}
-              className="rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5"
-            />
+          className={cx(
+            'w-full min-w-0 outline-none bg-transparent disabled:cursor-not-allowed',
+            'text-neutral-90 dark:text-neutral-90-dark',
+            'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark',
+            {
+              'text-14px py-0.5': size === 'default',
+              'text-18px py-0.5': size === 'large',
+            },
           )}
-        </InputEndIconWrapper>
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+        />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
       <InputDropdown
         open={dropdownOpen}
         elementRef={elementRef}

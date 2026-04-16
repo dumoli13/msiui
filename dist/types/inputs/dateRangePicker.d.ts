@@ -1,4 +1,4 @@
-import { PickerType } from './datePicker';
+import type { PickerType } from './datePicker';
 export type DateRangeValue = [Date, Date] | null;
 export interface DateRangePickerRef {
     element: HTMLDivElement | null;
@@ -7,7 +7,7 @@ export interface DateRangePickerRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked'> {
+export interface DateRangePickerProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'type'> {
     value?: DateRangeValue;
     defaultValue?: DateRangeValue;
     initialValue?: DateRangeValue;

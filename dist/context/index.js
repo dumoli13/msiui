@@ -1,12 +1,12 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { NotificationStack } from '../components/Notification';
+import { ToastStack } from '../components/Toast';
 import { Theme } from '../const';
 const LibraryContext = React.createContext(undefined);
 export const useMisDesignContext = () => {
     const context = React.useContext(LibraryContext);
     if (context === undefined) {
-        // throw new Error('UseContext must be used within a LibraryContext');
         const theme = document.documentElement.classList.contains('dark')
             ? Theme.DARK
             : Theme.LIGHT;
@@ -24,7 +24,6 @@ export const MisDesignProvider = ({ defaultTheme = Theme.LIGHT, theme: themeProp
         if (storedTheme) {
             return storedTheme === 'dark';
         }
-        // return window.matchMedia('(prefers-color-scheme: dark)').matches;
         return defaultTheme === Theme.DARK;
     });
     React.useEffect(() => {
@@ -57,6 +56,6 @@ export const MisDesignProvider = ({ defaultTheme = Theme.LIGHT, theme: themeProp
         theme: isDarkMode ? Theme.DARK : Theme.LIGHT,
         toggleTheme: () => setIsDarkMode((prev) => !prev),
     }), [isDarkMode]);
-    return (_jsxs(LibraryContext.Provider, { value: value, children: [children, _jsx(NotificationStack, {})] }));
+    return (_jsxs(LibraryContext.Provider, { value: value, children: [children, _jsx(NotificationStack, {}), _jsx(ToastStack, {})] }));
 };
 export default MisDesignProvider;

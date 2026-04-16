@@ -9,9 +9,9 @@ import Select from '../Inputs/Select';
 const TableFilterSelect = ({ type, value, option, label, onChange, }) => {
     const inputRef = React.useRef(null);
     const [open, setOpen] = React.useState(false);
-    const handleChange = (value) => {
-        onChange?.(value);
-        if (value === null) {
+    const handleChange = (newValue) => {
+        onChange?.(newValue);
+        if (newValue === null) {
             setOpen(false);
         }
     };
@@ -25,7 +25,7 @@ const TableFilterSelect = ({ type, value, option, label, onChange, }) => {
     }, [open]);
     return (_jsx(Popper, { open: open, onOpen: setOpen, className: "py-4 px-2", content: _jsxs(_Fragment, { children: [type === 'select' && (_jsx(Select, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280, clearable: true })), type === 'autocomplete' && (_jsx(AutoComplete, { value: value, inputRef: inputRef, onChange: handleChange, options: option, placeholder: `Select ${label}`, width: 280, clearable: true }))] }), children: _jsx(IconButton, { icon: _jsx(Icon, { name: "chevron-down", size: 16, className: cx({
                     'text-primary-main dark:text-primary-main-dark': value,
-                }) }), variant: "outlined", className: cx({
+                }), strokeWidth: 2 }), variant: "outlined", className: cx({
                 'border-primary-main dark:border-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': value,
             }), title: "Search by Option", size: "small" }) }));
 };

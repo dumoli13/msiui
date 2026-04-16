@@ -1,5 +1,4 @@
 import React from 'react';
-import cx from 'classnames';
 import Icon from '../Icon';
 
 interface InputEndIconWrapperProps {
@@ -7,12 +6,12 @@ interface InputEndIconWrapperProps {
   error?: boolean;
   success?: boolean;
   clearable?: boolean;
-  onClear?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClear?: () => void;
   endIcon?: React.ReactNode;
   children?: React.ReactNode;
 }
 
-const InputEndIconWrapper = ({
+function InputEndIconWrapper({
   loading = false,
   error = false,
   success = false,
@@ -20,47 +19,69 @@ const InputEndIconWrapper = ({
   onClear,
   endIcon,
   children,
-}: InputEndIconWrapperProps) => {
+}: Readonly<InputEndIconWrapperProps>) {
+  if (!clearable && !loading && !success && !error && !endIcon && !children)
+    return null;
+
   return (
-    <div className="flex gap-0.5 items-center">
+    <div className="flex gap-0.5 items-center shrink-0">
       {children}
+
       {clearable && (
-        <Icon
-          name="x-mark"
-          size={18}
-          strokeWidth={2}
+        <button
+          type="button"
+          aria-label="Clear value"
+          // Prevent the input from losing focus when clicking the clear button
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onClear}
-          className="rounded-full p-[3px] text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color"
-        />
+          className="rounded-full p-[3px] text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark transition-colors duration-150 cursor-pointer"
+        >
+          <Icon name="x-mark" size={18} strokeWidth={2} />
+        </button>
       )}
+
       {loading && (
-        <Icon
-          name="loader"
-          animation="spin"
-          strokeWidth={2}
-          className="text-neutral-70 dark:text-neutral-70-dark"
-        />
+        // aria-hidden: loading state should be communicated via aria-busy on the form, not here
+        <span aria-hidden="true">
+          <Icon
+            name="loader"
+            animation="spin"
+            strokeWidth={2}
+            className="text-neutral-70 dark:text-neutral-70-dark"
+          />
+        </span>
       )}
-      {success && (
-        <Icon
-          name="check"
-          strokeWidth={3}
-          size={12}
+
+      {success && !error && (
+        // aria-hidden: success state is conveyed via the field value / form feedback, not this icon
+        <span
+          aria-hidden="true"
           className="shrink-0 rounded-full bg-success-main dark:bg-success-main-dark text-neutral-10 dark:text-neutral-10-dark flex items-center justify-center p-0.5 m-0.5"
-        />
+        >
+          <Icon name="check" strokeWidth={3} size={12} />
+        </span>
       )}
+
       {error && (
-        <div className="h-4 w-4 text-12px shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center leading-none">
+        // aria-hidden: error state is conveyed via aria-invalid + aria-describedby on the input
+        <span
+          aria-hidden="true"
+          className="h-4 w-4 text-12px shrink-0 rounded-full bg-danger-main dark:bg-danger-main-dark text-neutral-10 dark:text-neutral-10-dark font-bold flex items-center justify-center leading-none"
+        >
           !
-        </div>
+        </span>
       )}
-      {!!endIcon && (
-        <div className={cx('text-neutral-70 dark:text-neutral-70-dark')}>
+
+      {endIcon && (
+        <span
+          aria-hidden="true"
+          className="text-neutral-70 dark:text-neutral-70-dark"
+        >
           {endIcon}
-        </div>
+        </span>
       )}
     </div>
   );
-};
+}
 
 export default InputEndIconWrapper;

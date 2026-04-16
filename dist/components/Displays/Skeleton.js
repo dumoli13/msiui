@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+/* eslint-disable react/no-array-index-key */
 import cx from 'classnames';
 /**
  *
@@ -19,7 +20,7 @@ const Skeleton = ({ width, height, type = 'circle' }) => {
 const SkeletonInput = ({ size = 'default', height }) => (_jsxs("div", { children: [_jsx("div", { className: "w-1/5 h-5 mb-1 bg-neutral-40 dark:bg-neutral-40-dark rounded-full animate-pulse" }), _jsx("div", { className: cx('w-full bg-neutral-40 dark:bg-neutral-40-dark rounded-full animate-pulse', {
                 'h-[32px]': size === 'default',
                 'h-[44px]': size === 'large',
-            }), style: { height: height } })] }));
+            }), style: { height } })] }));
 SkeletonInput.displayName = 'SkeletonInput';
 Skeleton.Input = SkeletonInput;
 const SkeletonTable = ({ column = 2, row = 3, size = 'default', }) => {

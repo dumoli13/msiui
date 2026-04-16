@@ -3,14 +3,13 @@
     "development"
   ],
   "hints": {
-    "compat-api/css": [
+    "no-inline-styles": "off",
+    "axe/aria": [
       "default",
       {
-        "ignore": [
-          "-webkit-text-size-adjust"
-        ]
+        "aria-valid-attr-value": "off",
+        "aria-required-parent": "off"
       }
-    ],
-    "no-inline-styles": "off"
+    ]
   }
 }

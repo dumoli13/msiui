@@ -35,19 +35,21 @@ const RadioGroup = ({ id, name, value: valueProp, defaultValue, initialValue = n
             setInternalValue(option.value);
         }
     };
-    const handleFocus = () => {
+    const handleFocus = (event) => {
         if (disabled)
             return;
         setFocused(true);
+        props.onFocus?.(event);
     };
-    const handleBlur = () => {
+    const handleBlur = (event) => {
         setFocused(false);
+        props.onBlur?.(event);
     };
     const inputId = `radiogroup-${id || name}-${React.useId()}`;
-    return (_jsxs("div", { className: cx('relative', {
+    return (_jsxs("div", { id: id, className: cx('relative', {
             'w-full': fullWidth,
             'flex items-start gap-4': labelPosition === 'left',
-        }, className), ref: elementRef, style: width ? { width } : undefined, ...props, children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsx("div", { className: cx('flex gap-2', {
+        }, className), ref: elementRef, style: { width }, ...props, children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsx("div", { className: cx('flex gap-2', {
                     'w-full': fullWidth,
                     'flex-row': direction === 'row',
                     'flex-col': direction === 'column',

@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { DrawerProps } from '../../types';
+import { OverlayContext } from '../../context/OverlayContext';
+import type { DrawerProps } from '../../types';
 import { Portal } from '../Portal';
 
 /**
@@ -20,6 +21,14 @@ const Drawer = ({
 }: DrawerProps) => {
   const drawerRef = React.useRef<HTMLDivElement>(null);
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
+
+  // Provide OverlayContext so nested overlays (Popper, Tooltip, etc.) portal
+  // into this drawer's container and use viewport coordinates (isFixed: true).
+  const [wrapperEl, setWrapperEl] = React.useState<HTMLDivElement | null>(null);
+  const overlayContextValue = React.useMemo(
+    () => ({ container: wrapperEl, isFixed: true }),
+    [wrapperEl],
+  );
 
   // Handle escape key press
   React.useEffect(() => {
@@ -59,7 +68,7 @@ const Drawer = ({
     return () => {
       document.body.style.overflow = '';
     };
-  }, [open, document.body.style.overflow]);
+  }, [open]);
 
   const drawerStyle = {
     width: position === 'left' || position === 'right' ? width : '100%',
@@ -88,47 +97,51 @@ const Drawer = ({
   return (
     <Portal>
       <div
+        ref={setWrapperEl}
         className={cx(
           'fixed inset-0 z-[1300] transition-opacity duration-300',
           open ? 'opacity-100' : 'opacity-0 pointer-events-none',
         )}
       >
-        {/* Backdrop */}
-        <div
-          className={cx(
-            'fixed inset-0 bg-neutral-100/50 transition-opacity duration-300',
-            open ? 'opacity-100' : 'opacity-0',
-          )}
-          aria-hidden="true"
-          onClick={disableBackdropClick ? undefined : onClose}
-        />
+        <OverlayContext.Provider value={overlayContextValue}>
+          {/* Backdrop */}
+          <div
+            className={cx(
+              'fixed inset-0 bg-neutral-100/50 transition-opacity duration-300',
+              open ? 'opacity-100' : 'opacity-0',
+            )}
+            aria-hidden="true"
+            onClick={disableBackdropClick ? undefined : onClose}
+          />
 
-        {/* Drawer content */}
-        <div
-          ref={drawerRef}
-          className={cx(
-            'bg-neutral-15 dark:bg-neutral-15-dark fixed shadow-xl',
-            'transition-all duration-300 ease-in-out transform',
-            'focus:outline-none', // for accessibility
-            {
-              'left-0 top-0': position === 'left',
-              'right-0 top-0': position === 'right',
-              'top-0 left-0 right-0': position === 'top',
-              'bottom-0 left-0 right-0': position === 'bottom',
-            },
-            className,
-          )}
-          style={{
-            ...drawerStyle,
-            transform: getTransform(),
-            ...(open ? { transform: 'translateX(0)' } : {}),
-          }}
-          role="dialog"
-          aria-modal="true"
-          tabIndex={-1}
-        >
-          {children}
-        </div>
+          {/* Drawer content */}
+          <div
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Drawer"
+            tabIndex={-1}
+            className={cx(
+              'bg-neutral-15 dark:bg-neutral-15-dark fixed shadow-xl',
+              'transition-all duration-300 ease-in-out transform',
+              'focus:outline-none',
+              {
+                'left-0 top-0': position === 'left',
+                'right-0 top-0': position === 'right',
+                'top-0 left-0 right-0': position === 'top',
+                'bottom-0 left-0 right-0': position === 'bottom',
+              },
+              className,
+            )}
+            style={{
+              ...drawerStyle,
+              transform: getTransform(),
+              ...(open ? { transform: 'translateX(0)' } : {}),
+            }}
+          >
+            {children}
+          </div>
+        </OverlayContext.Provider>
       </div>
     </Portal>
   );

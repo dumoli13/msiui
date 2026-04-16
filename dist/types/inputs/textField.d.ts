@@ -5,8 +5,8 @@ export interface TextfieldRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface TextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'required' | 'checked'> {
-    value?: string | number;
+export interface TextFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'value' | 'type'> {
+    value?: string | number | null;
     defaultValue?: string | number;
     initialValue?: string | number;
     label?: string;

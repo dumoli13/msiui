@@ -1,7 +1,7 @@
 import React from 'react';
-interface ModalBodyProps {
+interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
 }
-declare const ModalBody: ({ children }: ModalBodyProps) => import("react/jsx-runtime").JSX.Element;
+declare const ModalBody: ({ className, children }: ModalBodyProps) => import("react/jsx-runtime").JSX.Element;
 export default ModalBody;
 //# sourceMappingURL=ModalBody.d.ts.map

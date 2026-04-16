@@ -1,4 +1,4 @@
-import { SkeletonInputProps, SkeletonProps, SkeletonTableProps } from '../../types';
+import type { SkeletonInputProps, SkeletonProps, SkeletonTableProps } from '../../types';
 /**
  *
  * A predefined skeleton loader for input fields, designed to simulate loading states for forms or inputs.

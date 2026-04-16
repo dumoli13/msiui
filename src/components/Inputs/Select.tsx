@@ -2,12 +2,16 @@ import React from 'react';
 import cx from 'classnames';
 import { useInView } from 'react-intersection-observer';
 import { FETCH_LIMIT } from '../../const/select';
-import { SelectProps, SelectValue } from '../../types/inputs';
+import type { SelectProps, SelectValue } from '../../types/inputs';
 import Icon from '../Icon';
+import DropdownChevron from './DropdownChevron';
+import DropdownEmptyState from './DropdownEmptyState';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import useClickOutside from './useClickOutside';
 
 /**
  * Select components are used for collecting user provided information from a list of options.
@@ -42,7 +46,9 @@ const Select = <T, D = undefined>({
   async,
   fetchOptions,
   onKeyDown,
+  ...props
 }: SelectProps<T, D>) => {
+  const generatedId = React.useId();
   const elementRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLDivElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
@@ -56,7 +62,6 @@ const Select = <T, D = undefined>({
   const [inheritOptions, setInheritOptions] = React.useState<
     SelectValue<T, D>[]
   >(optionsProp || []);
-
   const [page, setPage] = React.useState(0);
 
   const options = React.useMemo(
@@ -77,15 +82,21 @@ const Select = <T, D = undefined>({
         (item) => item.value === (internalValue?.value ?? defaultValue),
       ) || null,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Re-sync internal value only when the options prop changes; reading internalValue and defaultValue here is intentional
   }, [optionsProp]);
 
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
-  const helperMessage = errorProp ?? helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
+  const inputId = id ?? `select-${name ?? generatedId}`;
+  const comboboxId = `${inputId}-combobox`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string' ? errorProp : helperText;
+  const listboxId = `${inputId}-listbox`;
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
     value,
@@ -94,62 +105,47 @@ const Select = <T, D = undefined>({
     disabled,
   }));
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const dropdownContainsTarget = dropdownRef.current?.contains(target);
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (dropdownContainsTarget || selectElementContainsTarget) {
-        elementRef.current?.focus();
-        return;
-      }
-
-      setDropdownOpen(false);
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+  const handleClose = React.useCallback(() => {
+    setFocused(false);
+    setDropdownOpen(false);
   }, []);
+
+  useClickOutside([elementRef, dropdownRef], handleClose);
 
   React.useEffect(() => {
     const getAsyncOptions = async () => {
       setLoadingFetchOptions(true);
       const newPage = page + 1;
-      const response = await fetchOptions!(newPage, FETCH_LIMIT);
+      const response = (await fetchOptions?.(newPage, FETCH_LIMIT)) ?? [];
       setPage(newPage);
-      if (response.length < FETCH_LIMIT) {
-        setStopAsyncFetch(true);
-      }
+      if (response.length < FETCH_LIMIT) setStopAsyncFetch(true);
       setInheritOptions((prev) => [...prev, ...response]);
       setLoadingFetchOptions(false);
     };
 
     if (async && inView && !stopAsyncFetch) getAsyncOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally triggers only on inView/dropdownOpen; page and stopAsyncFetch are modified inside
   }, [async, inView, dropdownOpen]);
 
-  const handleFocus = () => {
-    if (disabled) return;
+  const handleFocus = (event?: React.FocusEvent<HTMLDivElement>) => {
     setFocused(true);
     setDropdownOpen(true);
+    if (event) props.onFocus?.(event);
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
-    const relatedTarget = event.relatedTarget;
-
-    const dropdownContainsTarget = dropdownRef.current?.contains(relatedTarget);
-    const selectElementContainsTarget =
-      elementRef.current?.contains(relatedTarget);
-
-    if (dropdownContainsTarget || selectElementContainsTarget) {
-      return;
-    }
+    const dropdownContainsTarget = dropdownRef.current?.contains(
+      event.relatedTarget,
+    );
+    const elementContainsTarget = elementRef.current?.contains(
+      event.relatedTarget,
+    );
+    if (dropdownContainsTarget || elementContainsTarget) return;
 
     setFocused(false);
     setDropdownOpen(false);
     setHighlightedIndex(-1);
+    props.onBlur?.(event);
   };
 
   const handleDropdown = () => {
@@ -165,10 +161,8 @@ const Select = <T, D = undefined>({
 
   const handleSelectOption = (option: SelectValue<T, D>) => {
     if (value?.value === option.value) return;
-
     if (!isControlled) setInternalValue(option);
     onChange?.(option);
-
     setFocused(false);
     setDropdownOpen(false);
   };
@@ -199,70 +193,63 @@ const Select = <T, D = undefined>({
   };
 
   const dropdownContent = (
-    <>
+    <div role="listbox" id={listboxId} aria-label={label}>
       {renderOption
         ? renderOption(options, handleSelectOption, value, highlightedIndex)
         : options.map((option, index) => (
             <div
-              role="button"
+              role="option"
+              aria-selected={option.value === value?.value}
               key={String(option.value)}
               onClick={() => handleSelectOption(option)}
               onMouseOver={() => setHighlightedIndex(index)}
               data-highlighted={index === highlightedIndex}
-              className={cx('py-1.5 px-4 text-left break-words', {
-                'text-14px': size === 'default',
-                'text-18px': size === 'large',
-                'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark':
-                  option.value === value?.value,
-                'cursor-pointer hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark':
-                  option.value !== value?.value,
-                '!bg-neutral-20 !dark:bg-neutral-20-dark':
-                  index === highlightedIndex,
-              })}
+              className={cx(
+                'py-1.5 px-4 text-left break-words cursor-pointer',
+                {
+                  'text-14px': size === 'default',
+                  'text-18px': size === 'large',
+                  'bg-primary-surface dark:bg-primary-surface-dark text-primary-main dark:text-primary-main-dark':
+                    option.value === value?.value,
+                  'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100 dark:text-neutral-100-dark':
+                    option.value !== value?.value,
+                  '!bg-neutral-20 !dark:bg-neutral-20-dark':
+                    index === highlightedIndex,
+                },
+              )}
             >
               {option.label}
             </div>
           ))}
       <div ref={refInView} />
       {(loading || loadingFetchOptions) && (
-        <Icon
-          name="loader"
-          size={24}
-          strokeWidth={2}
-          animation="spin"
-          className="p-2 text-neutral-60 dark:text-neutral-60-dark"
-        />
+        <span aria-hidden="true">
+          <Icon
+            name="loader"
+            size={24}
+            strokeWidth={2}
+            animation="spin"
+            className="p-2 text-neutral-60 dark:text-neutral-60-dark"
+          />
+        </span>
       )}
-      {!loadingFetchOptions && options.length === 0 && (
-        <div className="flex flex-col items-center gap-4 text center text-neutral-60 dark:text-neutral-60-dark text-16px">
-          <div className="h-12 w-12 bg-neutral-60 dark:bg-neutral-60-dark flex items-center justify-center rounded-full text-neutral-10 dark:text-neutral-10-dark text-36px font-semibold mt-1">
-            !
-          </div>
-          <div>Empty Option</div>
-        </div>
-      )}
-    </>
+      {!loadingFetchOptions && options.length === 0 && <DropdownEmptyState />}
+    </div>
   );
 
   React.useEffect(() => {
     if (!dropdownRef.current || highlightedIndex < 0) return;
-
-    // Find any element that is marked as the highlighted one
     const activeItem = dropdownRef.current.querySelector(
       '[data-highlighted="true"]',
     ) as HTMLElement | null;
-
-    if (activeItem) {
-      activeItem.scrollIntoView({
-        block: 'nearest',
-      });
-    }
-  }, [highlightedIndex, dropdownContent]);
-
-  const inputId = `select-${id || name}-${React.useId()}`;
+    activeItem?.scrollIntoView({ block: 'nearest' });
+  }, [highlightedIndex]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- keyboard navigation delegated from inner combobox
     <div
+      id={inputId}
+      role="group"
       className={cx(
         'relative',
         {
@@ -273,90 +260,69 @@ const Select = <T, D = undefined>({
       )}
       onKeyDown={handleKeyDown}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={comboboxId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        ref={elementRef}
-        style={width ? { width } : undefined}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        startIcon={startIcon}
+        containerRef={elementRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={clearable && focused && !!value}
+            onClear={handleClearValue}
+            endIcon={endIcon}
+          >
+            <DropdownChevron
+              open={dropdownOpen}
+              disabled={disabled}
+              onClick={handleDropdown}
+            />
+          </InputEndIconWrapper>
+        }
       >
-        {!!startIcon && (
-          <div className="text-neutral-70 dark:text-neutral-70-dark">
-            {startIcon}
-          </div>
-        )}
         <div
-          role="button"
+          id={comboboxId}
+          role="combobox"
           tabIndex={disabled ? -1 : 0}
-          aria-pressed="true"
+          aria-haspopup="listbox"
+          aria-expanded={dropdownOpen}
+          aria-controls={listboxId}
+          aria-required={required}
+          aria-invalid={isError || undefined}
+          aria-describedby={helperMessage ? helperId : undefined}
           className={cx('w-full outline-none truncate', {
             'text-14px py-0.5': size === 'default',
             'text-18px py-0.5': size === 'large',
-            'text-neutral-60 dark:text-neutral-60-dark': !value || !value.label,
-            '!bg-neutral-20 dark:!bg-neutral-30-dark cursor-not-allowed':
-              disabled,
+            'text-neutral-60 dark:text-neutral-60-dark': !value?.label,
+            'cursor-not-allowed': disabled,
           })}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onClick={handleFocus}
           ref={valueRef}
         >
           {value?.label ?? placeholder}
         </div>
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-          endIcon={endIcon}
-        >
-          {disabled ? (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              className="p-0.5 text-neutral-70 dark:text-neutral-70-dark"
-            />
-          ) : (
-            <Icon
-              name="chevron-down"
-              size={20}
-              strokeWidth={2}
-              onClick={handleDropdown}
-              className={cx(
-                'rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark cursor-pointer transition-color',
-                {
-                  'rotate-180': dropdownOpen,
-                },
-              )}
-            />
-          )}
-        </InputEndIconWrapper>
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
       <InputDropdown
         open={dropdownOpen}
         elementRef={elementRef}

@@ -1,6 +1,6 @@
 export interface ImageViewerProps {
     open: boolean;
     onClose: () => void;
-    url: string | null;
+    url: string;
 }
 //# sourceMappingURL=imageViewer.d.ts.map

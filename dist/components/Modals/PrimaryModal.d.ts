@@ -1,4 +1,4 @@
-import { ConfirmModalProps } from '../../types';
+import type { ConfirmModalProps } from '../../types';
 /**
  *
  * A modal component used to display a primary action confirmation with customizable title, content, and confirm/cancel buttons.
@@ -14,6 +14,6 @@ import { ConfirmModalProps } from '../../types';
  * @property {Function} [onConfirm] - An optional callback function that is called when the confirm button is clicked.
  *
  */
-declare const PrimaryModal: ({ content, confirmText, cancelText, onConfirm, ...props }: ConfirmModalProps) => void;
+declare const PrimaryModal: ({ content, confirmText, cancelText, onConfirm, animation, ...props }: ConfirmModalProps) => void;
 export default PrimaryModal;
 //# sourceMappingURL=PrimaryModal.d.ts.map

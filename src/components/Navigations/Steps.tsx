@@ -1,9 +1,8 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
 import cx from 'classnames';
 import { useMisDesignContext } from '../../context';
 import { COLORS } from '../../libs';
-import { StepProps } from '../../types';
+import type { StepProps } from '../../types';
 import Icon from '../Icon';
 
 /**
@@ -98,7 +97,9 @@ function Steps({
               </div>
             </div>
           );
-        } else if (error || success) {
+        }
+
+        if (error || success) {
           return (
             <div
               key={index}
@@ -115,7 +116,7 @@ function Steps({
               )}
               role="button"
               onClick={() => {
-                if (available) handleChangePage?.(index);
+                if (available) handleChangePage(index);
               }}
             >
               {success ? (
@@ -147,45 +148,44 @@ function Steps({
               </div>
             </div>
           );
-        } else {
-          return (
-            <div
-              key={index}
-              className={cx(
-                `flex gap-2 relative flex-1 rounded-2xl ${
-                  !disabled && available
-                    ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer'
-                    : 'cursor-default'
-                }`,
-                {
-                  'items-start': !!description,
-                  'items-center': !description,
-                },
-              )}
-              role="button"
-              onClick={() => {
-                if (available) handleChangePage?.(index);
-              }}
-            >
-              <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-neutral-50 dark:text-neutral-50-dark border-neutral-50 dark:border-neutral-50-dark">
-                {index + 1}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-4">
-                  <h4 className="text-neutral-50 dark:text-neutral-50-dark">
-                    {title}
-                  </h4>
-                  {index < items.length - 1 && (
-                    <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
-                  )}
-                </div>
-                <p className="text-14px text-neutral-50 dark:text-neutral-50-dark">
-                  {description}
-                </p>
-              </div>
-            </div>
-          );
         }
+        return (
+          <div
+            key={index}
+            className={cx(
+              `flex gap-2 relative flex-1 rounded-2xl ${
+                !disabled && available
+                  ? 'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark cursor-pointer'
+                  : 'cursor-default'
+              }`,
+              {
+                'items-start': !!description,
+                'items-center': !description,
+              },
+            )}
+            role="button"
+            onClick={() => {
+              if (available) handleChangePage(index);
+            }}
+          >
+            <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-16px leading-none  border text-neutral-50 dark:text-neutral-50-dark border-neutral-50 dark:border-neutral-50-dark">
+              {index + 1}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-4">
+                <h4 className="text-neutral-50 dark:text-neutral-50-dark">
+                  {title}
+                </h4>
+                {index < items.length - 1 && (
+                  <div className="h-1 w-full flex-1 border-t border-neutral-40 dark:border-neutral-40-dark" />
+                )}
+              </div>
+              <p className="text-14px text-neutral-50 dark:text-neutral-50-dark">
+                {description}
+              </p>
+            </div>
+          </div>
+        );
       })}
     </div>
   );

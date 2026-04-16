@@ -12,7 +12,6 @@ const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: che
     const [internalChecked, setInternalChecked] = React.useState(defaultChecked || initialChecked);
     const isControlled = checkedProp !== undefined;
     const value = isControlled ? checkedProp : internalChecked;
-    const [focused, setFocused] = React.useState(false);
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -20,16 +19,11 @@ const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: che
         reset: () => setInternalChecked(initialChecked),
         disabled,
     }));
-    const helperMessage = errorProp ?? helperText;
+    const helperMessage = errorProp || helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
-    const handleFocus = () => {
-        if (disabled)
-            return;
-        setFocused(true);
-    };
-    const handleBlur = () => {
-        setFocused(false);
+    const handleBlur = (event) => {
+        props.onBlur?.(event);
     };
     const handleChange = () => {
         const newChecked = !value;
@@ -39,7 +33,7 @@ const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: che
         }
     };
     const handleKeyDown = (e) => {
-        if (!loading && !disabled && (e.key === 'Enter' || e.key === ' ')) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
             e.preventDefault();
             handleChange();
         }
@@ -48,37 +42,35 @@ const Switch = ({ id, name, defaultChecked, initialChecked = false, checked: che
         }
     };
     const inputId = `switch-${id || name}-${React.useId()}`;
-    return (_jsxs("div", { className: cx('relative', {
+    return (_jsx("div", { id: id, className: cx('relative', {
             'w-full': fullWidth,
-        }, className), style: width ? { width } : undefined, children: [_jsxs("div", { className: cx('relative flex text-neutral-90 dark:text-neutral-90-dark', {
-                    'flex-col gap-0.5': labelPosition === 'top',
-                    'flex items-center gap-4': labelPosition === 'left',
-                }), children: [label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { role: "button", tabIndex: disabled ? -1 : 0, className: cx('w-fit flex items-center gap-2.5 border rounded-md focus:ring-3', {
-                            'bg-neutral-20 dark:bg-neutral-20-dark opacity-50': loading || disabled,
-                            'cursor-default': loading,
-                            'cursor-not-allowed': disabled,
-                            'p-[7px]': size === 'default',
-                            'p-[11px]': size === 'large',
-                            'border-neutral-40 dark:border-neutral-40-dark focus:ring-primary-focus dark:focus:ring-primary-focus-dark bg-neutral-10 dark:bg-neutral-10-dark cursor-pointer hover:border-primary-hover dark:hover:border-primary-hover-dark': !isError && !loading && !disabled,
-                            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
-                            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
-                        }), onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: handleKeyDown, onFocus: handleFocus, onBlur: handleBlur, children: [_jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, type: "checkbox", className: "sr-only", checked: value, readOnly: true, ref: elementRef }), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
-                                    'w-7 h-4': size === 'default',
-                                    'w-8 h-5': size === 'large',
-                                }), children: _jsx("div", { className: "absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10 dark:text-neutral-10-dark", children: _jsx(Icon, { name: "loader", size: size === 'default' ? 12 : 16, animation: "spin", strokeWidth: 4 }) }) })) : (_jsx("div", { className: cx('rounded-full transition-colors relative', {
-                                    'w-7 h-4': size === 'default',
-                                    'w-8 h-5': size === 'large',
-                                    'bg-neutral-40 dark:bg-neutral-40-dark': !value && !disabled,
-                                    'bg-primary-main dark:bg-primary-main-dark': value && !disabled,
-                                    'bg-neutral-60 dark:bg-neutral-60-dark cursor-not-allowed': disabled,
-                                }), children: _jsx("div", { className: cx('absolute left-0.5 top-0.5 rounded-full bg-neutral-10 dark:bg-neutral-10-dark transition-all duration-500', {
-                                        'translate-x-3': value,
-                                        'w-3 h-3': size === 'default',
-                                        'w-4 h-4': size === 'large',
-                                    }) }) })), _jsx("div", { className: cx('min-w-5', {
-                                    'text-12px': size === 'default',
-                                    'text-16px': size === 'large',
-                                }), children: value ? trueLabel : falseLabel })] })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
+        }, className), style: { width }, children: _jsxs("div", { className: cx('relative flex text-neutral-90 dark:text-neutral-90-dark', {
+                'flex-col gap-0.5': labelPosition === 'top',
+                'flex items-center gap-4': labelPosition === 'left',
+            }), children: [label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { className: cx('w-fit flex items-center gap-2.5 rounded-md', {
+                        'bg-neutral-20 dark:bg-neutral-20-dark opacity-50': loading || disabled,
+                        'cursor-default': loading,
+                        'cursor-not-allowed': disabled,
+                        'py-1.5': size === 'default',
+                        'py-3': size === 'large',
+                    }), children: [_jsxs("div", { children: [_jsx("input", { ...props, id: inputId, tabIndex: -1, name: name, type: "checkbox", className: "sr-only", checked: value, readOnly: true }), loading ? (_jsx("div", { className: cx('rounded-full transition-colors relative bg-neutral-50 dark:bg-neutral-50-dark', {
+                                        'w-7 h-4': size === 'default',
+                                        'w-8 h-5': size === 'large',
+                                    }), children: _jsx("div", { className: "absolute left-0.5 top-0.5 transition-transform duration-500 translate-x-1.5 text-neutral-10 dark:text-neutral-10-dark", children: _jsx(Icon, { name: "loader", size: size === 'default' ? 12 : 16, animation: "spin", strokeWidth: 4 }) }) })) : (_jsx("div", { role: "button", "aria-label": typeof label === 'string' ? label : 'Toggle switch', ref: elementRef, tabIndex: disabled ? -1 : 0, onMouseDown: !loading && !disabled ? handleChange : undefined, onKeyDown: handleKeyDown, onBlur: handleBlur, className: cx('rounded-full transition-colors relative focus:ring-3 ring-primary-focus dark:ring-primary-focus-dark focus:outline-none', {
+                                        'w-7 h-4': size === 'default',
+                                        'w-8 h-5': size === 'large',
+                                        'bg-neutral-40 dark:bg-neutral-40-dark': !value && !disabled,
+                                        'bg-primary-main dark:bg-primary-main-dark': value && !disabled,
+                                        '!bg-danger-main !dark:bg-danger-main-dark': isError,
+                                        'bg-neutral-60 dark:bg-neutral-60-dark cursor-not-allowed': disabled,
+                                    }), children: _jsx("div", { className: cx('absolute left-0.5 top-0.5 rounded-full bg-neutral-10 dark:bg-neutral-10-dark transition-all duration-500', {
+                                            'translate-x-3': value,
+                                            'w-3 h-3': size === 'default',
+                                            'w-4 h-4': size === 'large',
+                                        }) }) }))] }), _jsxs("div", { children: [_jsx("div", { className: cx('min-w-5', {
+                                        'text-14px': size === 'default',
+                                        'text-18px': size === 'large',
+                                    }), children: value ? trueLabel : falseLabel }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] })] })] }) }));
 };
 Switch.isFormInput = true;
 export default Switch;

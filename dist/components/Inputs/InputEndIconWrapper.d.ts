@@ -4,10 +4,10 @@ interface InputEndIconWrapperProps {
     error?: boolean;
     success?: boolean;
     clearable?: boolean;
-    onClear?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onClear?: () => void;
     endIcon?: React.ReactNode;
     children?: React.ReactNode;
 }
-declare const InputEndIconWrapper: ({ loading, error, success, clearable, onClear, endIcon, children, }: InputEndIconWrapperProps) => import("react/jsx-runtime").JSX.Element;
+declare function InputEndIconWrapper({ loading, error, success, clearable, onClear, endIcon, children, }: Readonly<InputEndIconWrapperProps>): import("react/jsx-runtime").JSX.Element | null;
 export default InputEndIconWrapper;
 //# sourceMappingURL=InputEndIconWrapper.d.ts.map

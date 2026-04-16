@@ -1,3 +1,5 @@
+import type { ModalAnimationConfig } from '../animation';
+
 export interface ModalProps {
   open: boolean;
   children: React.ReactNode;
@@ -6,4 +8,5 @@ export interface ModalProps {
   height?: string | number;
   closeOnOverlayClick?: boolean;
   onClose?: () => void;
+  animation?: ModalAnimationConfig;
 }

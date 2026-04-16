@@ -1,4 +1,4 @@
-import { SelectValue } from '../inputs';
+import type { SelectValue } from '../inputs';
 
 export interface TableFilterSelectProps<T, D> {
   type: 'select' | 'autocomplete';

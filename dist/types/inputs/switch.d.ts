@@ -5,7 +5,7 @@ export interface SwitchRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultChecked' | 'onChange' | 'size' | 'required'> {
+export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'defaultChecked' | 'onChange' | 'size' | 'required' | 'type'> {
     defaultChecked?: boolean;
     initialChecked?: boolean;
     label?: string;

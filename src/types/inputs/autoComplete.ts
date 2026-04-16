@@ -1,4 +1,5 @@
-import { SelectValue } from './select';
+import type { ModalAnimationConfig } from '../animation';
+import type { SelectValue } from './select';
 
 export interface AutoCompleteRef<T, D = undefined> {
   element: HTMLDivElement | null;
@@ -8,17 +9,17 @@ export interface AutoCompleteRef<T, D = undefined> {
   disabled: boolean;
 }
 
-interface BaseProps<T, D = undefined>
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    | 'onChange'
-    | 'value'
-    | 'defaultValue'
-    | 'size'
-    | 'required'
-    | 'checked'
-    | 'defaultChecked'
-  > {
+interface BaseProps<T, D = undefined> extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  | 'onChange'
+  | 'value'
+  | 'defaultValue'
+  | 'size'
+  | 'required'
+  | 'checked'
+  | 'defaultChecked'
+  | 'type'
+> {
   value?: SelectValue<T, D> | null;
   defaultValue?: SelectValue<T, D> | T | null;
   initialValue?: SelectValue<T, D> | null;
@@ -47,6 +48,7 @@ interface BaseProps<T, D = undefined>
     selected: SelectValue<T, D> | null,
     highlightedIndex: number,
   ) => React.ReactNode;
+  animation?: ModalAnimationConfig;
 }
 
 interface WithoutAppendProps<T, D = undefined> {

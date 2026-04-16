@@ -1,9 +1,11 @@
 import React from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { EMAIL_REGEX, URL_REGEX } from '../../const/regex';
-import { FormProps } from '../../types';
-import { ButtonProps, FormRule } from '../../types/inputs';
-import {
+import type { FormDisabledStore } from '../../libs/FormDisabledStore';
+import { FormStore } from '../../libs/FormStore';
+import type { FormProps } from '../../types';
+import type { ButtonProps, FormRule } from '../../types/inputs';
+import type {
   FormTemplate,
   InputProps,
   InputPropsRefType,
@@ -24,6 +26,47 @@ import TextArea from './TextArea';
 import TextField from './TextField';
 import TimerField from './TimerField';
 
+// ─── Form Context ─────────────────────────────────────────────────────────────
+// Allows components nested deeper than direct Form children (e.g. a custom row
+// component that owns its own inputs internally) to register those inputs with
+// the Form's error-store and ref-tracking by calling useFormEnhanceChild().
+type FormContextValue = {
+  enhanceChild: (child: React.ReactNode) => React.ReactNode;
+};
+const FormContext = React.createContext<FormContextValue | null>(null);
+
+/**
+ * Returns the Form's `enhanceChild` function so that inputs rendered inside a
+ * custom component (not direct JSX children of `<Form>`) can still be wired up
+ * to the form's error store, dirty tracking, and ref collection.
+ *
+ * Must be called inside a component that is rendered within a `<Form>`.
+ */
+export function useFormEnhanceChild() {
+  return React.useContext(FormContext)?.enhanceChild ?? null;
+}
+
+/**
+ * Wrapper that connects a single input to the nearest `<Form>`.
+ * Use this inside custom components that own their inputs internally
+ * (i.e. the inputs are not direct JSX children of `<Form>`).
+ *
+ * @example
+ * function MyRow({ defaultValue }) {
+ *   return (
+ *     <div className="flex gap-4">
+ *       <FormField><TextField name="name" defaultValue={defaultValue.name} /></FormField>
+ *       <FormField><Select name="status" defaultValue={defaultValue.status} /></FormField>
+ *     </div>
+ *   );
+ * }
+ */
+export function FormField({ children }: { children: React.ReactElement }) {
+  const enhanceChild = useFormEnhanceChild();
+  return (enhanceChild?.(children) ?? children) as React.ReactElement;
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 /**
  * List of predefined rule. Other than this, user can add rule in pattern
  */
@@ -43,20 +86,79 @@ const DEFAULT_ERROR_MESSAGES = {
 
 const isFormInput = (
   el: React.ReactNode,
-): el is React.ReactElement<InputProps<any>> =>
-  React.isValidElement(el) && !!(el.type as any).isFormInput;
+): el is React.ReactElement<InputProps<unknown>> =>
+  React.isValidElement(el) &&
+  !!(el.type as { isFormInput?: boolean }).isFormInput;
 
 const isFormSubmitButton = (
   el: React.ReactNode,
 ): el is React.ReactElement<ButtonProps> => {
-  return React.isValidElement(el) && (el.props as any).type === 'submit';
+  return (
+    React.isValidElement(el) &&
+    (el.props as { type?: string }).type === 'submit'
+  );
 };
+
+interface FormFieldWrapperProps {
+  name: string;
+  errorStore: FormStore['errorStore'];
+  disabledStore: FormDisabledStore;
+  propDisabled: boolean | undefined;
+  externalDisabled: boolean;
+  children: React.ReactElement<{
+    error?: boolean | string;
+    disabled?: boolean;
+  }>;
+}
+
+const FormFieldWrapper = React.memo(function FormFieldWrapper({
+  name,
+  errorStore,
+  disabledStore,
+  propDisabled,
+  externalDisabled,
+  children,
+}: FormFieldWrapperProps) {
+  const error = React.useSyncExternalStore(
+    errorStore.makeSubscribe(name),
+    errorStore.makeSnapshot(name),
+  );
+  const isSubmitting = React.useSyncExternalStore(
+    disabledStore.subscribe,
+    disabledStore.getSnapshot,
+  );
+  const disabled = propDisabled ?? (externalDisabled || isSubmitting);
+  return React.cloneElement(children, {
+    error: error ?? undefined,
+    disabled,
+  });
+});
+
+interface FormSubmitButtonWrapperProps {
+  disabledStore: FormDisabledStore;
+  externalDisabled: boolean;
+  children: React.ReactElement<ButtonProps>;
+}
+
+const FormSubmitButtonWrapper = React.memo(function FormSubmitButtonWrapper({
+  disabledStore,
+  externalDisabled,
+  children,
+}: FormSubmitButtonWrapperProps) {
+  const isSubmitting = React.useSyncExternalStore(
+    disabledStore.subscribe,
+    disabledStore.getSnapshot,
+  );
+  const disabled = children.props.disabled || externalDisabled || isSubmitting;
+  return React.cloneElement(children, { disabled });
+});
 
 /**
  * High-performance form component with data domain management. Includes data entry and validation.
  */
 const Form = <T,>({
   onSubmit,
+  onError,
   onReset,
   className,
   rules,
@@ -67,15 +169,22 @@ const Form = <T,>({
   children,
   template,
 }: FormProps<T>) => {
-  const inputRefsRef = React.useRef<Record<string, InputPropsRefType[]>>({});
-  const submitButtonRef = React.useRef<HTMLButtonElement>(null);
-  const inputOrderRef = React.useRef<string[]>([]);
+  // ─── Single consolidated store (replaces 8+ individual useRefs) ────────
+  const storeRef = React.useRef(new FormStore());
+  const store = storeRef.current;
 
-  const [errors, setErrors] = React.useState<
-    Record<string, string | undefined>
-  >({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const formDisabled = disabled || isSubmitting;
+  // DOM ref for the submit button (kept separate — it's a real DOM element)
+  const submitButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  // ─── Stable refs for closure stabilization ─────────────────────────────
+  const disabledRef = React.useRef(disabled);
+  disabledRef.current = disabled;
+
+  const submitOnChangeRef = React.useRef(submitOnChange);
+  submitOnChangeRef.current = submitOnChange;
+
+  const focusOnLastFieldEnterRef = React.useRef(focusOnLastFieldEnter);
+  focusOnLastFieldEnterRef.current = focusOnLastFieldEnter;
 
   const getErrorMessage = (
     rule: FormRule,
@@ -92,34 +201,17 @@ const Form = <T,>({
       .replace('{max}', String(rule.max));
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    const invalidFields = validate();
-
-    if (invalidFields.length === 0) {
-      const result = getValues();
-      onSubmit?.(result);
-    }
-    setIsSubmitting(false);
-  };
-
   const handleReset = React.useCallback(() => {
-    for (const refs of Object.values(inputRefsRef.current)) {
-      for (const ref of refs) {
-        if (ref && typeof ref.reset === 'function') {
-          ref.reset();
-        }
-      }
-    }
-    setErrors({});
+    store.reset();
     onReset?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const validate = React.useCallback(() => {
     const newErrors: Record<string, string> = {};
-    const typedValues: Record<string, any> = {};
+    const typedValues: Record<string, unknown[]> = {};
 
-    for (const [key, refs] of Object.entries(inputRefsRef.current)) {
+    for (const [key, refs] of Object.entries(store.inputRefs)) {
       const values = refs.map((r) => r?.value).filter((v) => v !== undefined);
       typedValues[key] = values;
     }
@@ -127,174 +219,131 @@ const Form = <T,>({
     if (!rules) return [];
 
     for (const [fieldName, fieldRules] of Object.entries(
-      rules(typedValues as T),
+      rules(typedValues as { [K in keyof T]: T[K][] }),
     )) {
-      const values = typedValues[fieldName];
-      const refs = inputRefsRef.current[fieldName];
+      const refs = store.inputRefs[fieldName];
       if (!refs) continue;
 
-      for (const rule of fieldRules as FormRule[]) {
-        const checkValue = (val: any) => {
-          // Handle required rule
-          if (
-            rule.required &&
-            (val === undefined ||
-              val === null ||
-              val === '' ||
-              (Array.isArray(val) && val.length === 0) ||
-              (val instanceof Date && Number.isNaN(val.getTime())))
-          ) {
-            // Do not show required error if submitOnChange is true since user need time to fill all fields
-            if (!submitOnChange) {
-              newErrors[fieldName] = getErrorMessage(rule, 'required');
-            }
-          } else if (rule.pattern) {
-            const pattern =
-              typeof rule.pattern === 'string'
-                ? new RegExp(rule.pattern)
-                : rule.pattern;
-            if (!pattern.test(String(val))) {
-              newErrors[fieldName] = getErrorMessage(rule, 'pattern');
-            }
-          } else if (
-            rule.minLength !== undefined &&
-            (typeof val === 'number' || typeof val === 'string') &&
-            String(val).length < rule.minLength
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'minLength');
-          } else if (
-            rule.maxLength !== undefined &&
-            (typeof val === 'number' || typeof val === 'string') &&
-            String(val).length > rule.maxLength
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'maxLength');
-          } else if (
-            rule.exactLength !== undefined &&
-            (typeof val === 'number' || typeof val === 'string') &&
-            String(val).length !== rule.exactLength
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'exactLength');
-          } else if (
-            rule.min !== undefined &&
-            typeof val === 'number' &&
-            val < rule.min
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'min');
-          } else if (
-            rule.max !== undefined &&
-            typeof val === 'number' &&
-            val > rule.max
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'max');
-          } else if (
-            rule.email &&
-            typeof val === 'string' &&
-            !EMAIL_REGEX.test(val)
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'email');
-          } else if (
-            rule.url &&
-            typeof val === 'string' &&
-            !URL_REGEX.test(val)
-          ) {
-            newErrors[fieldName] = getErrorMessage(rule, 'url');
-          } else if (rule.equal !== undefined && val !== rule.equal) {
-            newErrors[fieldName] = getErrorMessage(rule, 'equal');
-          } else if (rule.validate && !rule.validate(val)) {
-            newErrors[fieldName] = getErrorMessage(rule, 'validate');
-          }
-        };
+      for (const element of refs) {
+        const instanceKey = store.refToErrorKey.get(element) ?? fieldName;
+        const val = element?.value;
+        if (val === undefined) continue;
 
-        // Check each value for this field
-        for (const value of values) {
-          checkValue(value);
-          if (newErrors[fieldName]) break; // Stop at first error
+        for (const rule of fieldRules as FormRule[]) {
+          const checkValue = (innerVal: unknown, innerInstanceKey: string) => {
+            // Handle required rule
+            if (
+              rule.required &&
+              (innerVal === undefined ||
+                innerVal === null ||
+                (typeof innerVal === 'string' && innerVal.trim() === '') ||
+                (Array.isArray(innerVal) && innerVal.length === 0) ||
+                (innerVal instanceof Date && Number.isNaN(innerVal.getTime())))
+            ) {
+              // Do not show required error if submitOnChange is true since user need time to fill all fields
+              if (!submitOnChange) {
+                newErrors[innerInstanceKey] = getErrorMessage(rule, 'required');
+              }
+            } else if (rule.pattern) {
+              const pattern =
+                typeof rule.pattern === 'string'
+                  ? new RegExp(rule.pattern)
+                  : rule.pattern;
+              const str =
+                typeof innerVal === 'string' || typeof innerVal === 'number'
+                  ? String(innerVal)
+                  : '';
+              if (!pattern.test(str)) {
+                newErrors[innerInstanceKey] = getErrorMessage(rule, 'pattern');
+              }
+            } else if (
+              rule.minLength !== undefined &&
+              (typeof innerVal === 'number' || typeof innerVal === 'string') &&
+              String(innerVal).length < rule.minLength
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'minLength');
+            } else if (
+              rule.maxLength !== undefined &&
+              (typeof innerVal === 'number' || typeof innerVal === 'string') &&
+              String(innerVal).length > rule.maxLength
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'maxLength');
+            } else if (
+              rule.exactLength !== undefined &&
+              (typeof innerVal === 'number' || typeof innerVal === 'string') &&
+              String(innerVal).length !== rule.exactLength
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(
+                rule,
+                'exactLength',
+              );
+            } else if (
+              rule.min !== undefined &&
+              typeof innerVal === 'number' &&
+              innerVal < rule.min
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'min');
+            } else if (
+              rule.max !== undefined &&
+              typeof innerVal === 'number' &&
+              innerVal > rule.max
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'max');
+            } else if (
+              rule.email &&
+              typeof innerVal === 'string' &&
+              !EMAIL_REGEX.test(innerVal)
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'email');
+            } else if (
+              rule.url &&
+              typeof innerVal === 'string' &&
+              !URL_REGEX.test(innerVal)
+            ) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'url');
+            } else if (rule.equal !== undefined && innerVal !== rule.equal) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'equal');
+            } else if (rule.validate && !rule.validate(innerVal)) {
+              newErrors[innerInstanceKey] = getErrorMessage(rule, 'validate');
+            }
+          };
+
+          checkValue(val, instanceKey);
+          if (newErrors[instanceKey]) break; // Stop at first error for this instance
         }
       }
     }
-    setErrors(newErrors);
+    store.errorStore.setErrors(newErrors);
     return Object.keys(newErrors);
-  }, [rules, submitOnChange]);
+  }, [rules, submitOnChange, store]);
 
-  const handleFormKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    currentKey: string,
-  ) => {
-    if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault();
-      const order = inputOrderRef.current;
-      const currentIndex = order.indexOf(currentKey);
-      if (currentIndex === -1) return;
+  const getValue = React.useCallback(
+    <K extends keyof T>(key: K) => store.getValue<T, K>(key),
+    [store],
+  );
 
-      let nextIndex = -1;
+  const getValues = React.useCallback(() => store.getValues<T>(), [store]);
 
-      if (e.shiftKey && e.key === 'Tab') {
-        // 🔹 Go backward when Shift + Tab
-        for (let i = currentIndex - 1; i >= 0; i--) {
-          const prevKey = order[i];
-          const refs = inputRefsRef.current[prevKey];
-          if (refs?.some((r) => !r.disabled)) {
-            nextIndex = i;
-            break;
-          }
-        }
+  // handleSubmit uses disabledStore instead of setState
+  const handleSubmit = React.useCallback(async () => {
+    store.disabledStore.set(true);
+    try {
+      const invalidFields = validate();
+
+      if (invalidFields.length === 0) {
+        const result = getValues();
+        await onSubmit?.(result);
       } else {
-        // 🔹 Normal Tab or Enter → go forward
-        for (let i = currentIndex + 1; i < order.length; i++) {
-          const nextKey = order[i];
-          const refs = inputRefsRef.current[nextKey];
-          if (refs?.some((r) => !r.disabled)) {
-            nextIndex = i;
-            break;
-          }
-        }
+        onError?.(invalidFields);
       }
-
-      if (nextIndex > -1) {
-        const targetRefs = inputRefsRef.current[order[nextIndex]];
-        const target = targetRefs.find((r) => !r?.disabled);
-        target?.focus?.();
-        return;
-      }
-
-      // 🔹 No more enabled inputs
-      if (!e.shiftKey) {
-        if (focusOnLastFieldEnter) {
-          if (submitButtonRef.current && !submitButtonRef.current.disabled) {
-            submitButtonRef.current.focus();
-          }
-        } else {
-          handleSubmit();
-        }
-      }
+    } finally {
+      store.disabledStore.set(false);
     }
-  };
+  }, [validate, getValues, onSubmit, onError, store]);
 
-  const getValue = React.useCallback(<K extends keyof T>(key: K) => {
-    const refs = inputRefsRef.current[key as string];
-    if (!refs || refs.length === 0) return undefined;
-    if (refs.length === 1) return refs[0].value as T[K];
-    return refs.map((r) => r?.value) as unknown as T[K];
-  }, []);
-
-  const getValues = React.useCallback(() => {
-    const result: Record<string, any> = {};
-
-    for (const [key, refs] of Object.entries(inputRefsRef.current)) {
-      const values = refs.map((r) => r?.value).filter((v) => v !== undefined);
-
-      if (values.length === 1) {
-        result[key] = values[0];
-      } else if (values.length > 1) {
-        result[key] = values;
-      }
-    }
-
-    return result as T;
-  }, []);
-
-  const errorsRef = React.useRef(errors);
-  errorsRef.current = errors;
+  // Stable ref for handleSubmit so handleFormKeyDown can read it
+  const handleSubmitRef = React.useRef(handleSubmit);
+  handleSubmitRef.current = handleSubmit;
 
   const debounceSubmit = useDebouncedCallback(() => {
     const invalidFields = validate();
@@ -304,108 +353,177 @@ const Form = <T,>({
     }
   }, 2000);
 
-  const enhanceChild = (child: React.ReactNode): React.ReactNode => {
-    if (!React.isValidElement(child)) return child;
+  // Stable ref for debounceSubmit
+  const debounceSubmitRef = React.useRef(debounceSubmit);
+  debounceSubmitRef.current = debounceSubmit;
 
-    if (isFormSubmitButton(child)) {
-      return React.cloneElement(child as React.ReactElement<any>, {
-        ...child.props,
-        ref: (child as any).ref || submitButtonRef,
-      });
-    }
-
-    const childProps = child.props as InputProps<any>;
-    if (isFormInput(child)) {
-      const {
-        name,
-        onChange: childOnChange,
-        defaultValue,
-        inputRef: originalInputRef,
-      } = childProps;
-      if (!name) return child;
-
-      if (!inputOrderRef.current.includes(name)) {
-        inputOrderRef.current.push(name);
+  // handleFormKeyDown reads all mutable values from refs
+  const handleFormKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>, currentKey: string) => {
+      // Allow Enter to work naturally in textarea elements (insert newline)
+      if (
+        (e.target as HTMLElement).tagName === 'TEXTAREA' &&
+        e.key === 'Enter'
+      ) {
+        return;
       }
 
-      const handleChange = (value: any) => {
-        if (errors[name]) {
-          setErrors((prev) => ({ ...prev, [name]: undefined }));
-        }
-        childOnChange?.(value);
-        if (submitOnChange) {
-          debounceSubmit();
-        }
-      };
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        const order = store.inputOrder;
+        const currentIndex = order.indexOf(currentKey);
+        if (currentIndex === -1) return;
 
-      // Use React.useRef to persist the cleanup function across re-renders
-      const cleanupRef = React.useRef<(() => void) | null>(null);
+        let nextIndex = -1;
 
-      return React.cloneElement(child, {
-        ...child.props,
-        defaultValue,
-        onChange: handleChange,
-        error: errors[name] ?? undefined,
-        disabled: childProps.disabled ?? formDisabled,
-        onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
-          if (childProps.onKeyDown) {
-            childProps.onKeyDown(e);
+        if (e.shiftKey && e.key === 'Tab') {
+          // 🔹 Go backward when Shift + Tab
+          for (let i = currentIndex - 1; i >= 0; i--) {
+            const prevKey = order[i];
+            const refs = store.inputRefs[prevKey];
+            if (refs?.some((r) => !r.disabled)) {
+              nextIndex = i;
+              break;
+            }
+          }
+        } else {
+          // 🔹 Normal Tab or Enter → go forward
+          for (let i = currentIndex + 1; i < order.length; i++) {
+            const nextKey = order[i];
+            const refs = store.inputRefs[nextKey];
+            if (refs?.some((r) => !r.disabled)) {
+              nextIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (nextIndex > -1) {
+          const targetRefs = store.inputRefs[order[nextIndex]];
+          const target = targetRefs.find((r) => !r?.disabled);
+          target?.focus?.();
+          return;
+        }
+
+        // 🔹 No more enabled inputs
+        if (!e.shiftKey) {
+          if (focusOnLastFieldEnterRef.current) {
+            if (submitButtonRef.current && !submitButtonRef.current.disabled) {
+              submitButtonRef.current.focus();
+            }
           } else {
-            handleFormKeyDown(e, name);
+            handleSubmitRef.current();
           }
-        },
-        inputRef: (ref: InputPropsRefType) => {
-          // Run previous cleanup if it exists
-          if (cleanupRef.current) {
-            cleanupRef.current();
-            cleanupRef.current = null;
-          }
+        }
+      }
+    },
+    [store],
+  );
 
-          if (name && ref) {
-            if (!inputRefsRef.current[name]) {
-              inputRefsRef.current[name] = [];
+  // enhanceChild reads all mutable values from refs — stable across renders
+  const enhanceChild = React.useCallback(
+    (child: React.ReactNode): React.ReactNode => {
+      if (!React.isValidElement(child)) return child;
+
+      if (isFormSubmitButton(child)) {
+        const childWithRef = child as React.ReactElement & {
+          ref?: React.Ref<HTMLButtonElement>;
+        };
+        const cloned = React.cloneElement(child, {
+          ...child.props,
+          ref: childWithRef.ref || submitButtonRef,
+        } as Partial<ButtonProps>);
+        return (
+          <FormSubmitButtonWrapper
+            disabledStore={store.disabledStore}
+            externalDisabled={disabledRef.current}
+          >
+            {cloned}
+          </FormSubmitButtonWrapper>
+        );
+      }
+
+      const childProps = child.props as InputProps<unknown>;
+      if (isFormInput(child)) {
+        const {
+          name,
+          onChange: childOnChange,
+          defaultValue,
+          inputRef: originalInputRef,
+        } = childProps;
+        if (!name) return child;
+
+        store.renderCounters[name] = (store.renderCounters[name] ?? -1) + 1;
+        const errorKey =
+          store.renderCounters[name] === 0
+            ? name
+            : `${name}__${store.renderCounters[name]}`;
+
+        if (!store.inputOrder.includes(name)) {
+          store.inputOrder.push(name);
+        }
+
+        const handleChange = (value: unknown) => {
+          store.errorStore.setError(errorKey, undefined);
+          store.dirtyFields[name] = true;
+          store.lastValues[name] = value;
+          childOnChange?.(value);
+          if (submitOnChangeRef.current) {
+            debounceSubmitRef.current();
+          }
+        };
+
+        const enhancedChild = React.cloneElement(child, {
+          ...child.props,
+          defaultValue,
+          onChange: handleChange,
+          onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (childProps.onKeyDown) {
+              childProps.onKeyDown(e);
+            } else {
+              handleFormKeyDown(e, name);
             }
-            const refsArray = inputRefsRef.current[name];
-            if (!refsArray.includes(ref)) {
-              refsArray.push(ref);
-            }
+          },
+          inputRef: store.getOrCreateInputRef(errorKey, name, originalInputRef),
+        });
 
-            // Create cleanup function
-            cleanupRef.current = () => {
-              if (inputRefsRef.current[name]) {
-                inputRefsRef.current[name] = inputRefsRef.current[name].filter(
-                  (r) => r !== ref,
-                );
-                if (inputRefsRef.current[name].length === 0) {
-                  delete inputRefsRef.current[name];
-                }
-              }
-            };
-          }
+        return (
+          <FormFieldWrapper
+            key={errorKey}
+            name={errorKey}
+            errorStore={store.errorStore}
+            disabledStore={store.disabledStore}
+            propDisabled={childProps.disabled}
+            externalDisabled={disabledRef.current}
+          >
+            {enhancedChild}
+          </FormFieldWrapper>
+        );
+      }
 
-          // Call original ref if it exists
-          if (typeof originalInputRef === 'function') {
-            originalInputRef(ref);
-          } else if (originalInputRef?.current !== undefined) {
-            originalInputRef.current = ref;
-          }
+      if (childProps.children) {
+        return React.cloneElement(
+          child as React.ReactElement<React.PropsWithChildren<unknown>>,
+          {
+            children: React.Children.map(childProps.children, enhanceChild),
+          },
+        );
+      }
 
-          return cleanupRef.current || undefined;
-        },
-      });
-    }
+      return child;
+    },
+    [handleFormKeyDown, store],
+  );
 
-    if (childProps.children) {
-      return React.cloneElement(
-        child as React.ReactElement<React.PropsWithChildren<unknown>>,
-        {
-          children: React.Children.map(childProps.children, enhanceChild),
-        },
-      );
-    }
-
-    return child;
-  };
+  // Keep a ref to the latest enhanceChild so the stable context callback
+  // always calls the version that closes over the current render's state
+  // (renderCounters, errorStoreRef, etc.).
+  const enhanceChildRef = React.useRef(enhanceChild);
+  enhanceChildRef.current = enhanceChild;
+  const formContextValue = React.useMemo<FormContextValue>(
+    () => ({ enhanceChild: (child) => enhanceChildRef.current(child) }),
+    [],
+  );
 
   React.useImperativeHandle(
     formRef,
@@ -415,76 +533,81 @@ const Form = <T,>({
       validate,
       getValue,
       getValues,
-      getErrors: () => errorsRef.current,
-      setErrors,
+      getDirtyFields: () => store.dirtyFields,
+      getErrors: () => store.errorStore.getErrors(),
+      setErrors: (errors) => store.errorStore.setErrors(errors),
     }),
-    [handleSubmit, handleReset, validate, getValue, getValues],
+    [handleSubmit, handleReset, validate, getValue, getValues, store],
   );
 
+  // renderTemplate no longer depends on formDisabled
   const renderTemplate = React.useCallback(
-    (template: FormTemplate[]): React.ReactNode => {
+    (formTemplate: FormTemplate[]): React.ReactNode => {
       const registerInputRef = (name?: string) => {
-        const cleanupRef = React.useRef<(() => void) | null>(null);
-
-        return (ref: any) => {
-          // Run previous cleanup if it exists
-          if (cleanupRef.current) {
-            cleanupRef.current();
-            cleanupRef.current = null;
-          }
-
-          if (!name || !ref) return;
-
-          if (!inputRefsRef.current[name]) {
-            inputRefsRef.current[name] = [];
-          }
-          const refsArray = inputRefsRef.current[name];
-          if (!refsArray.includes(ref)) {
-            refsArray.push(ref);
-          }
-
-          // Create cleanup function
-          cleanupRef.current = () => {
-            if (inputRefsRef.current[name]) {
-              inputRefsRef.current[name] = inputRefsRef.current[name].filter(
-                (r) => r !== ref,
-              );
-              if (inputRefsRef.current[name].length === 0) {
-                delete inputRefsRef.current[name];
-              }
+        // Each call creates a closure tracking its own last-mounted ref
+        let lastRef: InputPropsRefType | null = null;
+        return (ref: InputPropsRefType | null) => {
+          if (ref !== null && ref !== undefined) {
+            lastRef = ref;
+            if (name) {
+              store.registerRef(name, ref);
             }
-          };
-
-          return cleanupRef.current;
+          } else if (lastRef !== null) {
+            if (name) {
+              store.unregisterRef(name, lastRef);
+            }
+            lastRef = null;
+          }
         };
       };
+
+      const wrapWithErrorStore = (
+        name: string | undefined,
+        el: React.ReactElement<{
+          error?: boolean | string;
+          disabled?: boolean;
+        }>,
+        propDisabled?: boolean,
+      ): React.ReactElement => {
+        if (!name) return el;
+        return (
+          <FormFieldWrapper
+            key={el.key ?? undefined}
+            name={name}
+            errorStore={store.errorStore}
+            disabledStore={store.disabledStore}
+            propDisabled={propDisabled}
+            externalDisabled={disabledRef.current}
+          >
+            {el}
+          </FormFieldWrapper>
+        );
+      };
+
+      const commonInputProps = <V = unknown,>(
+        name?: string,
+        childOnChange?: (value: V) => void,
+      ) =>
+        name
+          ? {
+              onChange: (value: V) => {
+                store.errorStore.setError(name, undefined);
+                store.dirtyFields[name] = true;
+                store.lastValues[name] = value;
+                childOnChange?.(value);
+                if (submitOnChangeRef.current) {
+                  debounceSubmitRef.current();
+                }
+              },
+              inputRef: registerInputRef(name),
+            }
+          : {};
 
       const renderItem = (
         item: FormTemplate,
         index: number,
       ): React.ReactNode => {
         const key = item.id ?? index;
-
-        const commonInputProps = (
-          name?: string,
-          childOnChange?: (value: any) => void,
-        ) =>
-          name
-            ? {
-                disabled: formDisabled,
-                error: errors[name],
-                onChange: (value: any) => {
-                  if (errors[name]) {
-                    setErrors((prev) => ({ ...prev, [name]: undefined }));
-                  }
-                  childOnChange?.(value);
-                  if (submitOnChange) {
-                    debounceSubmit();
-                  }
-                },
-                inputRef: registerInputRef(name),
-              }
-            : {};
 
         switch (item.component) {
           case 'div':
@@ -502,116 +625,144 @@ const Form = <T,>({
             );
 
           case 'AutoComplete':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <AutoComplete
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'AutoCompleteMultiple':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <AutoCompleteMultiple
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'Checkbox':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <Checkbox
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'DatePicker':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <DatePicker
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'DateRangePicker':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <DateRangePicker
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'MultipleDatePicker':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <MultipleDatePicker
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'NumberTextField':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <NumberTextField
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'PasswordField':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <PasswordField
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'RadioGroup':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <RadioGroup
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'Select':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <Select
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'Switch':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <Switch
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'TextArea':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <TextArea
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'TextField':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <TextField
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           case 'TimerField':
-            return (
+            return wrapWithErrorStore(
+              item.name,
               <TimerField
                 key={key}
                 {...item}
                 {...commonInputProps(item.name, item.onChange)}
-              />
+              />,
+              item.disabled,
             );
           default:
             // eslint-disable-next-line no-console
@@ -620,27 +771,35 @@ const Form = <T,>({
         }
       };
 
-      return template.map((item, index) => renderItem(item, index));
+      return formTemplate.map((item, index) => renderItem(item, index));
     },
-    [errors, formDisabled, submitOnChange, debounceSubmit],
+    [store],
+  );
+
+  // Reset renderCounters at top of each render
+  store.renderCounters = {};
+
+  const enhancedChildren = React.useMemo(
+    () => React.Children.map(children, enhanceChild),
+    [children, enhanceChild],
   );
 
   return (
-    <form
-      className={className}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-      onReset={(e) => {
-        e.preventDefault();
-        handleReset();
-      }}
-    >
-      {template
-        ? renderTemplate(template)
-        : React.Children.map(children, enhanceChild)}
-    </form>
+    <FormContext.Provider value={formContextValue}>
+      <form
+        className={className}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmitRef.current();
+        }}
+        onReset={(e) => {
+          e.preventDefault();
+          handleReset();
+        }}
+      >
+        {template ? renderTemplate(template) : enhancedChildren}
+      </form>
+    </FormContext.Provider>
   );
 };
 

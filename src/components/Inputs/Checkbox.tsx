@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { CheckboxProps } from '../../types';
+import type { CheckboxProps } from '../../types';
 import Icon from '../Icon';
 import InputHelper from './InputHelper';
 
@@ -36,7 +36,7 @@ const Checkbox = ({
   const isControlled = valueProp !== undefined;
   const value = isControlled ? valueProp : internalValue;
 
-  const helperMessage = errorProp ?? helperText;
+  const helperMessage = errorProp || helperText;
   const isError = !!errorProp;
   const disabled = loading || disabledProp;
 
@@ -58,18 +58,22 @@ const Checkbox = ({
     }
   };
 
-  const handleFocus = () => {
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     if (disabled) return;
     setFocused(true);
+    props.onFocus?.(event);
   };
-  const handleBlur = () => setFocused(false);
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(false);
+    props.onBlur?.(event);
+  };
 
   const inputId = `checkbox-${id || name}-${React.useId()}`;
 
   return (
-    <div className={className} style={width ? { width } : undefined}>
+    <div id={id} className={className} style={{ width }}>
       <label
-        className={cx('flex w-fit', {
+        className={cx('flex items w-fit h-fit items-center', {
           'cursor-not-allowed opacity-50': disabled,
           'cursor-pointer': !disabled,
           'gap-0.5 items-center':

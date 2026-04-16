@@ -1,4 +1,4 @@
-import { SwitchProps } from '../../types';
+import type { SwitchProps } from '../../types';
 /**
  * The Switch component is used for toggling between two states. Most commonly used for setting on or off.
  */

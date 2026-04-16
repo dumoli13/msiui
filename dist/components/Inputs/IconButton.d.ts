@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButtonProps } from '../../types/inputs';
+import type { IconButtonProps } from '../../types/inputs';
 /**
  *  Icon buttons are commonly found in app bars and toolbars.
  *

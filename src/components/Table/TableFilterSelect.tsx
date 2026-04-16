@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { SelectRef, SelectValue } from '../../types';
-import { TableFilterSelectProps } from '../../types/table/tableFilterSelect';
+import type { SelectRef, SelectValue } from '../../types';
+import type { TableFilterSelectProps } from '../../types/table/tableFilterSelect';
 import Popper from '../Displays/Popper';
 import Icon from '../Icon';
 import AutoComplete from '../Inputs/AutoComplete';
@@ -18,9 +18,9 @@ const TableFilterSelect = <T, D>({
   const inputRef = React.useRef<SelectRef<T, D>>(null);
   const [open, setOpen] = React.useState(false);
 
-  const handleChange = (value: SelectValue<T, D> | null) => {
-    onChange?.(value);
-    if (value === null) {
+  const handleChange = (newValue: SelectValue<T, D> | null) => {
+    onChange?.(newValue);
+    if (newValue === null) {
       setOpen(false);
     }
   };
@@ -75,6 +75,7 @@ const TableFilterSelect = <T, D>({
             className={cx({
               'text-primary-main dark:text-primary-main-dark': value,
             })}
+            strokeWidth={2}
           />
         }
         variant="outlined"

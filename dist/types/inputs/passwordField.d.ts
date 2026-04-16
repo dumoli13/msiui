@@ -5,7 +5,7 @@ export interface PasswordFieldRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface PasswordFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'required' | 'checked'> {
+export interface PasswordFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'type'> {
     value?: string;
     defaultValue?: string;
     initialValue?: string;

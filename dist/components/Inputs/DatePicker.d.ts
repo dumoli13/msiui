@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePickerProps } from '../../types';
+import type { DatePickerProps } from '../../types';
 export declare const CancelButton: ({ onClick, }: {
     onClick: React.MouseEventHandler<HTMLButtonElement>;
 }) => import("react/jsx-runtime").JSX.Element;

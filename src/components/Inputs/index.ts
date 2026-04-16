@@ -33,3 +33,8 @@ export { default as TextField } from './TextField';
 export { default as TimerField } from './TimerField';
 
 export { default as Form } from './Form';
+export { FormField } from './Form';
+
+export { default as Uploader } from './Uploader';
+
+export { default as RichTextField } from './RichTextField';

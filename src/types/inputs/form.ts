@@ -1,35 +1,41 @@
-import { AutoCompleteProps, AutoCompleteRef } from './autoComplete';
-import {
+import type { AutoCompleteProps, AutoCompleteRef } from './autoComplete';
+import type {
   AutoCompleteMultipleProps,
   AutoCompleteMultipleRef,
 } from './autoCompleteMultiple';
-import { ButtonProps } from './button';
-import { CheckboxProps, CheckboxRef } from './checkbox';
-import { DatePickerProps, DatePickerRef } from './datePicker';
-import { DateRangePickerProps, DateRangePickerRef } from './dateRangePicker';
-import {
+import type { ButtonProps } from './button';
+import type { CheckboxProps, CheckboxRef } from './checkbox';
+import type { DatePickerProps, DatePickerRef } from './datePicker';
+import type {
+  DateRangePickerProps,
+  DateRangePickerRef,
+} from './dateRangePicker';
+import type {
   MultipleDatePickerProps,
   MultipleDatePickerRef,
 } from './multipleDatePicker';
-import { NumberTextFieldProps, NumberTextfieldRef } from './numberTextField';
-import { PasswordFieldProps, PasswordFieldRef } from './passwordField';
-import { RadioGroupProps } from './radioGroup';
-import { SelectProps, SelectRef } from './select';
-import { SwitchProps, SwitchRef } from './switch';
-import { TextAreaProps, TextAreaRef } from './textArea';
-import { TextFieldProps, TextfieldRef } from './textField';
-import { TimerFieldProps, TimerFieldRef } from './timerField';
+import type {
+  NumberTextFieldProps,
+  NumberTextfieldRef,
+} from './numberTextField';
+import type { PasswordFieldProps, PasswordFieldRef } from './passwordField';
+import type { RadioGroupProps } from './radioGroup';
+import type { SelectProps, SelectRef } from './select';
+import type { SwitchProps, SwitchRef } from './switch';
+import type { TextAreaProps, TextAreaRef } from './textArea';
+import type { TextFieldProps, TextfieldRef } from './textField';
+import type { TimerFieldProps, TimerFieldRef } from './timerField';
 
 export type InputPropsRefType =
-  | AutoCompleteRef<any>
-  | AutoCompleteMultipleRef<any>
+  | AutoCompleteRef<unknown>
+  | AutoCompleteMultipleRef<unknown>
   | CheckboxRef
   | DatePickerRef
   | DateRangePickerRef
   | MultipleDatePickerRef
   | NumberTextfieldRef
   | PasswordFieldRef
-  | SelectRef<any>
+  | SelectRef<unknown>
   | SwitchRef
   | TextAreaRef
   | TextfieldRef
@@ -63,13 +69,14 @@ export interface FormRef<T> {
   getValues: () => Partial<T>;
   getErrors: () => Record<string, string | undefined>;
   setErrors: (errors: Record<string, string | undefined>) => void;
+  getDirtyFields: () => Record<string, boolean>;
 }
 
 type BaseRule = {
   message?: string;
 };
 
-interface AllRuleKeys {
+interface AllRuleKeys<V = unknown> {
   required: boolean;
   email: boolean;
   url: boolean;
@@ -79,8 +86,8 @@ interface AllRuleKeys {
   exactLength: number;
   min: number;
   max: number;
-  equal: any;
-  validate: (value: any) => boolean;
+  equal: V;
+  validate: (value: V) => boolean;
 }
 
 export type FormTemplate =
@@ -89,33 +96,36 @@ export type FormTemplate =
       children?: FormTemplate[];
     } & React.HTMLAttributes<HTMLDivElement>)
   | ({ component: 'Button' } & ButtonProps)
-  | ({ component: 'AutoComplete' } & AutoCompleteProps<any>)
-  | ({ component: 'AutoCompleteMultiple' } & AutoCompleteMultipleProps<any>)
+  | ({ component: 'AutoComplete' } & AutoCompleteProps<unknown>)
+  | ({ component: 'AutoCompleteMultiple' } & AutoCompleteMultipleProps<unknown>)
   | ({ component: 'Checkbox' } & CheckboxProps)
   | ({ component: 'DatePicker' } & DatePickerProps)
   | ({ component: 'DateRangePicker' } & DateRangePickerProps)
   | ({ component: 'MultipleDatePicker' } & MultipleDatePickerProps)
   | ({ component: 'NumberTextField' } & NumberTextFieldProps)
   | ({ component: 'PasswordField' } & PasswordFieldProps)
-  | ({ component: 'RadioGroup' } & RadioGroupProps<any>)
-  | ({ component: 'Select' } & SelectProps<any>)
+  | ({ component: 'RadioGroup' } & RadioGroupProps<unknown>)
+  | ({ component: 'Select' } & SelectProps<unknown>)
   | ({ component: 'Switch' } & SwitchProps)
   | ({ component: 'TextArea' } & TextAreaProps)
   | ({ component: 'TextField' } & TextFieldProps)
   | ({ component: 'TimerField' } & TimerFieldProps);
 
-export type FormRule = BaseRule &
+export type FormRule<V = unknown> = BaseRule &
   {
-    [K in keyof AllRuleKeys]: { [P in K]: AllRuleKeys[P] } & {
-      [P in Exclude<keyof AllRuleKeys, K>]?: undefined;
+    [K in keyof AllRuleKeys<V>]: { [P in K]: AllRuleKeys<V>[P] } & {
+      [P in Exclude<keyof AllRuleKeys<V>, K>]?: undefined;
     };
-  }[keyof AllRuleKeys];
+  }[keyof AllRuleKeys<V>];
 
 interface BaseFormProps<T> {
   onSubmit?: (values: T) => Promise<void> | void;
+  onError?: (errorFields: string[]) => void;
   onReset?: () => void;
   className?: string;
-  rules?: (ref: T) => Partial<Record<keyof T, Array<FormRule>>>;
+  rules?: (ref: { [K in keyof T]: T[K][] }) => Partial<{
+    [K in keyof T]: Array<FormRule<T[K]>>;
+  }>;
   disabled?: boolean;
   formRef?: React.Ref<FormRef<T>>;
   submitOnChange?: boolean;

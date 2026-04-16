@@ -1,27 +1,27 @@
-export type Placement =
-  | 'top'
-  | 'top-left'
-  | 'top-right'
-  | 'bottom'
-  | 'bottom-left'
-  | 'bottom-right'
-  | 'left'
-  | 'left-top'
-  | 'left-bottom'
-  | 'right'
-  | 'right-top'
-  | 'right-bottom';
+import type { ModalAnimationConfig } from '../animation';
+
+export type Vertical = 'top' | 'center' | 'bottom';
+export type Horizontal = 'left' | 'center' | 'right';
+
+export interface Origin {
+  vertical: Vertical;
+  horizontal: Horizontal;
+}
 
 export interface PopperProps {
   disabled?: boolean;
+  trigger?: 'click' | 'hover';
   content: React.ReactNode;
   children: React.ReactElement;
   open?: boolean;
   onOpen?: (open: boolean) => void;
-  placement?: Placement;
-  offset?: number; // Distance between popper and anchor
+
+  anchorOrigin?: Origin;
+  transformOrigin?: Origin;
+
+  offset?: number;
   className?: string;
   style?: React.CSSProperties;
-  closeOnClickChild?: boolean;
   onClickOutside?: () => void;
+  animation?: ModalAnimationConfig;
 }

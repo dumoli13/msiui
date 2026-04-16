@@ -1,4 +1,5 @@
 export declare enum TimeUnit {
+    days = "days",
     hours = "hours",
     minutes = "minutes",
     seconds = "seconds"

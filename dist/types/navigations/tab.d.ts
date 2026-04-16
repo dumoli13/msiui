@@ -8,8 +8,10 @@ export interface TabProps {
     items: TabItem[];
     defaultActiveKey?: string | number;
     activeKey?: string | number;
-    onChange?: (key: string | number) => void;
-    onTabClick?: (key: string | number) => void;
-    onTabClose?: (key: string | number) => void;
+    fillParentWidth?: boolean;
+    textAlign?: 'left' | 'center' | 'right';
+    mountAllTabs?: boolean;
+    onTabClick?: (key: string | number, index: number, detail: TabItem) => void;
+    onTabClose?: (key: string | number, index: number) => void;
 }
 //# sourceMappingURL=tab.d.ts.map

@@ -1,5 +1,6 @@
 import React from 'react';
 import { NotificationStack } from '../components/Notification';
+import { ToastStack } from '../components/Toast';
 import { Theme } from '../const';
 
 interface LibraryContextType {
@@ -14,7 +15,6 @@ const LibraryContext = React.createContext<LibraryContextType | undefined>(
 export const useMisDesignContext = (): LibraryContextType => {
   const context = React.useContext(LibraryContext);
   if (context === undefined) {
-    // throw new Error('UseContext must be used within a LibraryContext');
     const theme = document.documentElement.classList.contains('dark')
       ? Theme.DARK
       : Theme.LIGHT;
@@ -43,7 +43,6 @@ export const MisDesignProvider = ({
     if (storedTheme) {
       return storedTheme === 'dark';
     }
-    // return window.matchMedia('(prefers-color-scheme: dark)').matches;
     return defaultTheme === Theme.DARK;
   });
 
@@ -90,6 +89,7 @@ export const MisDesignProvider = ({
     <LibraryContext.Provider value={value}>
       {children}
       <NotificationStack />
+      <ToastStack />
     </LibraryContext.Provider>
   );
 };

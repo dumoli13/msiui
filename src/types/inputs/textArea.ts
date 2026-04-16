@@ -6,12 +6,11 @@ export interface TextAreaRef {
   disabled: boolean;
 }
 
-export interface TextAreaProps
-  extends Omit<
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    'onChange' | 'size' | 'required' | 'checked'
-  > {
-  value?: string;
+export interface TextAreaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'value'
+> {
+  value?: string | null;
   defaultValue?: string;
   initialValue?: string;
   label?: string;

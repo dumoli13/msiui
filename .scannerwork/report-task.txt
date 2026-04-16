@@ -1,0 +1,6 @@
+projectKey=mis-design
+serverUrl=https://sonarqube.satnusa.com
+serverVersion=25.6.0.109173
+dashboardUrl=https://sonarqube.satnusa.com/dashboard?id=mis-design
+ceTaskId=ee0950bd-a24f-41f2-8f08-8d9aa7abfbff
+ceTaskUrl=https://sonarqube.satnusa.com/api/ce/task?id=ee0950bd-a24f-41f2-8f08-8d9aa7abfbff

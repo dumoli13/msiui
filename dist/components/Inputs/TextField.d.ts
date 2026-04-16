@@ -1,4 +1,4 @@
-import { TextFieldProps } from '../../types';
+import type { TextFieldProps } from '../../types';
 /**
  * The Text Field component is used for collecting text from users.
  */

@@ -1,21 +1,32 @@
-/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('path');
 
-const lintFix = (filenames) =>
-  `yarn lint:fix ${filenames
+const filterFiles = (filenames) => {
+  return filenames
+    .map((f) => path.relative(process.cwd(), f).replace(/\\/g, '/'))
     .filter((f) => !f.includes('make-executable.js'))
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' ')}`;
+    .filter((f) => !f.startsWith('dist/'))
+    .filter((f) => !f.startsWith('stories/'));
+};
 
-const prettierWrite = (filenames) =>
-  `yarn prettier --config ./.prettierrc.json --ignore-unknown --write ${filenames
+const prettierWrite = (filenames) => {
+  const files = filenames
+    .map((f) => path.relative(process.cwd(), f).replace(/\\/g, '/'))
     .filter((f) => !f.includes('make-executable.js'))
-    .map((f) => path.relative(process.cwd(), f))
-    .join(' ')}`;
+    .filter((f) => !f.startsWith('dist/'));
+
+  if (files.length === 0) return 'echo "No formattable files"';
+
+  return `yarn prettier --config ./.prettierrc.json --ignore-unknown --write ${files.join(' ')}`;
+};
 
 module.exports = {
-  '**/*.ts?(x)': () => 'yarn type:check',
-  '*.{js,jsx,ts,tsx}': lintFix,
-  '**/*': prettierWrite,
+  '*.[jt]s?(x)': (filenames) => {
+    const files = filterFiles(filenames);
+    if (files.length === 0) return 'echo "No lintable files"';
+
+    return [`eslint --fix --cache --max-warnings 0 ${files.join(' ')}`];
+  },
+
+  '*': prettierWrite,
 };

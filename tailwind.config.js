@@ -1,12 +1,19 @@
-/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-require-imports */
-export const content = ['./src/**/*.{html,js,jsx,ts,tsx}'];
+export const content = [
+  './src/**/*.{js,ts,jsx,tsx,mdx}',
+  './stories/**/*.{js,ts,jsx,tsx,mdx}',
+  './.storybook/**/*.{js,ts}',
+];
 export const theme = {
   container: {
     center: true,
     padding: '2rem',
     screens: {
-      '2xl': '1400px',
+      xs: '0px',
+      sm: '640px', // mobile screen size
+      md: '768px', // tablet screen size
+      lg: '1024px', // desktop screen size
+      xl: '1440px', // wide desktop screen size
     },
   },
   extend: {
@@ -98,7 +105,7 @@ export const theme = {
         dark: 'rgba(160, 160, 160, <alpha-value>)', // #A0A0A0
       },
       90: {
-        DEFAULT: 'rgba(66, 66, 66, <alpha-value>)', // #424242
+        DEFAULT: 'rgba(64, 64, 64, <alpha-value>)', // #404040
         dark: 'rgba(188, 188, 188, <alpha-value>)', // #BCBCBC
       },
       100: {
@@ -112,15 +119,15 @@ export const theme = {
         dark: 'rgba(90, 155, 226, <alpha-value>)', // #5A9BE2
       },
       surface: {
-        DEFAULT: 'rgba(214, 230, 245, <alpha-value>)', // #D6E6F5
+        DEFAULT: 'rgba(240, 248, 255, <alpha-value>)', // #F0F8FF
         dark: 'rgba(26, 43, 69, <alpha-value>)', // #1A2B45
       },
       border: {
-        DEFAULT: 'rgba(186, 213, 238, <alpha-value>)', // #BAD5EE
+        DEFAULT: 'rgba(186, 213, 239, <alpha-value>)', // #BAD5EF
         dark: 'rgba(42, 59, 94, <alpha-value>)', // #2A3B5E
       },
       hover: {
-        DEFAULT: 'rgba(40, 108, 171, <alpha-value>)', // #286CAB
+        DEFAULT: 'rgba(41, 108, 172, <alpha-value>)', // #296CAC
         dark: 'rgba(74, 143, 192, <alpha-value>)', // #4A8FC0
       },
       pressed: {
@@ -128,7 +135,7 @@ export const theme = {
         dark: 'rgba(44, 90, 138, <alpha-value>)', // #2C5A8A
       },
       focus: {
-        DEFAULT: 'rgba(49, 130, 206, 0.2)', // #3182CE
+        DEFAULT: 'rgba(49, 130, 206, 0.2)', // #3182CC33
         dark: 'rgba(90, 155, 226, 0.2)', // #5A9BE2
       },
     },
@@ -190,19 +197,19 @@ export const theme = {
         dark: 'rgba(111, 191, 139, <alpha-value>)', // #6FBF8B
       },
       surface: {
-        DEFAULT: 'rgba(247, 247, 247, <alpha-value>)', // #F7F7F7
+        DEFAULT: 'rgba(235, 255, 245, <alpha-value>)', // #EBFFF5
         dark: 'rgba(30, 42, 39, <alpha-value>)', // #1E2A27
       },
       border: {
-        DEFAULT: 'rgba(183, 219, 201, <alpha-value>)', // #B7DBC9
+        DEFAULT: 'rgba(184, 219, 202, <alpha-value>)', // #B8DBCA
         dark: 'rgba(134, 185, 168, <alpha-value>)', // #86B9A8
       },
       hover: {
-        DEFAULT: 'rgba(53, 122, 89, <alpha-value>)', // #357A59
+        DEFAULT: 'rgba(54, 122, 89, <alpha-value>)', // #367A59
         dark: 'rgba(86, 155, 127, <alpha-value>)', // #569B7F
       },
       pressed: {
-        DEFAULT: 'rgba(32, 86, 60, <alpha-value>)', // #20563C
+        DEFAULT: 'rgba(32, 87, 61, <alpha-value>)', // #20573D
         dark: 'rgba(58, 123, 98, <alpha-value>)', // #3A7B62
       },
       focus: {
@@ -228,13 +235,57 @@ export const theme = {
         dark: 'rgba(92, 93, 208, <alpha-value>)', // #5C5DD0
       },
       pressed: {
-        DEFAULT: 'rgba(33, 33, 122, 0.2)', // #21217A
-        dark: 'rgba(66, 68, 160, 0.2)', // #4244A0
+        DEFAULT: 'rgba(33,33,122, <alpha-value>)', // #212A7A
+        dark: 'rgba(66, 68, 160, <alpha-value>)', // #4244A0
       },
       focus: {
         DEFAULT: 'rgba(76, 77, 220, 0.2)', // #4C4DDC at 20% opacity
         dark: 'rgba(123, 124, 224, 0.2)', // #7B7CE0 at 20% opacity
       },
+    },
+  },
+  highlight: {
+    main: {
+      DEFAULT: 'rgba(253, 92, 157, <alpha-value>)', // #FD5C9D
+      dark: 'rgba(255, 126, 179, <alpha-value>)', // #FF7EB3
+    },
+    surface: {
+      DEFAULT: 'rgba(255, 233, 239, <alpha-value>)', // #FFE9EF
+      dark: 'rgba(45, 20, 30, <alpha-value>)', // #2D141E
+    },
+    border: {
+      DEFAULT: 'rgba(253, 209, 226, <alpha-value>)', // #FDD1E2
+      dark: 'rgba(94, 45, 65, <alpha-value>)', // #5E2D41
+    },
+    hover: {
+      DEFAULT: 'rgba(217, 52, 119, <alpha-value>)', // #D93477
+      dark: 'rgba(255, 105, 165, <alpha-value>)', // #FF69A5
+    },
+    pressed: {
+      DEFAULT: 'rgba(190, 69, 118, <alpha-value>)', // #BE4576
+      dark: 'rgba(255, 85, 145, <alpha-value>)', // #FF5591
+    },
+  },
+  accent: {
+    main: {
+      DEFAULT: 'rgba(254, 139, 45, <alpha-value>)', // #FE8B2D
+      dark: 'rgba(255, 161, 82, <alpha-value>)', // #FFA152
+    },
+    surface: {
+      DEFAULT: 'rgba(255, 246, 238, <alpha-value>)', // #FFF6EE
+      dark: 'rgba(38, 26, 18, <alpha-value>)', // #261A12
+    },
+    border: {
+      DEFAULT: 'rgba(242, 194, 155, <alpha-value>)', // #F2C29B
+      dark: 'rgba(84, 60, 40, <alpha-value>)', // #543C28
+    },
+    hover: {
+      DEFAULT: 'rgba(217, 115, 31, <alpha-value>)', // #D9731F
+      dark: 'rgba(255, 175, 110, <alpha-value>)', // #FFAF6E
+    },
+    pressed: {
+      DEFAULT: 'rgba(138, 69, 16, <alpha-value>)', // #8A4510
+      dark: 'rgba(255, 145, 60, <alpha-value>)', // #FF913C
     },
   },
 
@@ -321,3 +372,10 @@ export const plugins = [
   },
 ];
 export const darkMode = 'class';
+
+export default {
+  darkMode,
+  content,
+  theme,
+  plugins,
+};

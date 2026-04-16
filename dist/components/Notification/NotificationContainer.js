@@ -39,15 +39,16 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
             }, duration);
         }
         return () => {
-            clearTimeout(timerRef.current);
-            clearInterval(intervalRef.current);
+            clearTimeout(timerRef.current ?? undefined);
+            clearInterval(intervalRef.current ?? undefined);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- startProgress and handleClose use refs; duration is stable for the lifetime of this instance
     }, [open]);
     const startProgress = () => {
         intervalRef.current = setInterval(() => {
             setProgressWidth((prev) => {
                 if (prev <= 0) {
-                    clearInterval(intervalRef.current);
+                    clearInterval(intervalRef.current ?? undefined);
                     return 0;
                 }
                 return Math.max(prev - decrementRate, 0);
@@ -55,8 +56,8 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
         }, decrementInterval);
     };
     const handleMouseEnter = () => {
-        clearInterval(intervalRef.current);
-        clearTimeout(timerRef.current);
+        clearInterval(intervalRef.current ?? undefined);
+        clearTimeout(timerRef.current ?? undefined);
     };
     const handleMouseLeave = () => {
         startProgress();
@@ -72,12 +73,13 @@ const NotificationContainer = ({ open, title, description, icon, color = 'primar
     };
     if (!visible)
         return null;
-    return (_jsx("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, children: _jsxs("div", { className: "relative px-6 py-5 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden", children: [_jsx("div", { className: "shrink-0", children: icon }), _jsxs("div", { children: [_jsx("div", { className: "min-h-[28px] text-24px mb-2 break-words", children: title }), _jsx("p", { className: "text-20px break-words", children: description })] }), _jsx("div", { className: "absolute right-4 top-4", children: _jsx(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "p-1 shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color", onClick: handleClose }) }), _jsx("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark", children: _jsx("div", { className: cx('h-full transition-all ease-linear bg-primary-main', {
+    return (_jsx("div", { role: "none", onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, children: _jsxs("div", { className: "relative p-4 bg-neutral-10 dark:bg-neutral-10-dark text-neutral-90 dark:text-neutral-90-dark flex items-start gap-4 rounded-md shadow-box-notification min-w-[200px] max-w-[448px] overflow-hidden", children: [_jsx("div", { className: "shrink-0 mt-1", children: icon }), _jsxs("div", { className: "flex-1", children: [_jsx("div", { className: "font-semibold text-20px mb-2 break-words", children: title }), !!description && (_jsx("p", { className: "text-16px break-words", children: description }))] }), _jsx("div", { className: "shrink-0", children: _jsx(Icon, { name: "x-mark", size: 16, strokeWidth: 2, className: "p-1 shrink-0 rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color", onClick: handleClose }) }), _jsx("div", { className: "absolute bottom-0 left-0 w-full h-1 bg-neutral-30 dark:bg-neutral-30-dark", children: _jsx("div", { className: cx('h-full transition-all ease-linear ', {
                             'bg-primary-main dark:bg-primary-main-dark': color === 'primary',
                             'bg-success-main dark:bg-success-main-dark': color === 'success',
                             'bg-danger-main dark:bg-danger-main-dark': color === 'danger',
                             'bg-warning-main dark:bg-warning-main-dark': color === 'warning',
                             'bg-info-main dark:bg-info-main-dark': color === 'info',
+                            'bg-neutral-80 dark:bg-neutral-30-dark': color === 'neutral',
                         }), style: {
                             width: `${progressWidth}%`,
                             transitionDuration: '0s',

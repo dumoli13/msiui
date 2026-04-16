@@ -1,12 +1,13 @@
 import React from 'react';
+import cx from 'classnames';
 
-interface ModalBodyProps {
+interface ModalBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const ModalBody = ({ children }: ModalBodyProps) => {
+const ModalBody = ({ className, children }: ModalBodyProps) => {
   return (
-    <div className="pb-4 px-6 h-full text-neutral-80 dark:text-neutral-90-dark text-14px flex-1 overflow-auto">
+    <div className={cx('pb-4 px-6 h-full flex-1 overflow-auto', className)}>
       {children}
     </div>
   );

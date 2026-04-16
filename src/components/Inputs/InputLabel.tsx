@@ -1,4 +1,3 @@
-import React from 'react';
 import cx from 'classnames';
 
 interface InputLabelProps {
@@ -27,7 +26,13 @@ function InputLabel({
     >
       {children}
       {required && (
-        <span className="text-danger-main dark:text-danger-main-dark">*</span>
+        // aria-hidden: required state is conveyed to screen readers via aria-required on the input
+        <span
+          aria-hidden="true"
+          className="text-danger-main dark:text-danger-main-dark ml-0.5"
+        >
+          *
+        </span>
       )}
     </label>
   );

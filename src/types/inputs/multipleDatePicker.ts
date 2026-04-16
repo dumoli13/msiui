@@ -1,4 +1,4 @@
-import { PickerType } from './datePicker';
+import type { PickerType } from './datePicker';
 
 export type MultipleDateValue = Date[];
 
@@ -9,11 +9,16 @@ export interface MultipleDatePickerRef {
   reset: () => void;
   disabled: boolean;
 }
-export interface MultipleDatePickerProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    'value' | 'defaultValue' | 'onChange' | 'size' | 'required'
-  > {
+export interface MultipleDatePickerProps extends Omit<
+  React.InputHTMLAttributes<HTMLDivElement>,
+  | 'value'
+  | 'defaultValue'
+  | 'onChange'
+  | 'size'
+  | 'required'
+  | 'checked'
+  | 'defaultChecked'
+> {
   value?: MultipleDateValue;
   defaultValue?: MultipleDateValue;
   initialValue?: MultipleDateValue;

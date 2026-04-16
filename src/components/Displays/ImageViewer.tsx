@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { ImageViewerProps } from '../../types';
+import type { ImageViewerProps } from '../../types';
 import Icon from '../Icon';
 import { Portal } from '../Portal';
 
@@ -65,7 +65,7 @@ const ImageViewer = ({ open, onClose, url }: ImageViewerProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const decimalRegex = /^\d*\.?\d*$/;
+    const decimalRegex = /^(?:\d+(?:\.\d*)?|\.\d+)$/;
     if (decimalRegex.test(inputValue)) {
       const newScale = Number(e.target.value);
       setTempScale(newScale);
@@ -130,7 +130,7 @@ const ImageViewer = ({ open, onClose, url }: ImageViewerProps) => {
     observer.observe(document.body, { childList: true, subtree: true });
 
     return () => observer.disconnect();
-  }, []);
+  }, [handleWheel]);
 
   // Reset on close/open
   React.useEffect(() => {
@@ -186,7 +186,9 @@ const ImageViewer = ({ open, onClose, url }: ImageViewerProps) => {
           ref={containerRef}
           className="relative h-full w-full overflow-hidden"
         >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- drag-to-pan requires mouse events on container */}
           <div
+            role="application"
             ref={viewerRef}
             className="flex h-full w-full items-center justify-center"
             onMouseDown={handleMouseDown}
@@ -231,7 +233,7 @@ const ImageViewer = ({ open, onClose, url }: ImageViewerProps) => {
               className="w-10 bg-transparent text-center outline-none"
               aria-label="Scale percentage"
             />
-            %
+            <span>%</span>
           </div>
 
           <button

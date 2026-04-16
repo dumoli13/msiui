@@ -1,4 +1,4 @@
-import { ModalProps } from '../../types';
+import type { ModalProps } from '../../types';
 /**
  *
  * A flexible modal component that can be used to display content in a modal with customizable title, content, and actions.
@@ -17,6 +17,6 @@ import { ModalProps } from '../../types';
  * @property {Function} [onClose] - Optional callback function triggered when the notification is closed manually.
  *
  */
-declare const ModalContainer: ({ open, children, className, width, height, closeOnOverlayClick, onClose, }: ModalProps) => import("react/jsx-runtime").JSX.Element | null;
+declare const ModalContainer: ({ open, children, className, width, height, closeOnOverlayClick, onClose, animation, }: ModalProps) => import("react/jsx-runtime").JSX.Element | null;
 export default ModalContainer;
 //# sourceMappingURL=ModalContainer.d.ts.map

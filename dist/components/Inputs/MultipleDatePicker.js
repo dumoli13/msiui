@@ -8,17 +8,21 @@ import { DAYS_OF_WEEK, MONTH_OF_YEAR } from '../../const/datePicker';
 import { areDatesEqual, getYearRange, isToday } from '../../libs';
 import { Tag } from '../Displays';
 import Icon from '../Icon';
+import CalendarHeader from './CalendarHeader';
 import { CancelButton } from './DatePicker';
+import InputBase from './InputBase';
 import InputDropdown from './InputDropdown';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
+import useClickOutside from './useClickOutside';
 /**
  * The Multiple Date Picker component lets users select multiple date.
  * This component is similar to the Date Picker component but can not set a time of the date.
  *
  */
-const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = 'Input date', onChange, className, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable, width, disabledDate = () => false, format = 'D/M/YYYY', picker = 'date', required, onKeyDown, ...props }) => {
+const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialValue = [], label, labelPosition = 'top', autoHideLabel = false, placeholder = 'Input date', onChange, className, helperText, disabled: disabledProp = false, fullWidth, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable, width, disabledDate = () => false, format = 'DD MMMYYYY', picker = 'date', required, onKeyDown, ...props }) => {
+    const generatedId = React.useId();
     const elementRef = React.useRef(null);
     const valueRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
@@ -33,9 +37,12 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
     const [displayedDate, setDisplayedDate] = React.useState(value.length === 0 ? new Date() : value[0]);
     const yearRange = getYearRange(displayedDate.getFullYear());
     const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'long' });
-    const helperMessage = errorProp ?? helperText;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
+    const inputId = id ?? `multipledatepicker-${name ?? generatedId}`;
+    const inputElementId = `${inputId}-input`;
+    const helperId = `${inputId}-helper`;
+    const helperMessage = isError && typeof errorProp === 'string' ? errorProp : helperText;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -43,28 +50,18 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
         reset: () => setInternalValue(initialValue),
         disabled,
     }));
-    React.useEffect(() => {
-        const handleClickOutside = (event) => {
-            const target = event.target;
-            const dropdownContainsTarget = dropdownRef.current?.contains(target);
-            const selectElementContainsTarget = elementRef.current?.contains(target);
-            if (dropdownContainsTarget || selectElementContainsTarget) {
-                elementRef.current?.focus();
-                return;
-            }
-            handleBlur();
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+    const handleClose = React.useCallback(() => {
+        setFocused(false);
+        setDropdownOpen(false);
     }, []);
-    const handleFocus = () => {
+    useClickOutside([elementRef, dropdownRef], handleClose);
+    const handleFocus = (event) => {
         if (disabled)
             return;
         handleChangeView(picker);
         setFocused(true);
         setDropdownOpen(true);
+        props.onFocus?.(event);
     };
     const handleBlur = (event) => {
         const relatedTarget = event?.relatedTarget;
@@ -75,6 +72,8 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
         }
         setFocused(false);
         setDropdownOpen(false);
+        if (event)
+            props.onBlur?.(event);
     };
     const handleDropdown = () => {
         if (disabled)
@@ -179,7 +178,7 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
         setDisplayedDate(value[value.length - 1] || new Date());
     }, [value, dropdownOpen]);
     const handleKeyDown = (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'arrowUp') {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
             e.preventDefault();
             if (!dropdownOpen) {
                 handleDropdown();
@@ -189,7 +188,9 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
             onKeyDown?.(e);
         }
     };
-    const dropdownContent = (_jsxs("div", { className: "min-w-60", children: [calendarView === 'date' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-left", size: 20, strokeWidth: 2, onClick: handlePrevMonth, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsxs("div", { className: "flex items-center gap-4 text-16px font-semibold text-neutral-100 dark:text-neutral-100-dark", children: [_jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-[84px]", onClick: () => handleChangeView('month'), children: monthFormatter.format(displayedDate) }), _jsx("button", { type: "button", className: "shrink-0 hover:text-primary-hover dark:hover:text-primary-hover-dark w-10", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() })] }), _jsxs("div", { className: "flex items-center", children: [_jsx(Icon, { name: "chevron-right", size: 20, strokeWidth: 2, onClick: handleNextMonth, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] })] }), _jsx("div", { className: "text-12px p-2 border-neutral-40 dark:border-neutral-40-dark", children: _jsxs("table", { className: "w-full", children: [_jsx("thead", { children: _jsx("tr", { children: DAYS_OF_WEEK.map((day) => (_jsx("th", { children: _jsx("div", { className: "text-center p-1 font-normal w-8", children: day }) }, day))) }) }), _jsx("tbody", { children: dateMatrix.map((row, rowIdx) => (_jsx("tr", { children: row.map((date, dateIdx) => {
+    // Show the calendar toggle when the clear button is NOT shown
+    const showCalendarButton = !clearable || !focused || (clearable && focused && !value.length);
+    const dropdownContent = (_jsxs("div", { className: "min-w-60", children: [calendarView === 'date' && (_jsxs(_Fragment, { children: [_jsx(CalendarHeader, { displayedDate: displayedDate, monthFormatter: monthFormatter, onPrevYear: () => handleChangeYear(-1), onPrevMonth: handlePrevMonth, onNextMonth: handleNextMonth, onNextYear: () => handleChangeYear(1), onClickMonth: () => handleChangeView('month'), onClickYear: () => handleChangeView('year') }), _jsx("div", { className: "text-12px p-2 border-neutral-40 dark:border-neutral-40-dark", children: _jsxs("table", { className: "w-full", children: [_jsx("thead", { children: _jsx("tr", { children: DAYS_OF_WEEK.map((day) => (_jsx("th", { children: _jsx("div", { className: "text-center p-1 font-normal w-8", children: day }) }, day))) }) }), _jsx("tbody", { children: dateMatrix.map((row, rowIdx) => (_jsx("tr", { children: row.map((date, dateIdx) => {
                                             const isDateDisabled = date === null || disabledDate(date, tempValue);
                                             const isDateSelected = date
                                                 ? tempValue !== null && areDatesEqual(date, tempValue)
@@ -201,7 +202,7 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
                                                             'border border-primary-main dark:border-primary-main-dark': isToday(date) && !isDateSelected,
                                                             'bg-primary-main dark:bg-primary-main-dark !text-neutral-10 dark:!text-neutral-10-dark': isDateSelected,
                                                         }), disabled: isDateDisabled, children: date.getDate() })) }) }, dateIdx));
-                                        }) }, rowIdx))) })] }) })] })), calendarView === 'month' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("button", { type: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() }), _jsx("button", { type: "button", title: "Next Year", onClick: () => handleChangeYear(1), className: "w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25", children: _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2, className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }) })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-1 text-14px", children: MONTH_OF_YEAR.map((item) => {
+                                        }) }, rowIdx))) })] }) })] })), calendarView === 'month' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx("button", { type: "button", "aria-label": "Previous year", onClick: () => handleChangeYear(-1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25", children: _jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 }) }), _jsx("button", { type: "button", className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark hover:text-primary-hover dark:hover:text-primary-hover-dark", onClick: () => handleChangeView('year'), children: displayedDate.getFullYear() }), _jsx("button", { type: "button", "aria-label": "Next year", onClick: () => handleChangeYear(1), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25", children: _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }) })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-1 text-14px", children: MONTH_OF_YEAR.map((item) => {
                             const isDateDisabled = picker === 'month' &&
                                 disabledDate(new Date(displayedDate.getFullYear(), item.value), tempValue);
                             const isDateSelected = value.some((dateItem) => dateItem.getFullYear() === displayedDate.getFullYear() &&
@@ -212,7 +213,7 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
                                         'hover:bg-neutral-20 dark:hover:bg-neutral-20-dark': !isDateDisabled && !isDateSelected,
                                         'bg-primary-main text-neutral-10 rounded-md': isDateSelected,
                                     }), disabled: isDateDisabled, children: item.label }) }, item.value));
-                        }) }), picker === 'date' && (_jsx("div", { className: "flex justify-end gap-3 px-2", children: _jsx(CancelButton, { onClick: () => handleChangeView('date') }) }))] })), calendarView === 'year' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(-12), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" }), _jsx("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark", children: `${yearRange[0]} - ${yearRange[yearRange.length - 1]}` }), _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2, onClick: () => handleChangeYear(12), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25" })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-1 text-14px", children: yearRange.map((item) => {
+                        }) }), picker === 'date' && (_jsx("div", { className: "flex justify-end gap-3 px-2", children: _jsx(CancelButton, { onClick: () => handleChangeView('date') }) }))] })), calendarView === 'year' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "flex justify-between items-center gap-2 p-2 border-b border-neutral-40 dark:border-neutral-40-dark", children: [_jsx("button", { type: "button", "aria-label": "Previous year range", onClick: () => handleChangeYear(-12), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25", children: _jsx(Icon, { name: "chevron-double-left", size: 20, strokeWidth: 2 }) }), _jsx("div", { className: "text-16px font-medium text-neutral-100 dark:text-neutral-100-dark", children: `${yearRange[0]} - ${yearRange[yearRange.length - 1]}` }), _jsx("button", { type: "button", "aria-label": "Next year range", onClick: () => handleChangeYear(12), className: "p-1 flex items-center justify-center rounded-full hover:bg-neutral-20 dark:hover:bg-neutral-20-dark text-neutral-100/25 dark:text-neutral-100-dark/25", children: _jsx(Icon, { name: "chevron-double-right", size: 20, strokeWidth: 2 }) })] }), _jsx("div", { className: "grid grid-cols-3 p-2 gap-1 text-14px", children: yearRange.map((item) => {
                             const isDateDisabled = picker === 'year' &&
                                 disabledDate(new Date(item, displayedDate.getMonth()), tempValue);
                             const dateList = value.map((v) => v.getFullYear());
@@ -224,35 +225,22 @@ const MultipleDatePicker = ({ id, name, value: valueProp, defaultValue, initialV
                                         'bg-primary-main dark:bg-primary-main-dark text-neutral-10 dark:text-neutral-10-dark': isDateSelected,
                                     }), disabled: isDateDisabled, children: item }) }, item));
                         }) }), (picker === 'date' || picker === 'month') && (_jsx("div", { className: "flex justify-end gap-3 px-2", children: _jsx(CancelButton, { onClick: () => handleChangeView('date') }) }))] }))] }));
-    const inputId = `multipledatepicker-${id || name}-${React.useId()}`;
-    return (_jsxs("div", { className: cx('relative text-14px', {
+    return (_jsxs("div", { id: inputId, className: cx('relative text-14px', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md flex gap-2 items-center', {
-                    'w-full': fullWidth,
-                    'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
-                    'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
-                    'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-main dark:hover:border-primary-main-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
-                    'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
-                    'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main': !disabled,
-                    'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
-                    'py-[3px]': size === 'default',
-                    'py-[9px]': size === 'large',
-                }), ref: elementRef, style: width ? { width } : undefined, children: [_jsxs("div", { role: "button", tabIndex: disabled ? -1 : 0, "aria-pressed": "true", className: cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
-                            'w-full': fullWidth,
-                            'cursor-text': !disabled,
-                            'cursor-not-allowed': disabled,
-                        }), onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, children: [value?.map((selected, index) => {
-                                const tagValue = dayjs(selected).format(format);
-                                return (_jsx("div", { className: "flex items-center py-[1px]", children: disabled ? (_jsx(Tag, { color: "neutral", children: tagValue })) : (_jsx(Tag, { color: "info", size: size, onRemove: isControlled
-                                            ? undefined
-                                            : () => handleChange(value.filter((_, i) => i !== index)), children: tagValue })) }, tagValue));
-                            }), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: inputValue, placeholder: focused ? '' : placeholder || format, className: cx('outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
-                                    'text-14px py-0.5': size === 'default',
-                                    'text-18px py-0.5': size === 'large',
-                                }), disabled: disabled, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onClick: handleFocus, onChange: handleChangeInput, ref: valueRef, onKeyDown: handleKeyDown })] }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, children: (!clearable ||
-                            (clearable && !focused) ||
-                            (clearable && focused && !value)) && (_jsx(Icon, { name: "calendar", strokeWidth: 2, size: 20, onClick: disabled ? undefined : handleDropdown, className: "rounded-full hover:bg-neutral-30 dark:hover:bg-neutral-30-dark text-neutral-70 dark:text-neutral-70-dark transition-color p-0.5" })) })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: valueRef, dropdownRef: dropdownRef, maxHeight: 320, children: dropdownContent })] }));
+        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputElementId, size: size, required: required, children: label })), _jsx(InputBase, { focused: focused, error: isError, success: successProp, disabled: disabled, size: size, width: width, fullWidth: fullWidth, containerRef: elementRef, align: "start", endIcons: _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && value.length > 0, onClear: handleClearValue, children: showCalendarButton && (_jsx("button", { type: "button", "aria-label": dropdownOpen ? 'Close date picker' : 'Open date picker', "aria-expanded": dropdownOpen, onMouseDown: (e) => e.preventDefault(), onClick: disabled ? undefined : handleDropdown, disabled: disabled, className: "rounded-full p-0.5 text-neutral-70 dark:text-neutral-70-dark hover:bg-neutral-30 dark:hover:bg-neutral-30-dark transition-colors duration-150 disabled:pointer-events-none", children: _jsx(Icon, { name: "calendar", size: 20, strokeWidth: 2 }) })) }), children: _jsxs("div", { role: "button", tabIndex: disabled ? -1 : 0, "aria-pressed": "true", className: cx('flex flex-1 gap-x-2 gap-y-1 items-center flex-wrap', {
+                        'w-full': fullWidth,
+                        'cursor-text': !disabled,
+                        'cursor-not-allowed': disabled,
+                    }), onFocus: handleFocus, onBlur: handleBlur, children: [value?.map((selected, index) => {
+                            const tagValue = dayjs(selected).format(format);
+                            return (_jsx("div", { className: "flex items-center py-[1px]", children: disabled ? (_jsx(Tag, { color: "neutral", children: tagValue })) : (_jsx(Tag, { color: "info", size: size, onRemove: isControlled
+                                        ? undefined
+                                        : () => handleChange(value.filter((_, i) => i !== index)), children: tagValue })) }, tagValue));
+                        }), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputElementId, name: name, value: inputValue, placeholder: focused ? '' : placeholder || format, className: cx('outline-none bg-transparent disabled:bg-transparent text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
+                                'text-14px py-0.5': size === 'default',
+                                'text-18px py-0.5': size === 'large',
+                            }), disabled: disabled, "aria-invalid": isError || undefined, "aria-describedby": helperMessage ? helperId : undefined, "aria-label": label, autoComplete: "off", onFocus: handleFocus, onBlur: handleBlur, onChange: handleChangeInput, ref: valueRef, onKeyDown: handleKeyDown })] }) }), _jsx(InputHelper, { id: helperMessage ? helperId : undefined, message: helperMessage, error: isError, size: size }), _jsx(InputDropdown, { open: dropdownOpen, elementRef: elementRef, dropdownRef: dropdownRef, maxHeight: 320, children: dropdownContent })] }));
 };
 MultipleDatePicker.isFormInput = true;
 export default MultipleDatePicker;

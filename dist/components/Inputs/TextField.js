@@ -1,22 +1,29 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
+import InputBase from './InputBase';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
 /**
  * The Text Field component is used for collecting text from users.
  */
-const TextField = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, placeholder = '', onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, required, ...props }) => {
-    const parentRef = React.useRef(null);
+const TextField = ({ id, name, value: valueProp, defaultValue, initialValue = '', label, labelPosition = 'top', autoHideLabel = false, placeholder, onChange, className, helperText, disabled: disabledProp = false, fullWidth, startIcon, endIcon, inputRef, size = 'default', error: errorProp, success: successProp, loading = false, clearable = false, width, required, ...props }) => {
+    // useId must be called unconditionally at the top level
+    const generatedId = React.useId();
+    const containerRef = React.useRef(null);
     const elementRef = React.useRef(null);
     const [focused, setFocused] = React.useState(false);
-    const [internalValue, setInternalValue] = React.useState((defaultValue || initialValue).toString() ?? '');
+    // ?? instead of || so that a falsy-but-valid defaultValue (e.g. 0) is not skipped
+    const [internalValue, setInternalValue] = React.useState((defaultValue ?? initialValue).toString());
     const isControlled = valueProp !== undefined;
-    const value = isControlled ? valueProp.toString() : internalValue;
-    const helperMessage = errorProp && typeof errorProp === 'string' ? errorProp : helperText;
+    const value = isControlled ? (valueProp?.toString() ?? '') : internalValue;
     const isError = !!errorProp;
     const disabled = loading || disabledProp;
+    const inputId = id ?? `textfield-${name ?? generatedId}`;
+    const inputElementId = `${inputId}-input`;
+    const helperId = `${inputId}-helper`;
+    const helperMessage = isError && typeof errorProp === 'string' ? errorProp : helperText;
     React.useImperativeHandle(inputRef, () => ({
         element: elementRef.current,
         value,
@@ -24,50 +31,37 @@ const TextField = ({ id, name, value: valueProp, defaultValue, initialValue = ''
         reset: () => setInternalValue(initialValue.toString()),
         disabled,
     }));
-    const handleFocus = () => {
-        if (disabled)
-            return;
+    const handleFocus = (event) => {
         setFocused(true);
+        props.onFocus?.(event);
     };
     const handleBlur = (event) => {
-        const relatedTarget = event.relatedTarget;
-        const selectElementContainsTarget = parentRef.current?.contains(relatedTarget);
-        if (selectElementContainsTarget) {
+        // Keep focused if focus moves to another element inside the container (e.g. clear button)
+        if (containerRef.current?.contains(event.relatedTarget))
             return;
-        }
         setFocused(false);
+        props.onBlur?.(event);
     };
     const handleChange = (e) => {
         const newValue = e.target.value;
         onChange?.(newValue);
-        if (!isControlled) {
+        if (!isControlled)
             setInternalValue(newValue);
-        }
     };
-    const handleClearValue = () => {
+    const handleClear = () => {
         onChange?.('');
-        if (!isControlled) {
+        if (!isControlled)
             setInternalValue('');
-        }
+        // Return focus to the input after clearing so the user can keep typing
+        elementRef.current?.focus();
     };
-    const inputId = `textfield-${id || name}-${React.useId()}`;
-    return (_jsxs("div", { className: cx('relative', {
+    return (_jsxs("div", { id: inputId, className: cx('relative', {
             'w-full': fullWidth,
             'flex items-center gap-4': labelPosition === 'left',
-        }, className), children: [((autoHideLabel && focused) || !autoHideLabel) && label && (_jsx(InputLabel, { id: inputId, size: size, required: required, children: label })), _jsxs("div", { className: cx('relative px-3 border rounded-md flex gap-2 items-center', {
-                    'w-full': fullWidth,
-                    'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark': isError,
-                    'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark': !isError && successProp,
-                    'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark': !isError && !successProp && !disabled,
-                    'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark': disabled,
-                    'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main': !disabled,
-                    'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark': focused,
-                    'py-[3px]': size === 'default',
-                    'py-[9px]': size === 'large',
-                }), style: width ? { width } : undefined, ref: parentRef, children: [!!startIcon && (_jsx("div", { className: "text-neutral-70 dark:text-neutral-70-dark", children: startIcon })), _jsx("input", { ...props, tabIndex: disabled ? -1 : 0, id: inputId, name: name, value: value, onChange: handleChange, placeholder: focused ? '' : placeholder, onFocus: handleFocus, onBlur: handleBlur, className: cx('w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed', {
-                            'text-14px py-0.5': size === 'default',
-                            'text-18px py-0.5': size === 'large',
-                        }), disabled: disabled, "aria-label": label, ref: elementRef }), _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClearValue, endIcon: endIcon })] }), _jsx(InputHelper, { message: helperMessage, error: isError, size: size })] }));
+        }, className), children: [label && (!autoHideLabel || focused) && (_jsx(InputLabel, { id: inputElementId, size: size, required: required, children: label })), _jsx(InputBase, { focused: focused, error: isError, success: successProp, disabled: disabled, size: size, width: width, fullWidth: fullWidth, startIcon: startIcon, containerRef: containerRef, endIcons: _jsx(InputEndIconWrapper, { loading: loading, error: isError, success: successProp, clearable: clearable && focused && !!value, onClear: handleClear, endIcon: endIcon }), children: _jsx("input", { ...props, id: inputElementId, name: name, value: value, placeholder: placeholder, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, disabled: disabled, "aria-invalid": isError || undefined, "aria-describedby": helperMessage ? helperId : undefined, ref: elementRef, className: cx('w-full min-w-0 outline-none bg-transparent', 'text-neutral-90 dark:text-neutral-90-dark', 'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark', 'disabled:cursor-not-allowed', {
+                        'text-14px py-0.5': size === 'default',
+                        'text-18px py-0.5': size === 'large',
+                    }) }) }), _jsx(InputHelper, { id: helperMessage ? helperId : undefined, message: helperMessage, error: isError, size: size })] }));
 };
 TextField.isFormInput = true;
 export default TextField;

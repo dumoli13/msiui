@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE_SIZE } from '../../const';
-import { PaginationButtonProps, PaginationProps } from '../../types';
+import type { PaginationButtonProps, PaginationProps } from '../../types';
 import Icon from '../Icon';
 
 const navButtonStyle = cx(
@@ -61,7 +61,7 @@ const Pagination = ({
   const totalPages = total ? Math.ceil(total / itemsPerPage) : -1;
 
   const handlePageChange = (page: number) => {
-    onPageChange?.({ page: page, limit: itemsPerPage });
+    onPageChange?.({ page, limit: itemsPerPage });
   };
 
   const handlePrevPage = () => {
@@ -71,7 +71,9 @@ const Pagination = ({
   };
 
   const handleNextPage = () => {
-    handlePageChange(currentPage + 1);
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
+    }
   };
 
   React.useImperativeHandle(paginationRef, () => ({
@@ -206,27 +208,10 @@ const Pagination = ({
   };
 
   return (
-    <div
-      className={`flex gap-4 md:gap-10 items-start justify-between ${
-        totalPages > 1 || totalPages < 0 ? 'flex-row' : 'flex-row-reverse'
-      }`}
-    >
-      {totalPages > 1 ? (
-        <div className="flex item-center flex-wrap gap-2">
-          <PrevButton onClick={handlePrevPage} disabled={currentPage === 1} />
-          {renderPageNumbers()}
-          <NextButton
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-          />
-        </div>
-      ) : (
-        <div className="flex item-center flex-wrap gap-2">
-          <PrevButton onClick={handlePrevPage} disabled={currentPage === 1} />
-          <NextButton onClick={handleNextPage} disabled={!hasNext} />
-        </div>
+    <div className="flex gap-3 items-center justify-end">
+      {!!total && (
+        <div className="text-14px">{`Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, total)} of ${total} entries`}</div>
       )}
-
       <select
         id="pagination"
         aria-label="items-per-page"
@@ -240,6 +225,22 @@ const Pagination = ({
           </option>
         ))}
       </select>
+      {totalPages > 1 && (
+        <div className="flex item-center flex-wrap gap-2">
+          <PrevButton onClick={handlePrevPage} disabled={currentPage === 1} />
+          {renderPageNumbers()}
+          <NextButton
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages}
+          />
+        </div>
+      )}
+      {totalPages === -1 && (
+        <div className="flex item-center flex-wrap gap-2">
+          <PrevButton onClick={handlePrevPage} disabled={currentPage === 1} />
+          <NextButton onClick={handleNextPage} disabled={!hasNext} />
+        </div>
+      )}
     </div>
   );
 };

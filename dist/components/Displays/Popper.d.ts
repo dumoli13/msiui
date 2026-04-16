@@ -1,4 +1,4 @@
-import { PopperProps } from '../../types';
-declare const Popper: ({ disabled, content, children, open: openProp, onOpen, placement, offset, className, style, closeOnClickChild, onClickOutside, }: PopperProps) => import("react/jsx-runtime").JSX.Element;
+import type { PopperProps } from '../../types/displays/popper';
+declare const Popper: ({ disabled, trigger, content, children, open: openProp, onOpen, anchorOrigin, transformOrigin, offset, className, style, onClickOutside, animation, }: PopperProps) => import("react/jsx-runtime").JSX.Element;
 export default Popper;
 //# sourceMappingURL=Popper.d.ts.map

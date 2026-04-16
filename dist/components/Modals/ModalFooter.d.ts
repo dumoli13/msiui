@@ -1,7 +1,7 @@
 import React from 'react';
-interface ModalFooterProps {
+interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
 }
-declare const ModalFooter: ({ children }: ModalFooterProps) => import("react/jsx-runtime").JSX.Element;
+declare const ModalFooter: ({ className, children }: ModalFooterProps) => import("react/jsx-runtime").JSX.Element;
 export default ModalFooter;
 //# sourceMappingURL=ModalFooter.d.ts.map

@@ -1,4 +1,4 @@
-import { SelectValue } from './select';
+import type { SelectValue } from './select';
 export interface RadioGroupRef<T, D = undefined> {
     element: HTMLDivElement | null;
     value: SelectValue<T, D> | null;

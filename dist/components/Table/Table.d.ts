@@ -1,9 +1,4 @@
-import { TableProps } from '../../types';
-/**
- * Tables display sets of data. They can be fully customized.
- */
-declare const Table: <T extends {
-    [key: string]: any;
-}>({ columns, stickyHeader, maxHeight, selectedRows: selectedRowsProp, onRowSelect, sorting, rowClassName, rowStyle, onSort, fullwidth, showSelected, size, verticalAlign, style, onRowClick, data: dataProps, async, fetchData, paginate, total, pagination: paginationProps, onPageChange, }: TableProps<T>) => import("react/jsx-runtime").JSX.Element;
+import type { TableProps } from '../../types';
+declare const Table: <T extends Record<string, any>, K extends keyof T>({ columns, stickyHeader, maxHeight, rowClassName, rowStyle, fullwidth, size, verticalAlign, style, onRowClick, sorting, onSort, dataKey, data, loading, showSelected, onRowSelect, selectedRows: selectedRowsProp, isSelectAll, paginate, total, pagination: paginationProps, onPageChange, reorderable, onReorder, rowReorderable, onRowReorder, groupable, groupLevel, groups, onGroupToggle, onGroupPageChange, freezeLeftColumns, freezeRightColumns, freezeTopRows, freezeBottomRows, expandable, expandedRowKeys: expandedRowKeysProp, onExpandRow, renderExpandedRow, }: TableProps<T, K>) => import("react/jsx-runtime").JSX.Element;
 export default Table;
 //# sourceMappingURL=Table.d.ts.map

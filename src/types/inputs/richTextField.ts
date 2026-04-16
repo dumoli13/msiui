@@ -1,21 +1,35 @@
-export type LIST_TYPES = 'numbered-list' | 'bulleted-list';
+import type { Editor } from '@tiptap/react';
 
-export type TEXT_TAG =
-  | 'paragraph'
-  | 'heading-one'
-  | 'heading-two'
-  | 'heading-three'
-  | 'heading-four'
-  | 'heading-five'
-  | 'heading-six'
-  | 'block-quote';
+export interface RichTextFieldRef {
+  focus: () => void;
+  blur: () => void;
+  getHTML: () => string;
+  getJSON: () => object;
+  clearContent: () => void;
+  /** Access the full TipTap Editor instance for advanced use */
+  editor: Editor | null;
+}
 
-export type TABLE_TYPES = 'table' | 'table-row' | 'table-cell';
-
-export type RICH_ELEMENT_TYPE =
-  | LIST_TYPES
-  | TEXT_TAG
-  | TABLE_TYPES
-  | 'list-item'
-  | 'link'
-  | 'image';
+export interface RichTextFieldProps {
+  /** Controlled HTML string value */
+  value?: string;
+  /** Uncontrolled initial HTML string */
+  defaultValue?: string;
+  /** Called with updated HTML string on every content change */
+  onChange?: (html: string) => void;
+  label?: string;
+  labelPosition?: 'top' | 'left';
+  autoHideLabel?: boolean;
+  size?: 'default' | 'large';
+  width?: string | number;
+  placeholder?: string;
+  helperText?: string;
+  className?: string;
+  disabled?: boolean;
+  error?: boolean | string;
+  success?: boolean;
+  required?: boolean;
+  id?: string;
+  name?: string;
+  inputRef?: React.Ref<RichTextFieldRef>;
+}

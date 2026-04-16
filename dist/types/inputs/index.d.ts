@@ -16,4 +16,6 @@ export type { SwitchRef, SwitchProps } from './switch';
 export type { TextAreaRef, TextAreaProps } from './textArea';
 export type { TextfieldRef, TextFieldProps } from './textField';
 export type { TimerFieldRef, TimerFieldProps } from './timerField';
+export type { UploaderItem, UploaderSingleValue, UploaderMultipleValue, UploaderValue, UploaderRef, UploaderSingleProps, UploaderMultipleProps, UploaderProps, } from './uploader';
+export type { RichTextFieldRef, RichTextFieldProps } from './richTextField';
 //# sourceMappingURL=index.d.ts.map

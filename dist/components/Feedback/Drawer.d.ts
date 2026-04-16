@@ -1,4 +1,4 @@
-import { DrawerProps } from '../../types';
+import type { DrawerProps } from '../../types';
 /**
  * The navigation drawers (or "sidebars") provide ergonomic access to destinations
  * in a site or app functionality such as switching accounts.

@@ -1,8 +1,7 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { ConfirmModalProps } from '../../types';
+import type { ConfirmModalProps } from '../../types';
 import Icon from '../Icon';
 import ModalConfirmContainer from './ModalConfirmContainer';
+import { createModal } from './modalManager';
 
 const InfoModal = ({
   icon = (
@@ -17,28 +16,25 @@ const InfoModal = ({
   content,
   confirmText = 'OK',
   onConfirm,
+  animation,
   customAction,
 }: ConfirmModalProps) => {
-  const container = document.createElement('div');
-  const root = createRoot(container); // Use `!` if you're using TypeScript and are sure `root` exists.
-  document.body.appendChild(container);
-
-  const handleClose = () => {
-    root.unmount();
-    document.body.removeChild(container);
-  };
+  const modal = createModal();
+  if (!modal) return;
+  const { root, handleClose } = modal;
 
   root.render(
     <ModalConfirmContainer
       open
       title={title}
       icon={icon}
+      animation={animation}
       onConfirm={() => {
         onConfirm?.();
         handleClose();
       }}
       confirmText={confirmText}
-      confirmButtonColor="info"
+      buttonColor="info"
       customAction={customAction}
     >
       {content}

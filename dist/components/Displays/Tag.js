@@ -1,11 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import cx from 'classnames';
 import Icon from '../Icon';
-/**
- *
- * Tag are compact elements that represent an input, attribute, or action.
- *
- */
 function Tag({ className, children, color = 'primary', size = 'default', startIcon, endIcon, onRemove, }) {
     return (_jsxs("div", { className: cx('ring-[1.5px] border-box truncate flex items-center justify-center w-fit h-fit py-0.5 px-2 rounded-lg font-medium gap-1', {
             'ring-primary-border dark:ring-primary-border-dark text-primary-main dark:text-primary-main-dark bg-primary-surface dark:bg-primary-surface-dark': color === 'primary',

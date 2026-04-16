@@ -1,6 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import cx from 'classnames';
+import { OverlayContext } from '../../context/OverlayContext';
 import { Portal } from '../Portal';
 /**
  * The navigation drawers (or "sidebars") provide ergonomic access to destinations
@@ -9,6 +10,10 @@ import { Portal } from '../Portal';
 const Drawer = ({ className, position = 'left', open, onClose, children, width = 250, height = 'auto', disableBackdropClick = false, disableEscapeKeyDown = false, }) => {
     const drawerRef = React.useRef(null);
     const previouslyFocusedElement = React.useRef(null);
+    // Provide OverlayContext so nested overlays (Popper, Tooltip, etc.) portal
+    // into this drawer's container and use viewport coordinates (isFixed: true).
+    const [wrapperEl, setWrapperEl] = React.useState(null);
+    const overlayContextValue = React.useMemo(() => ({ container: wrapperEl, isFixed: true }), [wrapperEl]);
     // Handle escape key press
     React.useEffect(() => {
         const handleKeyDown = (event) => {
@@ -44,7 +49,7 @@ const Drawer = ({ className, position = 'left', open, onClose, children, width =
         return () => {
             document.body.style.overflow = '';
         };
-    }, [open, document.body.style.overflow]);
+    }, [open]);
     const drawerStyle = {
         width: position === 'left' || position === 'right' ? width : '100%',
         height: position === 'top' || position === 'bottom' ? height : '100%',
@@ -67,16 +72,15 @@ const Drawer = ({ className, position = 'left', open, onClose, children, width =
         }
         return '';
     };
-    return (_jsx(Portal, { children: _jsxs("div", { className: cx('fixed inset-0 z-[1300] transition-opacity duration-300', open ? 'opacity-100' : 'opacity-0 pointer-events-none'), children: [_jsx("div", { className: cx('fixed inset-0 bg-neutral-100/50 transition-opacity duration-300', open ? 'opacity-100' : 'opacity-0'), "aria-hidden": "true", onClick: disableBackdropClick ? undefined : onClose }), _jsx("div", { ref: drawerRef, className: cx('bg-neutral-15 dark:bg-neutral-15-dark fixed shadow-xl', 'transition-all duration-300 ease-in-out transform', 'focus:outline-none', // for accessibility
-                    {
-                        'left-0 top-0': position === 'left',
-                        'right-0 top-0': position === 'right',
-                        'top-0 left-0 right-0': position === 'top',
-                        'bottom-0 left-0 right-0': position === 'bottom',
-                    }, className), style: {
-                        ...drawerStyle,
-                        transform: getTransform(),
-                        ...(open ? { transform: 'translateX(0)' } : {}),
-                    }, role: "dialog", "aria-modal": "true", tabIndex: -1, children: children })] }) }));
+    return (_jsx(Portal, { children: _jsx("div", { ref: setWrapperEl, className: cx('fixed inset-0 z-[1300] transition-opacity duration-300', open ? 'opacity-100' : 'opacity-0 pointer-events-none'), children: _jsxs(OverlayContext.Provider, { value: overlayContextValue, children: [_jsx("div", { className: cx('fixed inset-0 bg-neutral-100/50 transition-opacity duration-300', open ? 'opacity-100' : 'opacity-0'), "aria-hidden": "true", onClick: disableBackdropClick ? undefined : onClose }), _jsx("div", { ref: drawerRef, role: "dialog", "aria-modal": "true", "aria-label": "Drawer", tabIndex: -1, className: cx('bg-neutral-15 dark:bg-neutral-15-dark fixed shadow-xl', 'transition-all duration-300 ease-in-out transform', 'focus:outline-none', {
+                            'left-0 top-0': position === 'left',
+                            'right-0 top-0': position === 'right',
+                            'top-0 left-0 right-0': position === 'top',
+                            'bottom-0 left-0 right-0': position === 'bottom',
+                        }, className), style: {
+                            ...drawerStyle,
+                            transform: getTransform(),
+                            ...(open ? { transform: 'translateX(0)' } : {}),
+                        }, children: children })] }) }) }));
 };
 export default Drawer;

@@ -8,7 +8,7 @@ type BaseDrawerProps = {
 };
 
 type LeftRightDrawerProps = BaseDrawerProps & {
-  position: 'left' | 'right';
+  position?: 'left' | 'right';
   width?: number | string;
   height?: never; // Explicitly disallow height
 };

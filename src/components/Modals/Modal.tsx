@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfirmModalProps, ModalProps } from '../../types';
+import type { ConfirmModalProps, ModalProps } from '../../types';
 import ConfirmModal from './ConfirmModal';
 import DangerModal from './DangerModal';
 import InfoModal from './InfoModal';

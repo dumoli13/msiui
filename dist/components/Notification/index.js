@@ -11,7 +11,7 @@ export const useNotification = () => {
     return (notification) => {
         if (addNotificationToStack) {
             addNotificationToStack({
-                id: Math.random().toString(),
+                id: crypto.randomUUID(),
                 color: notification.color ?? 'primary',
                 ...notification,
             });
@@ -31,7 +31,7 @@ export const NotificationStack = () => {
     const handleChangeNotifications = (notification) => {
         setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
     };
-    return (_jsx(Portal, { children: _jsx("div", { className: "fixed bottom-0 right-0 p-4 z-[1500] space-y-4", children: notifications.map((notification) => {
+    return (_jsx(Portal, { children: _jsx("div", { className: "fixed bottom-0 right-0 z-[1500] space-y-4", children: notifications.map((notification) => {
                 let icon;
                 switch (notification.color) {
                     case 'success':
@@ -45,6 +45,9 @@ export const NotificationStack = () => {
                         break;
                     case 'info':
                         icon = (_jsx(Icon, { name: "information-circle", size: 24, strokeWidth: 2, className: "text-info-main dark:text-info-main-dark" }));
+                        break;
+                    case 'neutral':
+                        icon = (_jsx(Icon, { name: "information-circle", size: 24, strokeWidth: 2, className: "text-neutral-80 dark:text-neutral-80-dark" }));
                         break;
                     default:
                         icon = notification.icon;

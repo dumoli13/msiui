@@ -1,4 +1,4 @@
-import { MultipleDatePickerProps } from '../../types/inputs';
+import type { MultipleDatePickerProps } from '../../types/inputs';
 /**
  * The Multiple Date Picker component lets users select multiple date.
  * This component is similar to the Date Picker component but can not set a time of the date.

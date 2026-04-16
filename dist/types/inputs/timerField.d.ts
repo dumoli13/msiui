@@ -5,7 +5,7 @@ export interface TimerFieldRef {
     reset: () => void;
     disabled: boolean;
 }
-export interface TimerFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked'> {
+export interface TimerFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'required' | 'checked' | 'defaultChecked' | 'type'> {
     value?: number | null;
     defaultValue?: number | null;
     initialValue?: number | null;

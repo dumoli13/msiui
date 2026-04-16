@@ -1,4 +1,4 @@
-import { SelectValue } from '../types';
+import type { SelectValue } from '../types';
 export declare function isToday(date: Date | null): boolean;
 export declare function areDatesEqual(dateA: Date, dateB: Date | Date[]): boolean;
 export declare function isDateABeforeDateB(dateA: Date, dateB: Date): boolean;

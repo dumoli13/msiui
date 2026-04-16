@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
-import { NumberTextFieldProps } from '../../types/inputs';
+import type { NumberTextFieldProps } from '../../types/inputs';
+import InputBase from './InputBase';
 import InputEndIconWrapper from './InputEndIconWrapper';
 import InputHelper from './InputHelper';
 import InputLabel from './InputLabel';
@@ -9,18 +10,17 @@ const formatValue = (value: string | number | null | undefined) => {
   if (value === '' || value === null || value === undefined) return '';
 
   const str = value.toString();
-
   const [int, dec] = str.split('.');
 
   if (!int || int === '-') return str;
 
   const formattedInt = Number(int).toLocaleString('en-US');
-
   return dec !== undefined ? `${formattedInt}.${dec}` : formattedInt;
 };
 
 /**
- * The Number Text Field component is used for collecting numeric data from users. This component will format thousand separator on blur.
+ * The Number Text Field component is used for collecting numeric data from users.
+ * Formats thousand separators on blur.
  */
 const NumberTextField = ({
   id,
@@ -31,7 +31,7 @@ const NumberTextField = ({
   label,
   labelPosition = 'top',
   autoHideLabel = false,
-  placeholder = '',
+  placeholder,
   onChange,
   className,
   helperText,
@@ -46,58 +46,55 @@ const NumberTextField = ({
   loading = false,
   clearable = false,
   width,
-  onFocus,
-  onBlur,
   max,
   min,
   required,
   ...props
 }: NumberTextFieldProps) => {
-  const parentRef = React.useRef<HTMLDivElement>(null);
+  const generatedId = React.useId();
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const elementRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState(false);
+
   const [internalValue, setInternalValue] = React.useState<number | null>(
     () => {
       let initialVal = defaultValue ?? initialValue;
-
-      // Apply min/max constraints to initial value
       if (initialVal !== null) {
-        if (min !== undefined && initialVal < min) {
-          initialVal = min;
-        } else if (max !== undefined && initialVal > max) {
-          initialVal = max;
-        }
+        if (min !== undefined && initialVal < min) initialVal = min;
+        else if (max !== undefined && initialVal > max) initialVal = max;
       }
-
       return initialVal;
     },
   );
-  const [internalStringValue, setInternalStringValue] = React.useState<string>(
+
+  const [internalStringValue, setInternalStringValue] = React.useState(
     internalValue?.toString() ?? '',
   );
-  const [internalError, setInternalError] = React.useState<string | undefined>(
-    '',
-  );
+  const [internalError, setInternalError] = React.useState('');
 
   const isControlled = valueProp !== undefined;
+  const value = isControlled ? valueProp : internalValue;
 
-  // Sync `internalStringValue` with `valueProp` when `valueProp` changes
+  // Keep displayed string in sync with controlled value
   React.useEffect(() => {
-    if (isControlled) {
-      setInternalStringValue(valueProp?.toString() ?? '');
-    }
+    if (isControlled) setInternalStringValue(valueProp?.toString() ?? '');
   }, [valueProp, isControlled]);
 
-  const value = isControlled ? valueProp : internalValue;
+  const formattedSource = isControlled ? value : internalStringValue;
   const displayValue = focused
     ? internalStringValue
-    : isControlled
-      ? value || ''
-      : formatValue(internalStringValue);
+    : formatValue(formattedSource);
 
-  const helperMessage = (errorProp || internalError) ?? helperText;
   const isError = !!(errorProp || internalError);
   const disabled = loading || disabledProp;
+
+  const inputId = id ?? `numbertextfield-${name ?? generatedId}`;
+  const inputElementId = `${inputId}-input`;
+  const helperId = `${inputId}-helper`;
+  const helperMessage =
+    isError && typeof errorProp === 'string'
+      ? errorProp
+      : internalError || helperText;
 
   React.useImperativeHandle(inputRef, () => ({
     element: elementRef.current,
@@ -110,108 +107,73 @@ const NumberTextField = ({
     disabled,
   }));
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      const selectElementContainsTarget = elementRef.current?.contains(target);
-
-      if (selectElementContainsTarget) {
-        elementRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-    onFocus?.(event);
-    if (isControlled) {
-      setInternalStringValue(valueProp?.toString() ?? '');
-    }
+    if (isControlled) setInternalStringValue(valueProp?.toString() ?? '');
     setFocused(true);
+    props.onFocus?.(event);
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    if (!isControlled) {
-      let constrainedValue = internalValue;
+    if (containerRef.current?.contains(event.relatedTarget)) return;
 
-      if (internalValue !== null && typeof internalValue === 'number') {
+    if (!isControlled) {
+      let clamped = internalValue;
+      if (internalValue !== null) {
         if (min !== undefined && internalValue < min) {
-          constrainedValue = min;
+          clamped = min;
           setInternalStringValue(min.toString());
         } else if (max !== undefined && internalValue > max) {
-          constrainedValue = max;
+          clamped = max;
           setInternalStringValue(max.toString());
         }
       }
-      setInternalValue(constrainedValue);
-    }
-
-    onBlur?.(event);
-    const relatedTarget = event.relatedTarget;
-
-    const selectElementContainsTarget =
-      parentRef.current?.contains(relatedTarget);
-
-    if (selectElementContainsTarget) {
-      return;
+      setInternalValue(clamped);
     }
 
     setFocused(false);
+    props.onBlur?.(event);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-
-    const decimalRegex = /^-?\d*\.?\d*$/;
-    if (!decimalRegex.test(inputValue)) return;
+    if (inputValue !== '' && !/^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(inputValue))
+      return;
 
     setInternalStringValue(inputValue);
 
     let newValue: number | null = null;
-
     if (inputValue !== '' && inputValue !== '-' && inputValue !== '.') {
       const parsed = Number(inputValue);
-      if (!Number.isNaN(parsed)) {
-        newValue = parsed;
-      }
+      if (!Number.isNaN(parsed)) newValue = parsed;
     }
 
-    let constrainedValue = newValue;
-
+    let constrained = newValue;
     if (newValue !== null) {
       if (min !== undefined && newValue < min) {
-        constrainedValue = min;
+        constrained = min;
         setInternalError(`Must be at least ${min}`);
       } else if (max !== undefined && newValue > max) {
-        constrainedValue = max;
+        constrained = max;
         setInternalError(`Must be no more than ${max}`);
       } else if (internalError) {
         setInternalError('');
       }
     }
 
-    if (!isControlled) {
-      setInternalValue(constrainedValue);
-    }
-
-    onChange?.(constrainedValue);
+    if (!isControlled) setInternalValue(constrained);
+    onChange?.(constrained);
   };
-  const handleClearValue = () => {
+
+  const handleClear = () => {
     onChange?.(null);
-    if (!isControlled) {
-      setInternalValue(null);
-    }
+    if (!isControlled) setInternalValue(null);
     setInternalStringValue('');
+    elementRef.current?.focus();
   };
-
-  const inputId = `numbertextfield-${id || name}-${React.useId()}`;
 
   return (
     <div
+      id={inputId}
       className={cx(
         'relative',
         {
@@ -221,71 +183,68 @@ const NumberTextField = ({
         className,
       )}
     >
-      {((autoHideLabel && focused) || !autoHideLabel) && label && (
-        <InputLabel id={inputId} size={size} required={required}>
+      {label && (!autoHideLabel || focused) && (
+        <InputLabel id={inputElementId} size={size} required={required}>
           {label}
         </InputLabel>
       )}
-      <div
-        className={cx(
-          'relative px-3 border rounded-md flex gap-2 items-center',
-          {
-            'w-full': fullWidth,
-            'border-danger-main dark:border-danger-main-dark focus:ring-danger-focus dark:focus:ring-danger-focus-dark':
-              isError,
-            'border-success-main dark:border-success-main-dark focus:ring-success-focus dark:focus:ring-success-focus-dark':
-              !isError && successProp,
-            'border-neutral-50 dark:border-neutral-50-dark hover:border-primary-hover dark:hover:border-primary-hover-dark focus:ring-primary-main dark:focus:ring-primary-main-dark':
-              !isError && !successProp && !disabled,
-            'bg-neutral-20 dark:bg-neutral-30-dark cursor-not-allowed text-neutral-60 dark:text-neutral-60-dark':
-              disabled,
-            'bg-neutral-10 dark:bg-neutral-10-dark shadow-box-3 focus:ring-3 focus:ring-primary-focus focus:!border-primary-main':
-              !disabled,
-            'ring-3 ring-primary-focus dark:ring-primary-focus-dark !border-primary-main dark:!border-primary-main-dark':
-              focused,
-            'py-[3px]': size === 'default',
-            'py-[9px]': size === 'large',
-          },
-        )}
-        style={width ? { width } : undefined}
-        ref={parentRef}
+
+      <InputBase
+        focused={focused}
+        error={isError}
+        success={successProp}
+        disabled={disabled}
+        size={size}
+        width={width}
+        fullWidth={fullWidth}
+        startIcon={startIcon}
+        containerRef={containerRef}
+        endIcons={
+          <InputEndIconWrapper
+            loading={loading}
+            error={isError}
+            success={successProp}
+            clearable={
+              clearable && focused && value !== null && value !== undefined
+            }
+            onClear={handleClear}
+            endIcon={endIcon}
+          />
+        }
       >
-        {!!startIcon && (
-          <div className="text-neutral-70 dark:text-neutral-70-dark">
-            {startIcon}
-          </div>
-        )}
         <input
           {...props}
-          tabIndex={disabled ? -1 : 0}
-          id={inputId}
+          id={inputElementId}
           name={name}
           value={displayValue}
+          placeholder={placeholder}
           onChange={handleChange}
-          placeholder={focused ? '' : placeholder}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          disabled={disabled}
+          aria-invalid={isError || undefined}
+          aria-describedby={helperMessage ? helperId : undefined}
+          autoComplete="off"
+          ref={elementRef}
           className={cx(
-            'w-full outline-none bg-neutral-10 dark:bg-neutral-10-dark disabled:bg-neutral-20 dark:disabled:bg-neutral-30-dark text-neutral-90 dark:text-neutral-90-dark disabled:cursor-not-allowed',
+            'w-full min-w-0 outline-none bg-transparent',
+            'text-neutral-90 dark:text-neutral-90-dark',
+            'placeholder:text-neutral-50 dark:placeholder:text-neutral-50-dark',
+            'disabled:cursor-not-allowed',
             {
               'text-14px py-0.5': size === 'default',
               'text-18px py-0.5': size === 'large',
             },
           )}
-          disabled={disabled}
-          autoComplete="off"
-          ref={elementRef}
         />
-        <InputEndIconWrapper
-          loading={loading}
-          error={isError}
-          success={successProp}
-          clearable={clearable && focused && !!value}
-          onClear={handleClearValue}
-          endIcon={endIcon}
-        />
-      </div>
-      <InputHelper message={helperMessage} error={isError} size={size} />
+      </InputBase>
+
+      <InputHelper
+        id={helperMessage ? helperId : undefined}
+        message={helperMessage}
+        error={isError}
+        size={size}
+      />
     </div>
   );
 };
